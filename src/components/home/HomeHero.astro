@@ -1,0 +1,118 @@
+---
+// HomeHero.astro: the top of the home page (section 1 of the "Casework" home page).
+//
+// What it shows, on ink: the huge CIVIC running from one page margin to the other, with the small
+// mono "AI CLUB" under its last C, and along the bottom two short lines (the mission line and
+// who we are) and an arrow down to the reel. The reel peeks in under the bottom edge, because
+// this section is a little shorter than the screen: 90 to 120px of reel shows on laptops and
+// tablets, and about a quarter of the screen on phones (the reel there is a taller 4:5 frame).
+//
+// Where the words come from: src/data/site.json ("hero" and "footerSmallPrint" lines).
+// Motion, all asked for with data attributes (see MOTION.md):
+//   - the letters of CIVIC rise from both ends at once (data-wordmark="hero", modules/wordmark.js),
+//   - the two lines rise out of their masks on the page's intro beat (data-reveal, M1),
+//   - the bottom row trails at half the scroll speed, like the logo (data-parallax, M4).
+// The header (griffin, "Civic AI Club / Pomfret School") drops in on the same beat; it lives
+// in src/components/Header.astro, not here.
+import Wordmark from '../Wordmark.astro';
+import Arrow from '../Arrow.astro';
+import site from '../../data/site.json';
+---
+
+<section class="home-hero theme-ink" aria-labelledby="home-hero-title">
+  <h1 id="home-hero-title" class="home-hero__title wrap">
+    <Wordmark variant="hero" />
+  </h1>
+  <!-- The bottom row trails at half speed too, so it keeps its distance from the big CIVIC
+       while the reel slides up over both (motion M4). -->
+  <div class="home-hero__foot grid" data-parallax="0.5">
+    <p class="home-hero__line" data-reveal="lines" data-reveal-on="intro" data-reveal-delay="0.35">
+      {site.lines.hero}
+    </p>
+    <p class="home-hero__line home-hero__line--who" data-reveal="lines" data-reveal-on="intro" data-reveal-delay="0.42">
+      {site.lines.footerSmallPrint}
+    </p>
+    <a class="home-hero__down" href="#reel" aria-label="Skip down to the reel">
+      <Arrow dir="down" />
+    </a>
+  </div>
+</section>
+
+<style>
+  .home-hero {
+    /* The screen's height minus the strip of reel that peeks in below: 12% of the height, kept
+       between 90px and 120px. */
+    min-height: calc(100svh - clamp(90px, 12svh, 120px));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: calc(var(--header-height) + 4px);
+    padding-bottom: 22px;
+  }
+  .home-hero__title {
+    font-weight: inherit;
+  }
+  /* The two lines share a baseline (their last lines line up), whatever their length. */
+  .home-hero__foot {
+    align-items: end;
+    align-items: last baseline;
+  }
+  /* The mission line: 20px on columns 1 to 4, in two balanced lines (no lone word on the second). */
+  .home-hero__line {
+    grid-column: 1 / span 4;
+    font-size: var(--fs-label);
+    line-height: var(--lh-label);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  /* Who we are, in grey, on columns 5 to 7. */
+  .home-hero__line--who {
+    grid-column: 5 / span 3;
+    color: var(--text-2);
+  }
+  .home-hero__down {
+    grid-column: -2 / -1;
+    align-self: end;
+    justify-self: end;
+    display: inline-flex;
+    padding: 6px;
+    margin: -6px;
+  }
+  /* On touch screens the arrow gets a finger-sized (44px) tap area, without moving it. */
+  @media (pointer: coarse) {
+    .home-hero__down {
+      min-width: 44px;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      margin: -16px;
+    }
+  }
+  @media (max-width: 1023px) {
+    .home-hero__line {
+      grid-column: 1 / span 4;
+    }
+    .home-hero__line--who {
+      grid-column: 5 / span 3;
+    }
+  }
+  /* Phones: the reel peeks in over about the lowest quarter of the screen, and the two lines
+     stack. */
+  @media (max-width: 767px) {
+    .home-hero {
+      min-height: 72svh;
+    }
+    .home-hero__foot {
+      row-gap: 10px;
+      align-items: end;
+    }
+    .home-hero__line,
+    .home-hero__line--who {
+      grid-column: 1 / span 5;
+    }
+    .home-hero__down {
+      grid-column: 6 / -1;
+    }
+  }
+</style>

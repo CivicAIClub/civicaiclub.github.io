@@ -1,0 +1,133 @@
+/*
+  tokens.css: the site's design decisions, written down once.
+
+  "Tokens" are named values (a color, a size, a timing) that every other file uses instead of
+  typing the raw value. If the club ever wants a slightly different crimson or a bigger
+  headline, it changes here and the whole site follows.
+
+  Used by: base.css, transitions.css and every component's <style> block.
+  Owned by: the club lead (see .github/CODEOWNERS). Please ask before changing.
+*/
+
+:root {
+  /* ---- Color ------------------------------------------------------------------------------
+     Almost everything is ink (near-black) and paper (warm off-white). All other color comes
+     from the tools' own screens in the footage.
+     Contrast ratios are measured against the background each color is meant for. */
+  --ink: #0d0d0c; /* ink sections, and text on paper (17.5:1 on paper) */
+  --paper: #f4f3ef; /* paper sections, and text on ink */
+  --ink-2: #5f5d58; /* secondary text on paper (5.9:1) */
+  --paper-2: #9a9893; /* secondary text on ink (6.8:1) */
+  --preload-grey: #c9c7c0; /* the preloader words before they darken */
+
+  /* Pomfret crimson. Used sparingly and never as text on ink:
+     - the one marked phrase per page (paper text on crimson),
+     - focus rings on paper, active and progress hairlines, the "in progress" dot. */
+  --crimson: #a8172b;
+  /* On ink backgrounds, rings and hairlines use this lighter crimson (5.0:1 on ink). */
+  --crimson-on-ink: #e24a5c;
+  /* Text on the crimson marker. One step lighter than paper so it clears 7:1 (7.1:1). */
+  --mark-text: #fbfaf7;
+
+  /* Divider lines are the text color at 25% strength, 1px thick. */
+  --rule-opacity: 0.25;
+  --rule: color-mix(in srgb, currentColor 25%, transparent);
+
+  /* The flat ink layer behind the home page's reel player. (Footage on the pages themselves is
+     never dimmed: text never sits on footage without solid ink under it.) */
+  --overlay-player: rgb(13 13 12 / 0.95);
+
+  /* ---- Type -------------------------------------------------------------------------------
+     Two free fonts (see astro.config.mjs). The variables --font-host-grotesk and
+     --font-martian-mono are created by Astro's font loader; the names below are what the
+     rest of the CSS uses. */
+  --font-sans: var(--font-host-grotesk), 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: var(--font-martian-mono), ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* The type scale, measured at a 1440px-wide screen and scaled down on smaller screens. */
+  --fs-mono: 11px; /* labels, counters, buttons: capitals, slightly spaced out */
+  --ls-mono: 0.04em;
+  --fs-ui: 14px; /* header links and other small interface text */
+  --fs-body: clamp(16px, 0.9rem + 0.2vw, 18px);
+  --fs-label: 20px; /* key/value rows and labels */
+  --lh-label: 1.2;
+  --fs-footer-nav: 28px;
+  --fs-footer-tagline: clamp(28px, 2.78vw, 40px);
+  --fs-statement: clamp(30px, 4.3vw, 80px); /* the big statements */
+  --lh-statement: 1.08;
+  --ls-statement: -0.02em;
+  --fs-case-hero: 9vw; /* case names above their hero footage, and the club lead's name */
+  --fs-figure: 6.6vw; /* big figures: the numbers at a glance, the months on About's timeline */
+  --fs-name: clamp(28px, 2.78vw, 40px); /* people's names in lists (40px from 1440px wide) */
+  --fs-display: 26vw; /* one giant word per page (About's "Merged" is sized to fit its row) */
+  --ls-display: -0.06em;
+  --fw-light: 300;
+  --fw-regular: 400;
+
+  /* ---- Grid -------------------------------------------------------------------------------
+     12 columns with 40px side margins and 20px gaps on wide screens, 8 columns on tablets,
+     6 columns on phones. Content starts at column 1 or column 7. */
+  --cols: 12;
+  --margin: 40px;
+  --gutter: 20px;
+  /* The space above and below a section, so every page keeps the same rhythm: the standard gap,
+     and a larger one before and after the big statements and people sections. */
+  --space-section: clamp(96px, 12vw, 180px);
+  --space-section-lg: clamp(120px, 15vw, 220px);
+  /* How many columns a statement's first line is pushed in by. */
+  --statement-indent: 3;
+  --header-height: 62px;
+
+  /* ---- Motion -----------------------------------------------------------------------------
+     Only two curves are used anywhere on the site:
+       civic: slow start, fast middle, slow end (page changes, dividers, the marker).
+       expo-out: a fast start and a long, soft stop (text and media reveals).
+     GSAP uses the same two curves (src/scripts/motion/core.js). */
+  --ease-civic: cubic-bezier(0.7, 0, 0.3, 1);
+  --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The arrow swap on hover (M7) and the underline hand-off (M8) have their own timing. */
+  --ease-arrow: cubic-bezier(0.52, 0, 0, 1);
+  --ease-underline: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-arrow: 0.7s;
+  --dur-underline: 0.6s;
+  --dur-menu: 0.85s;
+  --dur-sheet: 0.8s;
+
+  /* ---- Layers ----------------------------------------------------------------------------
+     Which things sit on top of which. Higher numbers cover lower ones. */
+  --z-footer: 0;
+  --z-main: 1;
+  --z-header: 50;
+  --z-menu: 45;
+  --z-dialog: 70;
+  --z-cursor: 90;
+  --z-preloader: 100;
+  --z-skip: 110;
+}
+
+/* Tablets: 8 columns, 24px margins. */
+@media (max-width: 1023px) {
+  :root {
+    --cols: 8;
+    --margin: 24px;
+    --gutter: 16px;
+    --statement-indent: 2;
+    --fs-label: 18px;
+    --fs-footer-nav: 24px;
+  }
+}
+
+/* Phones: 6 columns, 16px margins, 12px gaps. */
+@media (max-width: 767px) {
+  :root {
+    --cols: 6;
+    --margin: 16px;
+    --gutter: 12px;
+    --statement-indent: 1;
+    --fs-label: 17px;
+    /* Names shrink with narrow phones, so the longest one still fits on its line. */
+    --fs-name: min(28px, 7.2vw);
+    --fs-case-hero: 15vw;
+    --header-height: 56px;
+  }
+}

@@ -1,0 +1,704 @@
+---
+// Docket.astro: "the docket", every club case from A to E (section 5 of the home page, and the
+// target of the header's "Cases" link).
+//
+// Each case is a giant letter cut out of an ink sheet, with a short silent loop of that case's
+// tool playing through the hole in full color, and beside it the tool's name, the client
+// office, one line about what it does, "Open case ↗", and two ruled rows: who built it and
+// where it stands. Case E has no tool yet: its letter is only an outline, with no footage and
+// no link, and says "In progress".
+//
+// Two ways it can look, from the same HTML:
+//   1. A stack of letter windows, one case under the other. This is what phones, tablets,
+//      touch screens, visitors who asked for less motion, and browsers without JavaScript see.
+//      Every window is a plain link to its case page.
+//   2. On laptops and desktops with motion on, src/scripts/motion/modules/home-docket.js turns
+//      the section into a "stage" that stays on screen while you scroll through five screens'
+//      worth of page: one case at a time, the letter rolls to the next one, the footage fades
+//      across, and the words swap. A rail "A B C D E" and a "List view" button sit along the
+//      bottom. Clicking a letter zooms through the hole into that case's page.
+// The stage-only parts below (the shared ink sheet, the rail, the list) are marked "hidden" and
+// only shown by that script.
+//
+// Where the facts come from: src/content/cases/*.md (letter, name, office, the one line "fix",
+// the team, the status, the docket clip id) and src/components/home/docket-letters.json (the
+// letter outlines, traced from Host Grotesk Bold by scripts/build-docket-letters.mjs). Clip files
+// are listed in src/data/media.json.
+import Video from '../Video.astro';
+import ArrowLink from '../ArrowLink.astro';
+import { getAllCases, caseUrl } from '../../lib/cases';
+import { getClip } from '../../lib/media';
+import { formatPerson } from '../../lib/people';
+import glyphs from './docket-letters.json';
+
+const cases = await getAllCases();
+
+// The letter windows in the stacked layout are square (like the footage). The letter is drawn
+// 80% as tall as its window, centered, on a 1000 x 1000 drawing grid.
+const BOX = 1000;
+const LETTER_HEIGHT = 800;
+
+// Move and resize a letter outline (written in the font's own units) onto that grid. The
+// outline is a list of drawing commands with absolute positions ("M x y", "L x y", "Q ..."),
+// so every x and y pair is scaled and shifted the same way.
+function placeLetter(d: string, width: number): string {
+  const scale = LETTER_HEIGHT / glyphs.capHeight;
+  const dx = (BOX - width * scale) / 2;
+  const dy = (BOX - LETTER_HEIGHT) / 2;
+  return d.replace(/([MLQCZ])([^MLQCZ]*)/g, (_, command: string, numbers: string) => {
+    const values = numbers.trim() ? numbers.trim().split(/[\s,]+/).map(Number) : [];
+    const moved = values.map((value, i) =>
+      Math.round((i % 2 === 0 ? value * scale + dx : value * scale + dy) * 10) / 10
+    );
+    return command + moved.join(' ');
+  });
+}
+
+// "Built by": the students on the case, as "Name ’YY", leaving out advisors (they are credited
+// on the case page itself). A case nobody has been assigned to yet says so.
+function builtBy(team: { name: string; classYear?: number; role?: string }[]): string {
+  const builders = team.filter((person) => !/advisor/i.test(person.role ?? ''));
+  return builders.length ? builders.map(formatPerson).join(', ') : 'Not assigned yet';
+}
+
+// Everything the page needs about each case, worked out once.
+const rows = cases.map((entry) => {
+  const data = entry.data;
+  const glyph = glyphs.letters[data.letter as keyof typeof glyphs.letters];
+  const clip = data.public ? getClip(data.clips.docket) : undefined;
+  return {
+    letter: data.letter,
+    slug: data.slug,
+    title: data.title,
+    office: data.office,
+    fix: data.fix,
+    // Only public cases have a page to open; Case E is listed but has no page yet.
+    href: data.public ? caseUrl(data.slug) : undefined,
+    clip,
+    placed: placeLetter(glyph.d, glyph.width),
+    builtBy: builtBy(data.team),
+    // "Status": the case file's own words. An open case (Case E) reads "In progress. Discovery next."
+    status: data.inProgress ? `In progress. ${data.status.replace(/\.$/, '')}.` : data.status,
+  };
+});
+---
+
+<section id="cases" class="docket theme-ink" aria-labelledby="docket-title" data-docket>
+  <h2 id="docket-title" class="sr-only">Cases</h2>
+
+  <!-- data-header-keep: while this stage is stuck to the top of the window, the site header stays
+       on screen instead of sliding away (src/scripts/motion/modules/header.js). -->
+  <div class="docket__stage" data-docket-stage data-header-keep>
+    <ol class="docket__cases">
+      {
+        rows.map((row, i) => (
+          <li
+            class="dk-case grid"
+            data-dk-case={i}
+            data-letter={row.letter}
+            data-slug={row.slug}
+            data-href={row.href}
+          >
+            {/* The letter window: footage underneath, an ink sheet with a letter-shaped hole on top. */}
+            <div class:list={['dk-case__window', { 'dk-case__window--open': !row.clip }]}>
+              {row.clip && (
+                <div class="dk-case__media" data-dk-media>
+                  <Video id={row.clip.id} fill caption={false} placeholder={row.letter} />
+                </div>
+              )}
+              <svg
+                class="dk-case__ink"
+                viewBox={`0 0 ${BOX} ${BOX}`}
+                preserveAspectRatio="xMidYMid slice"
+                aria-hidden="true"
+                focusable="false"
+              >
+                {row.clip ? (
+                  <path class="dk-case__sheet" fill-rule="evenodd" d={`M0 0H${BOX}V${BOX}H0Z${row.placed}`} />
+                ) : (
+                  <>
+                    <rect class="dk-case__sheet" width={BOX} height={BOX} />
+                    <path class="dk-case__outline" d={row.placed} vector-effect="non-scaling-stroke" />
+                  </>
+                )}
+              </svg>
+              {row.href && (
+                <a
+                  class="dk-case__hit"
+                  href={row.href}
+                  tabindex="-1"
+                  aria-hidden="true"
+                  data-cursor={`Open Case ${row.letter} ↗`}
+                />
+              )}
+            </div>
+
+            {/* The words beside (or under) the letter. */}
+            <div class="dk-case__text" data-dk-text>
+              <h3 class="dk-case__name t-statement" data-dk-split>
+                <span class="sr-only">Case {row.letter}: </span>
+                {row.title}
+              </h3>
+              <p class="dk-case__office t-mono">
+                <span class="dk-mask">
+                  <span class="dk-mask__in" data-dk-line>
+                    {row.office}
+                  </span>
+                </span>
+              </p>
+              <p class="dk-case__line t-label" data-dk-split>
+                {row.fix}
+              </p>
+              <p class="dk-case__cta">
+                <span class="dk-mask">
+                  <span class="dk-mask__in" data-dk-line>
+                    {row.href ? (
+                      <ArrowLink href={row.href} cursor={`Open Case ${row.letter} ↗`} data-dk-open={String(i)}>
+                        Open case<span class="sr-only"> {row.letter}: {row.title}</span>
+                      </ArrowLink>
+                    ) : (
+                      <span class="dk-case__status t-mono">
+                        <span class="status-dot" aria-hidden="true" />
+                        In progress
+                      </span>
+                    )}
+                  </span>
+                </span>
+              </p>
+              {/* Two ruled rows: who built it, and where it stands. Each value rolls in and out
+                  with the rest of the case's words (data-dk-fact). */}
+              <dl class="dk-case__facts t-ui">
+                <div class="dk-fact">
+                  <dt class="dk-fact__key t-mono">Built by</dt>
+                  <dd class="dk-fact__value">
+                    <span class="dk-mask">
+                      <span class="dk-mask__in" data-dk-fact>
+                        {row.builtBy}
+                      </span>
+                    </span>
+                  </dd>
+                </div>
+                <div class="dk-fact">
+                  <dt class="dk-fact__key t-mono">Status</dt>
+                  <dd class="dk-fact__value">
+                    <span class="dk-mask">
+                      <span class="dk-mask__in" data-dk-fact>
+                        {row.status}
+                      </span>
+                    </span>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    {/* ---- Stage-only parts (shown by home-docket.js on laptops with motion on) ---- */}
+
+    {/* The shared ink sheet: one black layer over all the footage, with letter-shaped holes the
+        script moves (and a small square hole for the list view). */}
+    <svg class="dk-ink" aria-hidden="true" focusable="false" hidden data-dk-ink>
+      <defs>
+        <clipPath id="dk-slot" clipPathUnits="userSpaceOnUse">
+          <rect data-dk-slot />
+        </clipPath>
+        <mask id="dk-mask" maskUnits="userSpaceOnUse" data-dk-mask>
+          <rect class="dk-ink__keep" data-dk-mask-bg />
+          <g clip-path="url(#dk-slot)" data-dk-holes>
+            {
+              rows
+                .filter((row) => row.clip)
+                .map((row) => (
+                  <g data-dk-hole={row.letter}>
+                    <path class="dk-ink__hole" d={glyphs.letters[row.letter as keyof typeof glyphs.letters].d} />
+                  </g>
+                ))
+            }
+          </g>
+          <rect class="dk-ink__hole" data-dk-thumb width="0" height="0" />
+        </mask>
+      </defs>
+      <rect class="dk-ink__sheet" mask="url(#dk-mask)" data-dk-sheet />
+      <g clip-path="url(#dk-slot)">
+        {
+          rows
+            .filter((row) => !row.clip)
+            .map((row) => (
+              <g data-dk-hole={row.letter} data-dk-outline>
+                <path
+                  class="dk-ink__outline"
+                  d={glyphs.letters[row.letter as keyof typeof glyphs.letters].d}
+                  vector-effect="non-scaling-stroke"
+                />
+              </g>
+            ))
+        }
+      </g>
+    </svg>
+
+    {/* The area over the big letter: hovering pushes the footage in a little, clicking zooms in.
+        It is a duplicate of the "Open case" link, so keyboards and screen readers skip it. */}
+    <a class="dk-hit" href="#cases" tabindex="-1" aria-hidden="true" hidden data-dk-hit></a>
+
+    {/* The list view: every case name, centered. */}
+    <ol class="dk-list" hidden data-dk-list>
+      {
+        rows.map((row, i) => (
+          <li class="dk-list__item" data-dk-list-item={i}>
+            <span class="dk-list__mask">
+              <span class="dk-list__in" data-dk-list-in>
+                {row.href ? (
+                  <a class="dk-list__link" href={row.href}>
+                    <span class="sr-only">Case {row.letter}: </span>
+                    {row.title}
+                  </a>
+                ) : (
+                  <span class="dk-list__link dk-list__link--open">
+                    <span class="sr-only">Case {row.letter}: </span>
+                    {row.title}
+                    <span class="dk-list__status t-mono">In progress</span>
+                  </span>
+                )}
+              </span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+
+    {/* The bar along the bottom: the A to E rail, Pause, and the List view switch. */}
+    <div class="dk-bar t-mono" hidden data-dk-bar>
+      <nav class="dk-rail" aria-label="Cases A to E">
+        <ul>
+          {
+            rows.map((row, i) => (
+              <li>
+                <button type="button" class="dk-rail__item" data-dk-go={i} aria-label={`Case ${row.letter}: ${row.title}`}>
+                  {row.letter}
+                </button>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <button type="button" class="dk-bar__pause" data-dk-pause>
+        <span data-dk-pause-label>Pause</span><span class="sr-only"> case footage</span>
+      </button>
+      <button type="button" class="dk-pill" data-dk-pill>
+        <span data-dk-pill-label>List view</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ============ 1. The stacked layout (the default) ============ */
+  .docket {
+    padding-block: var(--space-section);
+  }
+  .docket__cases {
+    display: grid;
+    row-gap: clamp(72px, 9vw, 140px);
+  }
+  .dk-case {
+    row-gap: 28px;
+    align-items: start;
+  }
+
+  /* The letter window: square, footage underneath, ink sheet on top. */
+  .dk-case__window {
+    grid-column: 1 / span 5;
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .dk-case__media {
+    position: absolute;
+    inset: 0;
+  }
+  .dk-case__ink {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .dk-case__sheet {
+    fill: var(--ink);
+  }
+  .dk-case__outline {
+    fill: none;
+    stroke: var(--paper);
+    stroke-width: 1px;
+  }
+  /* The whole window is a link (for mouse and touch; keyboards use "Open case"). */
+  .dk-case__hit {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Without JavaScript the browser's own video controls would peek through the letter; hide them. */
+  :global(html:not(.js)) .dk-case__window :global(video::-webkit-media-controls) {
+    display: none !important;
+  }
+
+  .dk-case__text {
+    grid-column: 7 / -1;
+    display: grid;
+    align-content: start;
+    row-gap: 18px;
+  }
+  .dk-case__name {
+    margin-top: -0.18em;
+  }
+  .dk-case__office {
+    color: var(--text-2);
+  }
+  .dk-case__line {
+    max-width: 30ch;
+  }
+  .dk-case__cta {
+    margin-top: 10px;
+    font-size: var(--fs-ui);
+  }
+  .dk-case__status {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-2);
+  }
+
+  /* "Built by" and "Status": two rows between hairlines, the label in grey mono. Every row keeps
+     the same height whichever case is showing (a value may take two lines on narrower screens),
+     so the lines never jump when the stage swaps cases. */
+  .dk-case__facts {
+    margin-top: 12px;
+    border-top: 1px solid var(--rule);
+  }
+  .dk-fact {
+    display: grid;
+    grid-template-columns: 8.5em 1fr;
+    column-gap: var(--gutter);
+    align-items: baseline;
+    padding-block: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .dk-fact__key {
+    color: var(--text-2);
+  }
+  .dk-fact__value {
+    margin: 0;
+  }
+  /* A clipped window for one line that rolls in and out (the office and the link). The window is
+     cut a little larger than the line so focus rings and descenders are never clipped. */
+  .dk-mask {
+    display: block;
+    clip-path: inset(-8px -12px -8px -12px);
+  }
+  .dk-mask__in {
+    display: block;
+  }
+
+  @media (max-width: 1023px) {
+    .dk-case__window {
+      grid-column: 1 / span 4;
+    }
+    .dk-case__text {
+      grid-column: 5 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .dk-case {
+      row-gap: 22px;
+    }
+    .dk-case__window,
+    .dk-case__text {
+      grid-column: 1 / -1;
+    }
+    .dk-case__name {
+      margin-top: 0;
+    }
+    .dk-case__text {
+      row-gap: 12px;
+    }
+  }
+
+  /* Stage-only parts stay out of the stacked layout. */
+  .dk-ink,
+  .dk-hit,
+  .dk-list,
+  .dk-bar {
+    display: none;
+  }
+
+  /* ============ 2. The stage (laptops with motion on; class added by home-docket.js) ============ */
+  /* The section is five screens tall; the stage inside it stays stuck to the window meanwhile. */
+  .docket:global(.is-stage) {
+    padding: 0;
+    height: 500vh;
+    /* The "Cases" links land exactly where the stage sticks (cancelling the page's usual gap for
+       the header, which the stage doesn't need). */
+    scroll-margin-top: calc(-1 * (var(--header-height) + 12px));
+  }
+  .docket:global(.is-stage) .docket__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    container-type: size;
+    /* One grid column's width, used to line things up with the page grid. */
+    --col: calc((100cqw - 2 * var(--margin) - (var(--cols) - 1) * var(--gutter)) / var(--cols));
+  }
+  .docket:global(.is-stage) .docket__cases,
+  .docket:global(.is-stage) .dk-case,
+  .docket:global(.is-stage) .dk-case__window {
+    display: block;
+    position: static;
+    padding: 0;
+    aspect-ratio: auto;
+    overflow: visible;
+    isolation: auto;
+  }
+  /* Every case's footage fills a square the script sizes and moves; only the current one shows.
+     "display: contents" on the Video component's frame hands the footage over to the stage
+     script (the page-wide video player leaves it alone while the stage is on). */
+  .docket:global(.is-stage) .dk-case__media {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--dk-media, 100vh);
+    height: var(--dk-media, 100vh);
+    opacity: 0;
+    transform-origin: 0 0;
+    pointer-events: none;
+  }
+  .docket:global(.is-stage) .dk-case__media :global(.video) {
+    display: contents;
+  }
+  .docket:global(.is-stage) .dk-case__media :global(.video__toggle) {
+    display: none;
+  }
+  /* Pointing at the letter pushes the footage in a little (home-docket.js scales this layer
+     around its middle, which is the middle of the letter). */
+  .docket:global(.is-stage) .dk-case__media :global(.video__inner) {
+    transform-origin: 50% 50%;
+  }
+  /* On touch screens and phones (the stacked windows, motion on), home-docket.js plays only the
+     window in the middle of the screen. "display: contents" hands those clips over to it, the same
+     way as in the stage, so the page-wide video player (video.js) leaves them alone. */
+  .docket:global(.is-centering) .dk-case__media :global(.video) {
+    display: contents;
+  }
+  .docket:global(.is-stage) .dk-case__ink,
+  .docket:global(.is-stage) .dk-case__hit {
+    display: none;
+  }
+  /* The words sit in columns 8 to 12, their first line level with the top of the letter. The two
+     ruled rows start 62% of the way down the letter (level with the top of the A's crossbar), so
+     neither the space above them nor the space below them runs longer than about a third of the
+     screen. */
+  .docket:global(.is-stage) .dk-case__text {
+    position: absolute;
+    z-index: 4;
+    top: var(--dk-top, 11vh);
+    left: calc(var(--margin) + 7 * (var(--col) + var(--gutter)));
+    width: calc(5 * var(--col) + 4 * var(--gutter));
+    height: var(--dk-l, 78vh);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    pointer-events: none;
+  }
+  .docket:global(.is-stage) .dk-case__facts {
+    position: absolute;
+    top: calc(var(--dk-l, 78vh) * 0.62);
+    left: 0;
+    right: 0;
+    margin: 0;
+  }
+  /* Every case has its own copy of the rows in the same place; only the current case's hairlines
+     are drawn, so they never stack up. */
+  .docket:global(.is-stage) .dk-case:not(:global(.is-active)) .dk-case__facts,
+  .docket:global(.is-stage) .dk-case:not(:global(.is-active)) .dk-fact {
+    border-color: transparent;
+  }
+  .docket:global(.is-stage) .dk-case:not(:global(.is-active)) .dk-fact__key {
+    visibility: hidden;
+  }
+  @media (max-width: 1279px) {
+    .docket:global(.is-stage) .dk-fact {
+      min-height: calc(2 * 1.14em + 24px);
+    }
+  }
+  .docket:global(.is-stage) .dk-case:global(.is-active) .dk-case__text {
+    pointer-events: auto;
+  }
+  .docket:global(.is-stage.is-list) .dk-case__text {
+    visibility: hidden;
+  }
+
+  .docket:global(.is-stage) .dk-ink {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .dk-ink__keep {
+    fill: #fff;
+  }
+  .dk-ink__hole {
+    fill: #000;
+  }
+  .dk-ink__sheet {
+    fill: var(--ink);
+  }
+  .dk-ink__outline {
+    fill: none;
+    stroke: var(--paper);
+    stroke-width: 1px;
+  }
+  /* The faint paper grain of every ink section, laid over the stage's ink sheet too. */
+  .docket:global(.is-stage) .docket__stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background-image: url('../../assets/texture/grain.png');
+    background-size: 256px 256px;
+    opacity: 0.03;
+    mix-blend-mode: screen;
+  }
+  .docket:global(.is-stage) .dk-hit {
+    display: block;
+    position: absolute;
+    z-index: 3;
+    left: var(--dk-hit-x, 0);
+    top: var(--dk-hit-y, 0);
+    width: var(--dk-hit-w, 0);
+    height: var(--dk-hit-h, 0);
+  }
+  .docket:global(.is-stage.is-list) .dk-hit {
+    display: none;
+  }
+
+  /* The list view: every case name centered, the current one in paper, the rest in grey. */
+  .docket:global(.is-stage) .dk-list {
+    display: grid;
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    align-content: center;
+    justify-items: center;
+    text-align: center;
+    font-size: var(--fs-statement);
+    line-height: var(--lh-statement);
+    letter-spacing: var(--ls-statement);
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .docket:global(.is-stage.is-list) .dk-list {
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .dk-list__mask {
+    display: block;
+    clip-path: inset(-0.1em -0.3em -0.18em -0.3em);
+  }
+  .dk-list__in {
+    display: block;
+  }
+  .dk-list__link {
+    display: inline-block;
+    color: var(--paper-2);
+    transition: color 0.4s linear;
+  }
+  .dk-list__item:global(.is-focus) .dk-list__link {
+    color: var(--paper);
+  }
+  .dk-list__status {
+    margin-left: 0.8em;
+    vertical-align: 0.9em;
+  }
+
+  /* The bottom bar. The rail's underline hands over from one letter to the next (motion M8). */
+  .docket:global(.is-stage) .dk-bar {
+    display: grid;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 22px;
+    z-index: 5;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: center;
+    padding-inline: var(--margin);
+    color: var(--paper);
+  }
+  /* Buttons keep the bar's mono capitals (a browser's own button style would switch them off). */
+  .dk-bar button {
+    text-transform: inherit;
+  }
+  .dk-rail {
+    grid-column: 1 / span 4;
+  }
+  .dk-rail ul {
+    display: flex;
+    gap: 6px;
+  }
+  .dk-rail__item {
+    position: relative;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 4px 6px;
+    color: var(--paper-2);
+    letter-spacing: inherit;
+    transition: color 0.4s linear;
+  }
+  .dk-rail__item:global(.is-active) {
+    color: var(--paper);
+  }
+  .dk-rail__item::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 1px;
+    height: 1px;
+    background: var(--hairline);
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    transition: transform var(--dur-underline) var(--ease-underline);
+  }
+  .dk-rail__item:global(.is-active)::after {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+    transition-delay: 0.15s;
+  }
+  .dk-bar__pause {
+    grid-column: 8 / span 2;
+    justify-self: start;
+    min-height: 24px;
+    padding: 6px 8px;
+    border: 1px solid currentColor;
+    letter-spacing: inherit;
+  }
+  .dk-pill {
+    grid-column: 11 / -1;
+    justify-self: end;
+    min-height: 32px;
+    padding: 0 14px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    letter-spacing: inherit;
+    color: var(--paper);
+    mix-blend-mode: difference;
+  }
+</style>

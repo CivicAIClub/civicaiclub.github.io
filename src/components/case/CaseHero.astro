@@ -1,0 +1,172 @@
+---
+// CaseHero.astro: the first screen of a case page.
+//
+// Two rows on plain ink, like an exhibit in a museum:
+//   1. The words: a small mono line ("Case A · CLC Supported Study Hall · Built by Luke Ryan ’27,
+//      Jack Weinberg ’27") and, under it, the case name in huge light type.
+//   2. The exhibit frame: the case's hero clip, in full color, from margin to margin with square
+//      corners. It is 16:9 on laptops (the whole clip shows) and 4:5 on phones and on tablets held
+//      upright (a 4:5 copy of the clip when there is one, otherwise the 16:9 clip cropped around
+//      the part of the tool that matters, set by "heroFocus" in the case file).
+// No text ever sits on the footage, and nothing covers it: the clip plays exactly as recorded.
+// Its Pause button is a small ink chip in the frame's top right corner.
+//
+// Motion (all through data attributes, see MOTION.md):
+//   - the name and the small line rise out of their masks as soon as the page arrives (M1; the
+//     name first, the line 0.15s later), so the name is there while footage handed over from the
+//     page before is still settling into the frame,
+//   - the words drift down at half the scroll speed (M4, data-parallax="0.5"), so the frame
+//     slides up over them,
+//   - the frame grows to the full width of the window as it scrolls up to the header
+//     (data-hero-grow, src/scripts/motion/modules/case-hero-grow.js),
+//   - the frame is named "case-media-<slug>" for page changes (view transitions), so the home
+//     page's case letter, or the "Next case" band of the case before, can grow into it instead of
+//     the usual new-sheet page change. The styles for that are in src/styles/case.css.
+// data-header-solid (on the words and on the frame's outer box) asks the header for a plain ink
+// strip behind it while either is under the header (src/scripts/site/header-backdrop.js).
+import Video from '../Video.astro';
+import { formatPerson } from '../../lib/people';
+
+interface Props {
+  letter: string;
+  slug: string;
+  title: string;
+  office: string;
+  team: { name: string; classYear?: number; role?: string }[];
+  clipId?: string;
+  // Where to crop the 16:9 clip in a 4:5 frame, as a CSS position ("22% 50%" keeps the left
+  // part of the screen, where the tool's own content is).
+  focus?: string;
+}
+const { letter, slug, title, office, team, clipId, focus } = Astro.props;
+
+// "Built by" lists the students who built the tool, with class years. Advisors are credited in
+// full further down the page, in the credits.
+const builders = team.filter((person) => !person.role || !/advis/i.test(person.role)).map(formatPerson);
+const meta = [`Case ${letter}`, office, builders.length ? `Built by ${builders.join(', ')}` : ''].filter(Boolean);
+
+// The frame's inline style: its page-change name, and the crop point for 4:5 frames.
+const frameStyle = [
+  `view-transition-name: case-media-${slug}`,
+  'view-transition-class: case-media',
+  focus ? `--hero-focus: ${focus}` : '',
+]
+  .filter(Boolean)
+  .join('; ');
+---
+
+<section class="case-hero theme-ink" aria-labelledby="case-title">
+  <!-- Row 1: the words, on plain ink. They drift at half speed as the page scrolls (M4), so they
+       linger under the header for a moment; data-header-solid gives the header its ink strip over
+       them then, so the header's words never print over the big name. -->
+  <div class="case-hero__text grid" data-parallax="0.5" data-header-solid>
+    <p class="case-hero__meta t-mono" data-reveal="lines" data-reveal-on="intro" data-reveal-delay="0.15">
+      {meta.join(' · ')}
+    </p>
+    <h1 id="case-title" class="case-hero__name" data-reveal="lines" data-reveal-on="intro">
+      {title}
+    </h1>
+  </div>
+
+  <!-- Row 2: the exhibit frame. The outer box is the one that grows (data-hero-grow); the inner
+       box is the frame itself, named for the page change. -->
+  <div class="case-hero__grow" data-hero-grow data-header-solid>
+    <div class="case-hero__frame" data-case-hero-media style={frameStyle}>
+      <Video id={clipId} fill priority caption={false} placeholder={letter} toggle class="case-hero__video" />
+      <!-- Phones: show the 4:5 copy's still picture straight away, instead of the wide one (only
+           when the clip has a 4:5 copy). It runs as the page is read, before the first paint. -->
+      <script is:inline>
+        (function () {
+          // The video just above this script, inside the Video component's figure.
+          var figure = document.currentScript && document.currentScript.previousElementSibling;
+          var video = figure && figure.querySelector('video[data-poster-mobile]');
+          // Only phones (the same width the 4:5 video files are for) get the 4:5 picture.
+          if (video && window.matchMedia('(max-width: 767px)').matches) {
+            video.setAttribute('poster', video.getAttribute('data-poster-mobile'));
+          }
+        })();
+      </script>
+    </div>
+  </div>
+</section>
+
+<style>
+  .case-hero {
+    padding-top: calc(var(--header-height) + clamp(48px, 8vh, 96px));
+    /* Ink under the frame, so the frame has room to grow into as it widens (it grows from its
+       top edge, so it also gets a little taller). */
+    padding-bottom: clamp(48px, 6vw, 96px);
+  }
+  .case-hero__text {
+    position: relative;
+    row-gap: clamp(12px, 1.4vw, 20px);
+    pointer-events: none;
+  }
+  .case-hero__meta {
+    grid-column: 1 / span 9;
+    color: var(--text-2);
+  }
+  .case-hero__name {
+    grid-column: 1 / -1;
+    font-size: var(--fs-case-hero);
+    font-weight: var(--fw-light);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    /* Pull the name's left edge onto the margin line (big light letters have a little
+       built-in space on their left). */
+    margin-left: -0.05em;
+  }
+
+  /* The frame, margin to margin, below the name. It sits above the words, so when they drift
+     down it slides over them. */
+  .case-hero__grow {
+    position: relative;
+    z-index: 1;
+    margin: clamp(40px, 5.6vw, 96px) var(--margin) 0;
+  }
+  .case-hero__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #1b1b1a;
+  }
+  /* The Pause button: a small ink chip in the frame's top right corner, so it never covers
+     the tool on screen, and reads the same on any footage. */
+  .case-hero :global(.case-hero__video .video__toggle) {
+    top: 16px;
+    right: 16px;
+    bottom: auto;
+    left: auto;
+    background: var(--ink);
+    color: var(--paper);
+    mix-blend-mode: normal;
+  }
+
+  /* Phones, and tablets held upright: a 4:5 frame, cropped around the tool's own content. */
+  @media (max-width: 767px), (orientation: portrait) and (max-width: 1100px) {
+    .case-hero__frame {
+      aspect-ratio: 4 / 5;
+    }
+    .case-hero__frame :global(.video__el) {
+      object-position: var(--hero-focus, 50% 50%);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .case-hero__meta {
+      grid-column: 1 / -1;
+      max-width: 38ch;
+      font-size: max(var(--fs-mono), 11px);
+    }
+    .case-hero__name {
+      font-size: 13vw;
+    }
+    .case-hero__grow {
+      margin-top: clamp(28px, 8vw, 40px);
+    }
+    .case-hero :global(.case-hero__video .video__toggle) {
+      top: 12px;
+      right: 12px;
+    }
+  }
+</style>

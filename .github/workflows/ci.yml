@@ -1,0 +1,43 @@
+# ci.yml: checks every pull request before it can be merged.
+#
+# In plain words, on every pull request (and every push to main) GitHub starts a fresh computer,
+# downloads the project, installs the exact package versions from package-lock.json, and runs:
+#   1. the import check: GSAP and Lenis may only be used inside src/scripts/motion/,
+#   2. the media check: no oversized videos or posters, and every clip in media.json is complete,
+#   3. the build: the whole site must build without errors.
+# If any step fails, the pull request shows a red cross and can't be merged until it's fixed.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v7
+
+      - name: Set up Node (version from .nvmrc)
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install exact package versions
+        run: npm ci
+
+      - name: GSAP and Lenis only in src/scripts/motion/
+        run: npm run check:gsap
+
+      - name: Media size and manifest check
+        run: npm run check:media
+
+      - name: Build the site
+        run: npm run build

@@ -1,0 +1,455 @@
+---
+// styleguide.astro: the club's internal "style guide" page, at /styleguide/.
+//
+// It shows every building block of the site and every motion data- attribute, with dummy text,
+// so anyone can review a component or an animation on its own before using it on a real page.
+// It is hidden from search engines (noindex), left out of the sitemap, and blocked in robots.txt.
+// When you add a component or a motion module, add a small example here too.
+import Base from '../layouts/Base.astro';
+import Wordmark from '../components/Wordmark.astro';
+import Griffin from '../components/Griffin.astro';
+import Arrow from '../components/Arrow.astro';
+import Statement from '../components/Statement.astro';
+import KeyValue from '../components/KeyValue.astro';
+import Divider from '../components/Divider.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import RollLink from '../components/RollLink.astro';
+import BigLink from '../components/BigLink.astro';
+import Video from '../components/Video.astro';
+import MarkedText from '../components/MarkedText.astro';
+import Photo from '../components/Photo.astro';
+
+// The palette, with what each color is for (see src/styles/tokens.css).
+const swatches = [
+  { name: '--ink', hex: '#0D0D0C', use: 'Ink sections; text on paper (17.5:1)' },
+  { name: '--paper', hex: '#F4F3EF', use: 'Paper sections; text on ink' },
+  { name: '--ink-2', hex: '#5F5D58', use: 'Secondary text on paper (5.9:1)' },
+  { name: '--paper-2', hex: '#9A9893', use: 'Secondary text on ink (6.8:1)' },
+  { name: '--crimson', hex: '#A8172B', use: 'Marker, focus rings on paper, hairlines, status dot' },
+  { name: '--crimson-on-ink', hex: '#E24A5C', use: 'Rings and hairlines on ink (never text)' },
+  { name: '--mark-text', hex: '#FBFAF7', use: 'Text on the crimson marker (7.1:1)' },
+  { name: '--preload-grey', hex: '#C9C7C0', use: 'Preloader words before they darken' },
+];
+
+// The cursor labels the site uses.
+const cursorLabels = ['Watch the reel', 'Open Case A ↗', 'Open Case C ↗', 'Pause', 'Drag'];
+---
+
+<Base title="Style guide" description="Components and motion for the Civic AI Club site." noindex theme="ink">
+  <!-- The hero wordmark: lands from both ends on the intro beat, drifts apart on scroll. -->
+  <section class="sg-hero theme-ink">
+    <div class="wrap">
+      <p class="t-mono sg-kicker">Style guide · Casework · noindex</p>
+      <h1 class="sr-only">Style guide</h1>
+      <Wordmark variant="hero" />
+    </div>
+    <div class="grid sg-hero__foot">
+      <p class="sg-note">
+        Every component and motion attribute, with dummy text. Scroll slowly. Turn Motion off in the
+        footer to see the still version. <a href="/?preloader">Replay the home preloader</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Palette -->
+  <section class="sg theme-paper" aria-labelledby="sg-palette">
+    <div class="grid">
+      <h2 id="sg-palette" class="t-mono sg-label">Palette</h2>
+      <ul class="sg-swatches">
+        {
+          swatches.map((s) => (
+            <li class="sg-swatch">
+              <span class="sg-swatch__chip" style={`background:${s.hex}`} />
+              <span class="t-mono">{s.name} {s.hex}</span>
+              <span class="t-ui t-secondary">{s.use}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Type scale -->
+  <section class="sg theme-paper" aria-labelledby="sg-type">
+    <div class="grid sg-stack">
+      <h2 id="sg-type" class="t-mono sg-label">Type</h2>
+      <p class="t-mono">Martian Mono 11px caps · labels, counters, buttons</p>
+      <p class="t-ui">Host Grotesk 400 14px · header links and interface text</p>
+      <p>Host Grotesk 300 16–18px · body text. The quick brown fox files a case.</p>
+      <p class="t-label">Host Grotesk 300 20px · key/value rows and labels</p>
+      <p style="font-size: var(--fs-footer-tagline); line-height: 1.14">Footer tagline 40px</p>
+      <p class="t-statement">Statement, clamp(30px, 4.3vw, 80px)</p>
+      <p style="font-size: var(--fs-case-hero); line-height: .95; letter-spacing: -0.03em">Case name 9vw</p>
+      <p style="font-size: var(--fs-display); line-height: .85; letter-spacing: var(--ls-display)">Merged</p>
+    </div>
+  </section>
+
+  <!-- Grid -->
+  <section class="sg theme-ink" aria-labelledby="sg-grid">
+    <div class="grid">
+      <h2 id="sg-grid" class="t-mono sg-label">Grid · 12 / 8 / 6 columns</h2>
+    </div>
+    <div class="grid sg-columns" aria-hidden="true">
+      {Array.from({ length: 12 }, (_, i) => <span class="sg-col t-mono">{i + 1}</span>)}
+    </div>
+  </section>
+
+  <!-- M1 + M5: statements -->
+  <section class="sg theme-ink" aria-labelledby="sg-m1">
+    <div class="grid sg-stack">
+      <h2 id="sg-m1" class="t-mono sg-label">M1 line rise · M5 marker (data-reveal="lines", data-mark)</h2>
+      <Statement class="sg-full">
+        A dummy statement on ink that rises word by word, with one phrase <mark data-mark>under the
+        crimson marker</mark> and a <a href="#sg-m1">link inside the text</a> whose underline rises
+        with its words.
+      </Statement>
+    </div>
+  </section>
+  <section class="sg theme-paper">
+    <div class="grid sg-stack">
+      <Statement class="sg-full">
+        <MarkedText text="The same on paper, written with MarkedText and a [bracketed phrase] from a case file." />
+      </Statement>
+      <p class="t-label sg-half" data-reveal="lines" data-reveal-delay="0.4">
+        A smaller paragraph with data-reveal-delay="0.4": it waits 0.4 seconds before rising.
+      </p>
+      <p class="t-label sg-half" data-reveal="lines" data-reveal-start="top 60%">
+        This one uses data-reveal-start="top 60%": it rises only once its top passes 60% of the window.
+      </p>
+    </div>
+  </section>
+
+  <!-- M2: dividers, key/value rows -->
+  <section class="sg theme-paper" aria-labelledby="sg-m2">
+    <div class="grid">
+      <h2 id="sg-m2" class="t-mono sg-label">M2 divider draw · KeyValue (data-draw)</h2>
+    </div>
+    <KeyValue label="A short label">A value on the right, from column 7, rising line by line after its divider draws in.</KeyValue>
+    <KeyValue label="With an after slot">
+      A value followed by a link that is not split into lines.
+      <ArrowLink slot="after" href="#sg-m2">An arrow link</ArrowLink>
+    </KeyValue>
+    <div class="grid sg-verticals">
+      <Divider tone="hairline" />
+      <div class="rule sg-vertical" data-draw="y" aria-hidden="true"></div>
+      <p class="t-ui t-secondary">A crimson hairline (tone="hairline") and a vertical line (data-draw="y").</p>
+    </div>
+  </section>
+
+  <!-- M3: media open, Video component -->
+  <section class="sg theme-ink" aria-labelledby="sg-m3">
+    <div class="grid sg-stack">
+      <h2 id="sg-m3" class="t-mono sg-label">M3 media open · Video (data-media-open, data-video)</h2>
+      <div class="sg-media-a">
+        <Video id="styleguide-demo" open />
+      </div>
+      <div class="sg-media-b">
+        <Video id="styleguide-demo" open grayscale caption="The same test clip in grayscale, with a caption passed in by the page." />
+      </div>
+      <div class="sg-media-a">
+        <Video id="missing-clip-id" open placeholder="A" caption="A clip id that is not in media.json yet: a typed placeholder, never a broken video." />
+      </div>
+      <div class="sg-media-b" data-media-open>
+        <div class="sg-plain" data-media-inner>
+          <span class="t-mono">Any element can open: data-media-open + data-media-inner</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real footage from src/data/media.json: one loop, one scroll-driven ("scrub") clip and the
+       club photo (in black and white, the only way the site shows it), so the real files can be
+       checked on their own. -->
+  <section class="sg theme-paper" aria-labelledby="sg-footage">
+    <div class="grid sg-stack">
+      <h2 id="sg-footage" class="t-mono sg-label">Real footage · a loop, a scrub clip, a photo (Video, Photo)</h2>
+      <div class="sg-media-a" data-sg-sample="loop">
+        <Video id="music-studio-hero" open />
+      </div>
+      <div class="sg-media-b" data-sg-sample="scrub">
+        <Video id="autoplanner-scrub" />
+        <p class="t-ui t-secondary sg-note-small">
+          A scrub clip ("scrub": true) never plays by itself. On a case page, scrolling moves it
+          frame by frame; here it shows its poster and the browser's own controls.
+        </p>
+      </div>
+      <div class="sg-media-a" data-sg-sample="photo">
+        <Photo id="about-club-photo" tone="bw" sizes="(min-width: 1024px) 58vw, 100vw" />
+      </div>
+    </div>
+  </section>
+
+  <!-- M4: parallax -->
+  <section class="sg sg-parallax theme-paper" aria-labelledby="sg-m4">
+    <div class="grid sg-stack">
+      <h2 id="sg-m4" class="t-mono sg-label">M4 parallax (data-parallax, data-parallax-y)</h2>
+      <div class="sg-half sg-box" data-parallax="0.3">
+        <span class="t-mono">data-parallax="0.3"</span>
+      </div>
+      <div class="sg-half sg-frame">
+        <div class="sg-frame__inner" data-parallax-y="-12,12" data-parallax-scale="1.3">
+          <span class="t-mono">data-parallax-y="-12,12" data-parallax-scale="1.3"</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Header swap: when this section reaches the top, the header's name becomes a small CIVIC. -->
+  <section class="sg theme-ink" data-header-swap aria-labelledby="sg-swap">
+    <div class="grid">
+      <h2 id="sg-swap" class="t-mono sg-label">Header swap (data-header-swap)</h2>
+      <p class="t-label sg-half">
+        When this section's top passes the header, "Civic AI Club / Pomfret School" rolls out and a
+        small CIVIC rolls in. Scroll back up to swap back.
+      </p>
+    </div>
+  </section>
+
+  <!-- M6, M7, M8: links -->
+  <section class="sg theme-paper" aria-labelledby="sg-links">
+    <div class="grid sg-stack">
+      <h2 id="sg-links" class="t-mono sg-label">M6 roll · M7 arrow swap · M8 underline hand-off</h2>
+      <p class="t-ui sg-row">
+        <RollLink href="#sg-links" label="Nav link (M6 + simple underline)" />
+        <RollLink href="#sg-links" label="Rolls to a second phrase" second="Like this" />
+        <RollLink href="#sg-links" label="Underlined (M8 hand-off)" underline />
+        <RollLink href="#sg-links" label="Current page" current />
+      </p>
+      <p class="t-label sg-row">
+        <ArrowLink href="#sg-links">Arrow link ↗ (M7)</ArrowLink>
+        <ArrowLink href="#sg-links" dir="down">Down arrow</ArrowLink>
+        <ArrowLink href="#sg-links" dir="left">Back arrow</ArrowLink>
+        <ArrowLink href="https://github.com/CivicAIClub" external>External link</ArrowLink>
+      </p>
+    </div>
+    <BigLink href="#sg-links" label="A big link" second="Rolls on hover" />
+  </section>
+
+  <!-- M9: letter roll -->
+  <section class="sg theme-ink" aria-labelledby="sg-m9">
+    <div class="grid sg-stack">
+      <h2 id="sg-m9" class="t-mono sg-label">M9 letter roll (data-letter-roll) · click</h2>
+      <p class="sg-letters">
+        <button type="button" class="sg-letter" data-letter-roll="A,B,C,D,E">A</button>
+        <button type="button" class="t-label" data-letter-roll="Pause,Play">Pause</button>
+      </p>
+    </div>
+  </section>
+
+  <!-- Cursor labels -->
+  <section class="sg theme-paper" aria-labelledby="sg-cursor">
+    <div class="grid sg-stack">
+      <h2 id="sg-cursor" class="t-mono sg-label">Cursor (data-cursor) · mouse only, motion on</h2>
+      <ul class="sg-tiles">
+        {
+          cursorLabels.map((label) => (
+            <li class="sg-tile theme-ink" data-cursor={label}>
+              <span class="t-mono">{label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Brand pieces -->
+  <section class="sg theme-ink" aria-labelledby="sg-brand">
+    <div class="grid sg-stack">
+      <h2 id="sg-brand" class="t-mono sg-label">Brand: wordmark, griffin, arrows, status</h2>
+      <div class="sg-half"><Wordmark variant="plain" /></div>
+      <div class="sg-half sg-row">
+        <span class="t-ui"><Wordmark variant="small" lockup={false} decorative /></span>
+        <span class="sg-griffin"><Griffin label="Pomfret School griffin" /></span>
+        <span class="t-statement" aria-hidden="true"><Arrow dir="ne" /> <Arrow dir="down" /> <Arrow dir="left" /></span>
+      </div>
+      <p class="t-mono sg-full"><span class="status-dot" aria-hidden="true"></span>In progress</p>
+    </div>
+  </section>
+  <section class="sg theme-paper">
+    <div class="grid sg-stack">
+      <div class="sg-half"><Wordmark variant="plain" /></div>
+      <p class="t-mono sg-half"><span class="status-dot" aria-hidden="true"></span>In progress (on paper)</p>
+      <p class="t-ui sg-full">
+        The footer below shows the curtain reveal, the CIVIC rebuilding from the center, and the
+        Motion switch.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sg {
+    padding-block: clamp(64px, 8vw, 120px);
+  }
+  .sg-label {
+    grid-column: 1 / -1;
+    color: var(--text-2);
+    margin-bottom: 24px;
+  }
+  .sg-stack {
+    row-gap: 32px;
+  }
+  /* Everything in a stacked demo runs full width unless a class below says otherwise. */
+  .sg-stack > * {
+    grid-column: 1 / -1;
+  }
+  .sg-full,
+  .grid > :global(.sg-full) {
+    grid-column: 1 / -1;
+  }
+  .sg-half {
+    grid-column: span 6;
+  }
+  .sg-row {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 32px;
+    align-items: center;
+  }
+
+  .sg-hero {
+    min-height: 92svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: calc(var(--header-height) + 8px);
+    padding-bottom: 24px;
+  }
+  .sg-kicker {
+    color: var(--text-2);
+    margin-bottom: 16px;
+  }
+  .sg-hero__foot .sg-note {
+    grid-column: 1 / span 5;
+  }
+  .sg-note a {
+    text-decoration: underline;
+  }
+
+  .sg-swatches {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px var(--gutter);
+  }
+  .sg-swatch {
+    display: grid;
+    gap: 8px;
+  }
+  .sg-swatch__chip {
+    display: block;
+    aspect-ratio: 3 / 2;
+    border: 1px solid var(--rule);
+  }
+
+  .sg-columns {
+    margin-top: 8px;
+  }
+  .sg-col {
+    height: 120px;
+    display: grid;
+    place-items: end start;
+    padding: 6px;
+    background: color-mix(in srgb, var(--crimson-on-ink) 18%, transparent);
+  }
+  @media (max-width: 1023px) {
+    .sg-col:nth-child(n + 9) {
+      display: none;
+    }
+    .sg-half {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .sg-col:nth-child(n + 7) {
+      display: none;
+    }
+  }
+
+  .sg-verticals {
+    align-items: stretch;
+    row-gap: 24px;
+  }
+  .sg-verticals > :global(.rule) {
+    grid-column: 1 / span 6;
+  }
+  .sg-vertical {
+    grid-column: 7;
+    width: 1px;
+    height: 160px;
+  }
+  .sg-verticals p {
+    grid-column: 8 / -1;
+  }
+
+  .sg-media-a {
+    grid-column: 1 / span 7;
+  }
+  .sg-media-b {
+    grid-column: 6 / -1;
+  }
+  .sg-note-small {
+    margin-top: 12px;
+    max-width: 48ch;
+  }
+  .sg-plain {
+    aspect-ratio: 16 / 9;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .sg-parallax {
+    overflow: hidden;
+  }
+  .sg-box {
+    min-height: 220px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--rule);
+  }
+  .sg-frame {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+  }
+  .sg-frame__inner {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .sg-letters {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-end;
+    gap: 40px;
+  }
+  .sg-letter {
+    font-size: clamp(120px, 18vw, 260px);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+  }
+
+  .sg-tiles {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--gutter);
+  }
+  .sg-tile {
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: end start;
+    padding: 12px;
+  }
+
+  .sg-griffin {
+    width: 72px;
+  }
+</style>

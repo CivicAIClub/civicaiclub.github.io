@@ -1,0 +1,83 @@
+/*
+  case.css: page-change styles for the case pages (/cases/<slug>/).
+
+  Loaded only by src/pages/cases/[slug].astro. The site's usual page change (the new page rising
+  over the old one like a fresh sheet) is in transitions.css. This file adds one thing: the
+  "footage hand-off". A case page's hero frame is named "case-media-<slug>" (with the shared
+  class "case-media"). When the page being left has footage with the same name (the home page's
+  case letter after its zoom, or the "Next case" band after its zoom, both full screen by then),
+  the browser shrinks that full-screen picture into this page's hero frame, the inset rectangle
+  under the case name, while the new page's ink rises around it like the usual fresh sheet. It
+  reads as the case being filed into its frame.
+
+  In a cross-page change, the NEW page's styles decide how the change looks, which is why these
+  rules live on the case page. Browsers without view transitions (Firefox today) just open the
+  page. With reduced motion, or Motion switched off, there is no page-change animation at all.
+*/
+
+/* The footage moves and shrinks from its old place and size (the whole screen) into the hero
+   frame over the same 0.8s and curve as the sheet, so the two feel like one move. */
+::view-transition-group(*.case-media) {
+  animation-duration: var(--dur-sheet);
+  animation-timing-function: var(--ease-civic);
+}
+
+/* The old picture fades into the new one while they move. Both fill the moving box like a
+   cropped photo, whatever their shapes (the full screen into a 16:9 or 4:5 frame). The fade uses
+   the same civic curve as the move: the old picture holds while the frame starts to shrink, and
+   the hero's own footage takes over as it settles, so the brightness only ever falls from the
+   full-screen picture to the settled page (no flash, no dip). */
+::view-transition-image-pair(*.case-media) {
+  overflow: clip;
+}
+::view-transition-old(*.case-media),
+::view-transition-new(*.case-media) {
+  height: 100%;
+  object-fit: cover;
+  animation-duration: var(--dur-sheet);
+  animation-timing-function: var(--ease-civic);
+}
+
+/* During the hand-off only (Base.astro adds "vt-handoff" to the page for its length), the case
+   name and the header get their own layers above the moving footage. Without this they would
+   be hidden under it and pop in when it lands; with it, the name rises from the first moment,
+   and the header stays in place. The layers need no animation of their own: they show the live
+   page, where the name is already rising (M1).
+   The name's layer is lifted above the frame (z-index; the frame normally slides over the name
+   when scrolling) and carries its own strip of ink, so the light type never sits on the bright
+   full-screen footage while it shrinks away underneath. */
+html.vt-handoff .case-hero__text {
+  view-transition-name: case-hero-text;
+  z-index: 2;
+  background: var(--ink);
+  box-shadow: 0 0 0 24px var(--ink);
+}
+/* The page being left usually dims to 60% as it drifts up. Around the moving footage that would
+   show as a grey wash, so during the hand-off it keeps its full strength and only drifts. */
+html.vt-handoff::view-transition-old(root) {
+  animation-name: vt-handoff-out;
+}
+@keyframes vt-handoff-out {
+  to {
+    transform: translateY(-6vh);
+  }
+}
+html.vt-handoff .site-header__bar {
+  view-transition-name: site-header;
+}
+::view-transition-new(case-hero-text):only-child,
+::view-transition-new(site-header):only-child {
+  animation: none;
+}
+/* The page before names its header too, so the two headers (for example the home page's small
+   CIVIC and this page's name) cross-fade instead of swapping in one frame. */
+::view-transition-old(site-header),
+::view-transition-new(site-header) {
+  animation-duration: 0.4s;
+}
+
+/* Arriving from a page with nothing to hand over (for example About): the hero has no partner,
+   so it rises with the rest of the new sheet instead of floating in on top of the old page. */
+::view-transition-new(*.case-media):only-child {
+  animation: var(--dur-sheet) var(--ease-civic) both vt-sheet-in;
+}

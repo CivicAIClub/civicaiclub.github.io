@@ -1,0 +1,42 @@
+/*
+  about.css: layout pieces shared by more than one section of the About page.
+
+  The "people" rows (One lead, +8 developers) follow one pattern: a short label on the left
+  (columns 1 and 2) that stays in view at the bottom of the window while its section scrolls
+  past ("sticky"), and the section's content on the right (columns 3 to 12).
+  Only src/pages/about.astro loads this file. Each About section keeps the rest of its styles
+  in its own component in src/components/about/.
+*/
+
+.people {
+  row-gap: 0;
+}
+.people__rule {
+  grid-column: 1 / -1;
+  margin-bottom: clamp(20px, 2vw, 28px);
+}
+.people__label {
+  grid-column: 1 / span 2;
+  grid-row: 2;
+  align-self: end;
+  position: sticky;
+  bottom: var(--margin);
+  font-weight: var(--fw-light);
+}
+.people__body {
+  grid-column: 3 / -1;
+  grid-row: 2;
+}
+
+@media (max-width: 1023px) {
+  .people__label {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    position: static;
+    margin-bottom: clamp(28px, 5vw, 40px);
+  }
+  .people__body {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+}

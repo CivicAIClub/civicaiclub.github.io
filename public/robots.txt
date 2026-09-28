@@ -1,0 +1,5 @@
+# Search engines may read every page except the club's internal style guide.
+User-agent: *
+Disallow: /styleguide/
+
+Sitemap: https://civicaiclub.github.io/sitemap.xml

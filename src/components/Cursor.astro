@@ -1,0 +1,54 @@
+---
+// Cursor.astro: the small label that follows the mouse over footage and actions.
+//
+// It never replaces the normal pointer (that always stays visible). Over anything with a
+// data-cursor attribute, for example <figure data-cursor="Pause">, a small outlined label with
+// that text trails the pointer, 24px below and to the right. When the text changes it rolls
+// (the old words go up, the new ones come up from below).
+// It only appears on devices with a real mouse or trackpad and only when motion is on.
+// The moving and rolling are done by src/scripts/motion/modules/cursor.js.
+// It is decoration: screen readers skip it and it never catches clicks.
+---
+
+<div class="cursor" aria-hidden="true" data-cursor-el>
+  <span class="cursor__box">
+    <span class="cursor__label t-mono" data-cursor-label></span>
+  </span>
+</div>
+
+<style>
+  .cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-cursor);
+    display: none;
+    pointer-events: none;
+    color: var(--paper);
+    mix-blend-mode: difference;
+    will-change: transform;
+  }
+  /* The motion code adds "has-cursor" to the page only on mouse/trackpad devices with motion on. */
+  @media (hover: hover) and (pointer: fine) {
+    :global(html.has-cursor) .cursor {
+      display: block;
+    }
+  }
+  .cursor__box {
+    display: inline-block;
+    padding: 7px 9px 6px;
+    border: 1px solid currentColor;
+    opacity: 0;
+    transform: scale(0.6);
+    transform-origin: 0 0;
+  }
+  .cursor__label {
+    position: relative;
+    display: inline-block;
+    overflow: clip;
+    vertical-align: top;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+</style>

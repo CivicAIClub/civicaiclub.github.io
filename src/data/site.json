@@ -1,0 +1,18 @@
+{
+  "_note": "Site-wide names, links and lines of copy. Change a link here and every page that uses it follows.",
+  "name": "Civic AI Club",
+  "school": "Pomfret School",
+  "url": "https://civicaiclub.github.io",
+  "description": "A student-run club at Pomfret School. Teachers and staff bring us a chore that eats their week; student developers build the tool and hand it over.",
+  "intakeFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSc1tSjWa6Lgs_99pRJwdenQYpSGSczJGtZ53FFNhBeDDvT9Kg/viewform",
+  "joinFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSc1tSjWa6Lgs_99pRJwdenQYpSGSczJGtZ53FFNhBeDDvT9Kg/viewform",
+  "githubUrl": "https://github.com/CivicAIClub",
+  "copyrightYear": 2026,
+  "lines": {
+    "preloader": "Bring us the boring bits.",
+    "hero": "Built at Pomfret for people down the hall and down the road.",
+    "footer": "Bring us the chore you repeat every week.",
+    "footerSmallPrint": "A student-run club at Pomfret School.",
+    "honestAi": "The AI is in our workshop, not stamped on your tool. We build with AI coding assistants. None of the four tools we’ve built calls an AI model. Want yours with none? Say so."
+  }
+}

@@ -1,0 +1,25 @@
+---
+// Divider.astro: a thin horizontal line across the columns (1px, the text color at 25%).
+//
+// With motion on, it draws itself from left to right when it scrolls into view (motion M2,
+// the data-draw attribute; the animation lives in src/scripts/motion/modules/draw.js).
+// With motion off it is simply there. It is decoration, so screen readers skip it.
+interface Props {
+  // Set to false for a line that should not animate.
+  draw?: boolean;
+  // "hairline" is the crimson 1px line used for active and progress states.
+  tone?: 'rule' | 'hairline';
+  class?: string;
+}
+const { draw = true, tone = 'rule', class: className } = Astro.props;
+---
+
+<div class:list={['rule', `rule--${tone}`, className]} data-draw={draw ? '' : undefined} aria-hidden="true">
+</div>
+
+<style>
+  .rule--hairline {
+    background: var(--hairline, var(--crimson));
+    opacity: 1;
+  }
+</style>

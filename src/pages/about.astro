@@ -1,0 +1,63 @@
+---
+// about.astro: the About page (https://civicaiclub.github.io/about/).
+//
+// It follows the same arc as the About page of the studio that inspired the site's design:
+// a statement, then proof, then the people, then how the club works, then a way to get in
+// touch. Each section is its own component in src/components/about/, in this order:
+//    1. Opening      the opening statement and the four "rules of the room"
+//    2. Proof        "Merged" in giant letters, the pull-request count and four more numbers
+//    3. Workshop     a wide clip of the club's public GitHub
+//    4. HonestLine   the honest line about how the club uses AI (the page's one crimson marker)
+//    5. Lead         the club lead and the faculty advisor
+//    6. Developers   everyone who built a case, with a hover card playing their tool
+//    7. Roll         every student in the club, plus the two advisors
+//    8. Frame        how a case goes from a problem to a tool someone owns (the ink section)
+//    9. Started      the club photo and a strip of moments since the first meeting
+//   10. BigLink      "Got a chore?", which rolls to "Bring us a problem ↗" (the intake form)
+// The footer is added by the page frame (src/layouts/Base.astro), like on every page.
+//
+// Where the words come from: src/data/ (members, numbers, timeline, site links, about media)
+// and src/content/cases/ (who built what). The motion for this page lives in
+// src/scripts/motion/modules/about-*.js and is asked for with data-about-* attributes
+// (see the "About page" section of MOTION.md).
+import Base from '../layouts/Base.astro';
+import BigLink from '../components/BigLink.astro';
+import Opening from '../components/about/Opening.astro';
+import Proof from '../components/about/Proof.astro';
+import Workshop from '../components/about/Workshop.astro';
+import HonestLine from '../components/about/HonestLine.astro';
+import Lead from '../components/about/Lead.astro';
+import Developers from '../components/about/Developers.astro';
+import Roll from '../components/about/Roll.astro';
+import Frame from '../components/about/Frame.astro';
+import Started from '../components/about/Started.astro';
+import site from '../data/site.json';
+import '../styles/about.css';
+---
+
+<Base
+  title="About"
+  description="A student-run lab at Pomfret School. We build working tools for the people down the hall. Next up: two businesses down the road."
+  current="about"
+>
+  <Opening />
+  <Proof />
+  <Workshop />
+  <HonestLine />
+  <Lead />
+  <Developers />
+  <Roll />
+  <Frame />
+  <Started />
+
+  <!-- 10. The closing link to the intake form. -->
+  <section class="closing theme-paper" aria-label="Bring us a problem">
+    <BigLink href={site.intakeFormUrl} label="Got a chore?" second="Bring us a problem ↗" external />
+  </section>
+</Base>
+
+<style>
+  .closing {
+    padding-block: 0 var(--space-section);
+  }
+</style>

@@ -1,0 +1,127 @@
+---
+// about/Opening.astro: the top of the About page. Section 1 of 10.
+//
+// What it shows: the page's opening statement at statement size (about 62px on a laptop) with
+// its first line pushed in by three columns, and below it "Rules of the room": the four rules
+// the club follows on every first call with a client, numbered (01) to (04).
+//
+// Motion (only when motion is on; everything is plainly visible otherwise):
+//   - the statement's lines rise out of their masks as the page arrives (motion M1, 0.2s in),
+//   - the divider draws itself (M2),
+//   - the rules rise one after another, 0.08s apart (M1 with a growing delay per rule).
+// No animation code lives here: the data-reveal / data-draw attributes ask
+// src/scripts/motion/modules/reveal-lines.js and draw.js to do it (see MOTION.md).
+//
+// Used by: src/pages/about.astro.
+import Statement from '../Statement.astro';
+import Divider from '../Divider.astro';
+
+// The rules of the room, in the club's own words (from the build brief).
+const rules = [
+  'The client talks first.',
+  'We read the problem back.',
+  'No timeline promised on the first call.',
+  'We test with our own data.',
+];
+
+// Each rule waits a little longer than the one before it, so they rise 0.08s apart. The
+// first waits 0.3s, so the rules follow the statement instead of racing it on arrival.
+const ruleDelay = (index: number) => (0.3 + index * 0.08).toFixed(2);
+---
+
+<section class="opening theme-paper" aria-labelledby="about-title">
+  <div class="grid">
+    <Statement as="h1" id="about-title" class="opening__statement" revealOn="intro" delay={0.2}>
+      We’re a student-run lab at Pomfret School. We build working tools for the people down the
+      hall. Next up: two businesses down the road.
+    </Statement>
+  </div>
+
+  <div class="rules grid">
+    <Divider class="rules__rule" />
+    <h2 class="rules__title t-label" data-reveal="lines" data-reveal-delay="0.3">Rules of the room</h2>
+    <ol class="rules__list t-label">
+      {
+        rules.map((rule, i) => (
+          <li class="rules__item">
+            <span class="rules__num" data-reveal="lines" data-reveal-delay={ruleDelay(i)}>
+              ({String(i + 1).padStart(2, '0')})
+            </span>
+            <span data-reveal="lines" data-reveal-delay={ruleDelay(i)}>{rule}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  /* The statement sits low in the first screen, with the rules near its bottom edge, like an
+     opening page of a magazine. */
+  .opening {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: calc(var(--header-height) + clamp(120px, 22vh, 260px));
+    padding-bottom: clamp(56px, 9vh, 96px);
+  }
+  .opening :global(.opening__statement) {
+    grid-column: 1 / span 11;
+    --span: 11;
+  }
+
+  .rules {
+    margin-top: clamp(72px, 13vh, 150px);
+    row-gap: 18px;
+  }
+  .rules :global(.rules__rule) {
+    grid-column: 1 / span 10;
+  }
+  .rules__title {
+    grid-column: 1 / span 3;
+    font-weight: var(--fw-light);
+  }
+  .rules__list {
+    grid-column: 7 / span 4;
+    display: grid;
+    gap: 4px;
+  }
+  /* The numbers sit in their own little column, in grey, so the rules line up. */
+  .rules__item {
+    display: grid;
+    grid-template-columns: 2.8em 1fr;
+  }
+  .rules__num {
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 1023px) {
+    .opening :global(.opening__statement) {
+      grid-column: 1 / -1;
+      --span: var(--cols);
+    }
+    .rules :global(.rules__rule) {
+      grid-column: 1 / -1;
+    }
+    .rules__title {
+      grid-column: 1 / span 3;
+    }
+    .rules__list {
+      grid-column: 4 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .opening {
+      min-height: 92svh;
+    }
+    .rules__title,
+    .rules__list {
+      grid-column: 1 / -1;
+    }
+    .rules__list {
+      margin-top: 8px;
+    }
+  }
+</style>

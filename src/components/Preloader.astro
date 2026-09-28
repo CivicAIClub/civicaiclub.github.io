@@ -1,0 +1,82 @@
+---
+// Preloader.astro: the paper sheet with one line, "Bring us the boring bits.", that opens the
+// home page on someone's first visit in a browser session.
+//
+// It is hidden unless a tiny script at the top of the page (in Base.astro) decides it should
+// play: first page of the session, motion allowed, and this is the home page. Then
+// src/scripts/motion/modules/preloader.js runs it:
+//   0 to 0.55s  the five words darken from light grey to ink, one after another,
+//   0.6s        the sheet lifts off the top of the screen while the line holds still, and the
+//               header and the big CIVIC start arriving on the same beat,
+//   1.0s        scrolling is switched back on,
+//   1.4s        done.
+// Screen readers skip it (it is decoration; the page itself says the same things).
+import site from '../data/site.json';
+import Griffin from './Griffin.astro';
+
+// Split the line into words so each can darken on its own.
+const words = site.lines.preloader.split(' ');
+---
+
+<div class="preloader theme-paper" aria-hidden="true" data-preloader>
+  <div class="preloader__hold" data-preloader-hold>
+    <div class="preloader__line">
+      <span class="preloader__griffin" data-preloader-word><Griffin /></span>
+      <p class="preloader__text">
+        {
+          words.map((word, i) => (
+            <>
+              <span data-preloader-word>{word}</span>
+              {i < words.length - 1 ? ' ' : ''}
+            </>
+          ))
+        }
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .preloader {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-preloader);
+    display: none;
+    overflow: hidden;
+  }
+  /* Shown only when the script in Base.astro has chosen to play it. */
+  :global(html.js-preload) .preloader {
+    display: block;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .preloader {
+      display: none !important;
+    }
+  }
+  .preloader__hold {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+  .preloader__line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .preloader__griffin {
+    display: block;
+    width: 40px;
+    color: var(--preload-grey);
+  }
+  .preloader__text {
+    font-size: 24px;
+    font-weight: var(--fw-regular);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .preloader__text span {
+    color: var(--preload-grey);
+  }
+</style>

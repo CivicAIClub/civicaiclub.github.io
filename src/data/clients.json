@@ -1,0 +1,21 @@
+{
+  "_note": "Local businesses we are working with. Public level only: name, one plain line, status. No logos, no AI words, no contact names, no details of how their business runs. Never add a prospect that has not agreed to be listed.",
+  "items": [
+    {
+      "id": "green-valley-hospitality",
+      "name": "Green Valley Hospitality",
+      "place": "",
+      "line": "Daily sales recaps that reach the reporting spreadsheets without retyping.",
+      "status": "In progress",
+      "stage": "Discovery complete."
+    },
+    {
+      "id": "black-pond-brews",
+      "name": "Black Pond Brews",
+      "place": "Danielson, CT",
+      "line": "Marketing and email tools.",
+      "status": "In progress",
+      "stage": "Discovery complete."
+    }
+  ]
+}

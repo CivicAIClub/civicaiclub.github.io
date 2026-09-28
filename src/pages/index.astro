@@ -1,0 +1,91 @@
+---
+// index.astro: the home page (https://civicaiclub.github.io/).
+//
+// The "Casework" home page, top to bottom. Each big section is its own component in
+// src/components/home/ (the small shared pieces, like Statement and KeyValue, are in
+// src/components/):
+//   0. Preloader     the paper sheet "Bring us the boring bits." (first visit only; <Base preloader>)
+//   1. HomeHero      the huge CIVIC, the mission line, and an arrow down
+//   2. HomeReel      the reel of every tool, which opens the full showreel in a player
+//   3. Statement     what the club does, with the page's one crimson marker
+//   4. KeyValue      what the tools run on
+//   5. Docket        every case, A to E, as a giant letter with its footage inside
+//   6. DownTheRoad   the local businesses we're working with, all "In progress"
+//   7. Glance        the club's checked numbers, three clips and this week, in a strip
+//   8. BigLink       "Who builds this?", which rolls to "Meet the club" and leads to About
+//   9. The footer    added by the page frame (src/layouts/Base.astro), like on every page
+//
+// Where the words come from: src/data/site.json (the main lines), src/content/cases/ (the
+// cases), src/data/clients.json (local businesses), src/data/numbers.json (the counts) and
+// src/data/home.json (which clips). The motion for this page lives in
+// src/scripts/motion/modules/home-*.js and is asked for with data attributes (see the "Home
+// page" section of MOTION.md).
+import Base from '../layouts/Base.astro';
+import Statement from '../components/Statement.astro';
+import KeyValue from '../components/KeyValue.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import BigLink from '../components/BigLink.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import HomeReel from '../components/home/HomeReel.astro';
+import Docket from '../components/home/Docket.astro';
+import DownTheRoad from '../components/home/DownTheRoad.astro';
+import Glance from '../components/home/Glance.astro';
+import '../styles/home.css';
+---
+
+<!-- preloadImages: phones fetch the 4:5 reel poster first (it is their largest first picture). -->
+<Base
+  preloader
+  intro="home"
+  theme="ink"
+  preloadImages={[{ href: '/media/home/home-reel-mobile-poster.webp', media: '(max-width: 767px)' }]}
+>
+  <HomeHero />
+
+  <HomeReel />
+
+  <!-- 3. Statement: what the club does, with the page's one crimson marker. -->
+  <section class="home-block theme-ink" aria-label="What we do">
+    <div class="grid">
+      <Statement class="span-all">
+        Teachers and staff bring us a chore that <mark data-mark>eats their week</mark>. A pair of
+        student developers scopes it with them, builds the tool and hands it over.
+        See <a href="/about/#frame">how we work</a>.
+      </Statement>
+    </div>
+  </section>
+
+  <!-- 4. Key/value: what the tools run on. -->
+  <!-- Wording approved by the club lead on 2026-09-28. -->
+  <section class="home-block home-block--kv theme-ink" aria-label="What it runs on">
+    <KeyValue label="Bring us the boring bits.">
+      Most of what we build runs on what the school already uses: Canvas, Google Docs, Sheets,
+      Drive and Calendar. Client data and student records never go into our repositories.
+      <ArrowLink slot="after" href="#cases" dir="down">See the cases</ArrowLink>
+    </KeyValue>
+  </section>
+
+  <Docket />
+
+  <DownTheRoad />
+
+  <Glance />
+
+  <!-- 8. The big link to the About page. -->
+  <section class="home-close theme-paper" aria-label="Who builds this">
+    <BigLink href="/about/" label="Who builds this?" second="Meet the club" />
+  </section>
+</Base>
+
+<style>
+  .home-block {
+    padding-block: var(--space-section-lg) var(--space-section);
+  }
+  .home-block--kv {
+    padding-top: 0;
+    padding-bottom: clamp(24px, 3vw, 48px);
+  }
+  .home-close {
+    padding-block: clamp(40px, 6vw, 96px) var(--space-section);
+  }
+</style>

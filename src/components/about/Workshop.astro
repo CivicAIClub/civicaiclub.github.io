@@ -1,0 +1,56 @@
+---
+// about/Workshop.astro: the workshop reel. Section 3 of 10 on the About page.
+//
+// What it shows: one looping clip of the club's public GitHub (the list of its merged pull
+// requests, then the changes inside one of them), in a 16:9 frame from column 2 to column 11 on
+// an ink band, with its written caption below and a small Pause button on the footage.
+// The clip is shown a little enlarged around the purple "Merged" label near its top left, which
+// trims GitHub's page edges and buttons away so the frame reads as footage, not a screenshot.
+//
+// The clip is asked for by id (src/data/about.json names it; src/data/media.json lists its
+// files). Video.astro writes the video, and src/scripts/motion/modules/video.js plays it only
+// while it is on screen and motion is allowed.
+// Motion: the frame opens from the top as it scrolls in (M3), and the footage slowly pushes in
+// (grows by another 12%, still around the "Merged" label) while the page scrolls past it
+// (src/scripts/motion/modules/about-workshop.js, asked for with data-about-pushin). When this
+// section reaches the top of the window, the header swaps the club's name for a small CIVIC
+// (data-header-swap, modules/header.js). The frame is marked data-header-solid, so the header
+// gets its ink strip while the footage passes under it (src/scripts/site/header-backdrop.js).
+import Video from '../Video.astro';
+import about from '../../data/about.json';
+---
+
+<section class="workshop theme-ink" data-header-swap aria-label="Workshop">
+  <div class="grid">
+    <div class="workshop__frame" data-header-solid data-about-pushin>
+      <Video id={about.media.workshop} open class="workshop__video" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .workshop {
+    padding-block: var(--space-section);
+  }
+  .workshop__frame {
+    grid-column: 2 / span 10;
+  }
+  .workshop :global(.video__frame) {
+    aspect-ratio: 16 / 9;
+  }
+  /* The crop: the footage is shown 10% larger, grown from the spot where GitHub's "Merged"
+     label sits (5% from the left, 13% from the top), so that label stays in view while the
+     page's edges and the buttons on the right fall outside the frame. */
+  .workshop :global(.video__el) {
+    transform: scale(1.1);
+    transform-origin: 5% 13%;
+  }
+  .workshop :global(.video__caption) {
+    max-width: 44ch;
+  }
+  @media (max-width: 1023px) {
+    .workshop__frame {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

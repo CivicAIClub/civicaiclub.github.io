@@ -1,0 +1,423 @@
+---
+// NextCase.astro: the ink band at the bottom of a case page that leads to the next case.
+//
+// On the left, the next case's letter (B after A, and A again after D) is cut out of the ink like
+// a window, and the next case's square "docket" clip plays through it in full color. On the
+// right: its name in big type, its client office, its one-line summary, and "Open case ↗".
+// The whole band is one link: an empty, see-through link laid over the band, named for screen
+// readers "Next case: Case B, Music Studio". Mouse users see "Open Case B ↗" beside the pointer.
+// The band itself is a region named "Next case".
+//
+// How the cut-out works: the letter is drawn in white on an ink box, laid over the clip with a
+// "darken" blend, which keeps whichever of the two is darker at each point. White is never the
+// darker one, so the clip shows through the letter untouched; ink is darker than anything in the
+// tools' light screens, so around the letter the band stays plain ink.
+// The letter's shape is the traced outline the home page's docket uses
+// (src/components/home/docket-letters.json, made by scripts/build-docket-letters.mjs), so both
+// pages show exactly the same letters. The window is exactly the letter's size, so the letter's
+// left edge sits on the page margin. If that file is ever missing, the letter is typed as text
+// instead (centered in a square) and everything still works, without the zoom.
+//
+// Motion (src/scripts/motion/modules/case-next.js, and data attributes):
+//   - the footage drifts from 20% higher to its place as the band scrolls in (M4),
+//   - hovering (or focusing the link) pushes the footage in a little (to 104%, 0.6s),
+//   - clicking with a mouse zooms through the letter: the band's words fade out (0.3s), the ink
+//     sheet with its letter-shaped hole moves into a layer that covers the whole window
+//     ("next__zoom" below), and the hole grows from the deepest point of one of its strokes until
+//     it swallows the whole window (0.7s, the civic curve) while the footage grows to fill it.
+//     Then the next case opens and the full-screen footage settles into that page's hero frame
+//     (a view transition, styled in src/styles/case.css).
+//     On touch screens, in browsers without view transitions, and with motion off, it is a
+//     plain link.
+import Divider from '../Divider.astro';
+import ArrowLink from '../ArrowLink.astro';
+import Arrow from '../Arrow.astro';
+import Video from '../Video.astro';
+
+interface Props {
+  letter: string;
+  slug: string;
+  title: string;
+  office: string;
+  fix: string;
+  href: string;
+  clipId?: string;
+}
+const { letter, slug, title, office, fix, href, clipId } = Astro.props;
+
+// The traced letter outlines, if the file is there ("import.meta.glob" quietly finds nothing
+// when a file is missing, instead of stopping the build).
+interface Outline {
+  d: string;
+  width: number;
+  top: number;
+  bottom: number;
+  zoom: { x: number; y: number; r: number };
+}
+const found = import.meta.glob<{ default: { letters: Record<string, Outline> } }>('../home/docket-letters.json', {
+  eager: true,
+});
+const outline = Object.values(found)[0]?.default?.letters?.[letter];
+// The letter's box in the outline's own units, and where to zoom from, as shares of that box.
+const box = outline ? { x: 0, y: outline.top, w: outline.width, h: outline.bottom - outline.top } : null;
+const zoom =
+  outline && box
+    ? {
+        x: (outline.zoom.x - box.x) / box.w,
+        y: (outline.zoom.y - box.y) / box.h,
+        r: outline.zoom.r / box.h,
+      }
+    : null;
+---
+
+<section class="next theme-ink" data-next-case data-cursor={`Open Case ${letter} ↗`} aria-label="Next case">
+  <!-- The link that covers the band. It comes first, so Tab reaches it before "All cases". -->
+  <a class="next__cover" href={href} aria-label={`Next case: Case ${letter}, ${title}`} data-next-link></a>
+
+  <div class="next__head grid" data-next-fade>
+    <Divider class="next__rule" />
+    <p class="next__label t-mono">Next: Case {letter}</p>
+    <p class="next__all t-mono"><ArrowLink href="/#cases">All cases</ArrowLink></p>
+  </div>
+
+  <div class="next__body grid">
+    <!-- The letter window. data-next-slug names the case it opens, for the page change. -->
+    <div
+      class:list={['next__window', { 'next__window--outline': box }]}
+      style={box ? `--aspect: ${box.w} / ${box.h}` : undefined}
+      data-next-window
+      data-next-slug={slug}
+      data-zoom-x={zoom?.x.toFixed(4)}
+      data-zoom-y={zoom?.y.toFixed(4)}
+      data-zoom-r={zoom?.r.toFixed(4)}
+    >
+      <Video
+        id={clipId}
+        fill
+        parallax="-20,0"
+        scale={1.25}
+        caption={false}
+        placeholder={letter}
+        class="next__video"
+      />
+      {
+        box && outline ? (
+          <svg
+            class="next__ink"
+            viewBox={`${box.x} ${box.y} ${box.w} ${box.h}`}
+            aria-hidden="true"
+            focusable="false"
+            data-next-ink
+          >
+            <rect x={box.x - box.w * 4} y={box.y - box.h * 4} width={box.w * 9} height={box.h * 9} fill="currentColor" />
+            <path d={outline.d} fill="#fff" />
+          </svg>
+        ) : (
+          <svg class="next__ink" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false" data-next-ink>
+            <rect x="-10" y="-10" width="1020" height="1020" fill="currentColor" />
+            <text class="next__glyph" x="500" y="920" text-anchor="middle">
+              {letter}
+            </text>
+          </svg>
+        )
+      }
+    </div>
+
+    <div class="next__text" data-next-fade>
+      <h2 id="next-title" class="next__name t-statement" data-reveal="lines">{title}</h2>
+      <p class="next__office t-mono">{office}</p>
+      <p class="next__fix t-label" data-reveal="lines">{fix}</p>
+      <p class="next__open t-label" aria-hidden="true">
+        <span class="next__open-slot next__open-slot--in"><Arrow dir="ne" /></span>
+        <span class="next__open-text">Open case</span>
+        <span class="next__open-slot"><Arrow dir="ne" /></span>
+      </p>
+    </div>
+  </div>
+
+  <!-- The zoom layer: empty and hidden until a click. It covers the whole browser window
+       ("position: fixed"). The motion code moves the window's footage into data-next-zoom-media,
+       places the ink sheet's letter-shaped hole exactly over the window, then grows both. -->
+  {
+    outline && (
+      <div class="next__zoom" hidden aria-hidden="true" data-next-zoom>
+        <div class="next__zoom-media" data-next-zoom-media />
+        <svg class="next__zoom-sheet" focusable="false" data-next-zoom-sheet>
+          <defs>
+            <mask
+              id={`next-zoom-hole-${slug}`}
+              maskUnits="userSpaceOnUse"
+              x="-100000"
+              y="-100000"
+              width="200000"
+              height="200000"
+            >
+              <rect fill="#fff" data-next-zoom-paper />
+              <path d={outline.d} fill="#000" data-next-zoom-letter />
+            </mask>
+          </defs>
+          <g data-next-zoom-grow>
+            <rect fill="currentColor" mask={`url(#next-zoom-hole-${slug})`} data-next-zoom-ink />
+          </g>
+        </svg>
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .next {
+    padding-block: clamp(28px, 3vw, 40px) clamp(48px, 6vw, 88px);
+  }
+  .next__head {
+    row-gap: 16px;
+    align-items: baseline;
+  }
+  /* The band's words sit above the zoom layer, so they can fade out over it during the zoom. */
+  .next__head,
+  .next__text {
+    position: relative;
+    z-index: 2;
+  }
+  .next__head :global(.next__rule) {
+    grid-column: 1 / -1;
+  }
+  .next__label {
+    grid-column: 1 / span 6;
+    color: var(--text-2);
+  }
+  /* "All cases" is its own link, so it sits above the band's stretched link. */
+  .next__all {
+    position: relative;
+    z-index: 2;
+    grid-column: 7 / -1;
+    justify-self: end;
+  }
+  /* Its tap area is at least 44px tall (easy to hit with a finger, and a tap just off the words
+     still lands on it): extra padding above and below, taken back with a negative margin so the
+     layout doesn't move, and the hover underline kept under the words. */
+  .next__all :global(.arrow-link) {
+    padding-block: 15px;
+    margin-block: -11px;
+  }
+  .next__all :global(.arrow-link::after) {
+    bottom: 11px;
+  }
+
+  .next__body {
+    margin-top: clamp(32px, 4vw, 56px);
+    align-items: end;
+  }
+
+  /* The window: a square on columns 1 to 6 (the typed-letter fallback)... */
+  .next__window {
+    position: relative;
+    grid-column: 1 / span 6;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  /* ...or, with the traced outline, exactly the letter's size: its capital about two thirds of
+     the window's height, starting on the page margin. */
+  .next__window--outline {
+    aspect-ratio: var(--aspect);
+    justify-self: start;
+    width: auto;
+    height: clamp(300px, 74vh, 720px);
+    max-width: 100%;
+  }
+  /* The clip's Pause button sits in the window's top-right corner, as a small ink chip (like the
+     hero's), readable over the footage where a letter's stroke reaches that corner. */
+  .next__window :global(.video__toggle) {
+    top: 0;
+    right: 0;
+    bottom: auto;
+    left: auto;
+    background: var(--ink);
+    mix-blend-mode: normal;
+  }
+  /* The ink box reaches far past the letter ("overflow: visible"), so it still covers the
+     whole window while the letter grows, whatever the window's exact shape. */
+  .next__ink {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    color: var(--ink);
+    mix-blend-mode: darken;
+    pointer-events: none;
+  }
+  /* The same faint grain as the rest of the ink band, laid over the window so the flat ink
+     around the letter matches its surroundings. */
+  .next__window::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('../../assets/texture/grain.png');
+    background-size: 256px 256px;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
+  }
+  /* The letter: Host Grotesk Light, capital height 840 of the 1000-unit square (80 above and
+     below), in white so the clip shows through it untouched. */
+  .next__glyph {
+    fill: #fff;
+    font-family: var(--font-sans);
+    font-weight: var(--fw-light);
+    font-size: 1200px;
+    letter-spacing: 0;
+  }
+  /* Mouse and trackpad: pointing at the band (or focusing its link) pushes the footage in a
+     little, to 104% over 0.6s. It stays pushed in while it zooms (in the zoom layer). */
+  @media (hover: hover) {
+    .next__window :global(.video__inner) {
+      transition: transform 0.6s var(--ease-expo-out);
+    }
+    .next:hover .next__window :global(.video__inner),
+    .next:focus-within .next__window :global(.video__inner) {
+      transform: scale(1.04);
+    }
+  }
+  .next__zoom :global(.video__inner) {
+    transform: scale(1.04);
+  }
+
+  /* The zoom layer covers the whole browser window, above the band's footage and below its
+     words. It never catches clicks. */
+  .next__zoom {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .next__zoom[hidden] {
+    display: none;
+  }
+  /* The footage while zooming: a square as big as the window's longer side, moved and scaled
+     by the motion code (the same trick as the home page's docket, so its picture is framed
+     exactly as it was in the letter at the start). */
+  .next__zoom-media {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+  }
+  /* The ink sheet with the letter-shaped hole, in the window's own pixels. */
+  .next__zoom-sheet {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    color: var(--ink);
+  }
+
+  /* The text: columns 8 to 12, level with the window's bottom edge. */
+  .next__text {
+    grid-column: 8 / -1;
+    display: grid;
+    row-gap: 16px;
+  }
+  .next__name {
+    margin-bottom: 8px;
+  }
+  .next__office {
+    color: var(--text-2);
+  }
+  .next__fix {
+    max-width: 30ch;
+  }
+
+  /* The see-through link over the whole band, so a click anywhere opens the case. Its focus
+     ring is drawn just inside the band's edge. */
+  .next__cover {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .next__cover:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: -6px;
+  }
+
+  /* "Open case ↗" with the arrow swap (M7): on hover the arrow leaves up and to the right, a
+     second one arrives from the bottom left in front of the text, and the text slides over. */
+  .next__open {
+    --shift: calc(0.72em + 0.4em);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    justify-self: start;
+    margin-top: 12px;
+  }
+  .next__open-text {
+    display: inline-block;
+    transition: transform var(--dur-arrow) var(--ease-arrow);
+  }
+  .next__open-slot {
+    position: relative;
+    display: inline-flex;
+    overflow: clip;
+    width: 0.72em;
+    height: 0.72em;
+  }
+  .next__open-slot :global(.arrow) {
+    transition: transform var(--dur-arrow) var(--ease-arrow);
+  }
+  .next__open-slot--in {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -0.36em;
+  }
+  .next__open-slot--in :global(.arrow) {
+    transform: translate(-110%, 110%);
+  }
+  @media (hover: hover) {
+    .next:hover .next__open-text,
+    .next:focus-within .next__open-text {
+      transform: translateX(var(--shift));
+    }
+    .next:hover .next__open-slot:not(.next__open-slot--in) :global(.arrow),
+    .next:focus-within .next__open-slot:not(.next__open-slot--in) :global(.arrow) {
+      transform: translate(110%, -110%);
+    }
+    .next:hover .next__open-slot--in :global(.arrow),
+    .next:focus-within .next__open-slot--in :global(.arrow) {
+      transform: none;
+    }
+  }
+
+  /* Tablets: window on columns 1 to 4, text on 5 to 8. */
+  @media (max-width: 1023px) {
+    .next__window {
+      grid-column: 1 / span 4;
+    }
+    .next__text {
+      grid-column: 5 / -1;
+    }
+  }
+  /* Phones: the window full width, the text below it. */
+  @media (max-width: 767px) {
+    .next__label {
+      grid-column: 1 / span 3;
+    }
+    .next__all {
+      grid-column: 4 / -1;
+    }
+    .next__window,
+    .next__text {
+      grid-column: 1 / -1;
+    }
+    .next__window--outline {
+      height: min(92vw, 56vh);
+    }
+    .next__text {
+      margin-top: 28px;
+    }
+  }
+</style>

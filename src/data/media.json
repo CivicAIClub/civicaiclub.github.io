@@ -1,0 +1,460 @@
+[
+  {
+    "id": "autoplanner-hero",
+    "case": "autoplanner",
+    "usedOn": [
+      "autoplanner"
+    ],
+    "av1": "/media/autoplanner/autoplanner-hero.av1.mp4",
+    "h264": "/media/autoplanner/autoplanner-hero.h264.mp4",
+    "poster": "/media/autoplanner/autoplanner-hero-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 7.6,
+    "caption": "AutoPlanner fetches three students’ Canvas assignments and lays them out as color-coded weekly tables with priority labels. Demo data.",
+    "demoData": true,
+    "mobile": {
+      "av1": "/media/autoplanner/autoplanner-hero-mobile.av1.mp4",
+      "h264": "/media/autoplanner/autoplanner-hero-mobile.h264.mp4",
+      "poster": "/media/autoplanner/autoplanner-hero-mobile-poster.webp",
+      "width": 1080,
+      "height": 1350
+    }
+  },
+  {
+    "id": "autoplanner-scrub",
+    "case": "autoplanner",
+    "usedOn": [
+      "autoplanner"
+    ],
+    "h264": "/media/autoplanner/autoplanner-scrub.h264.mp4",
+    "poster": "/media/autoplanner/autoplanner-scrub-poster.webp",
+    "width": 1600,
+    "height": 900,
+    "duration": 10,
+    "caption": "AutoPlanner takes three Canvas tokens, fetches every schedule, switches between student tabs and creates a Google Doc. Demo data.",
+    "demoData": true,
+    "scrub": true
+  },
+  {
+    "id": "autoplanner-docket",
+    "case": "autoplanner",
+    "usedOn": [
+      "home",
+      "roster-export"
+    ],
+    "av1": "/media/autoplanner/autoplanner-docket.av1.mp4",
+    "h264": "/media/autoplanner/autoplanner-docket.h264.mp4",
+    "poster": "/media/autoplanner/autoplanner-docket-poster.webp",
+    "width": 1600,
+    "height": 1600,
+    "duration": 3.733,
+    "caption": "Three students’ color-coded weekly tables in AutoPlanner, one after another. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "autoplanner-detail-1",
+    "case": "autoplanner",
+    "usedOn": [
+      "autoplanner"
+    ],
+    "av1": "/media/autoplanner/autoplanner-detail-1.av1.mp4",
+    "h264": "/media/autoplanner/autoplanner-detail-1.h264.mp4",
+    "poster": "/media/autoplanner/autoplanner-detail-1-poster.webp",
+    "width": 1080,
+    "height": 1080,
+    "duration": 4.467,
+    "caption": "Student tabs, then the priority labels (Today, Tomorrow, Due Soon, This Week, Upcoming) as the tables switch between students. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "autoplanner-detail-2",
+    "case": "autoplanner",
+    "usedOn": [
+      "autoplanner"
+    ],
+    "av1": "/media/autoplanner/autoplanner-detail-2.av1.mp4",
+    "h264": "/media/autoplanner/autoplanner-detail-2.h264.mp4",
+    "poster": "/media/autoplanner/autoplanner-detail-2-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 5.633,
+    "caption": "One click on Create Google Doc, and AutoPlanner confirms the Doc is ready with a link to open it. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "music-studio-hero",
+    "case": "music-studio",
+    "usedOn": [
+      "music-studio"
+    ],
+    "av1": "/media/music-studio/music-studio-hero.av1.mp4",
+    "h264": "/media/music-studio/music-studio-hero.h264.mp4",
+    "poster": "/media/music-studio/music-studio-hero-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 6.067,
+    "caption": "The Music Studio portal previews a lesson’s calendar invite with its attendees, then creates the event and sends the invites. Demo data.",
+    "demoData": true,
+    "mobile": {
+      "av1": "/media/music-studio/music-studio-hero-mobile.av1.mp4",
+      "h264": "/media/music-studio/music-studio-hero-mobile.h264.mp4",
+      "poster": "/media/music-studio/music-studio-hero-mobile-poster.webp",
+      "width": 1080,
+      "height": 1350
+    }
+  },
+  {
+    "id": "music-studio-scrub",
+    "case": "music-studio",
+    "usedOn": [
+      "music-studio"
+    ],
+    "h264": "/media/music-studio/music-studio-scrub.h264.mp4",
+    "poster": "/media/music-studio/music-studio-scrub-poster.webp",
+    "width": 1600,
+    "height": 900,
+    "duration": 9.6,
+    "caption": "The studio dashboard: preview and send a lesson invite, open a student’s profile, and read the recap from their last lesson. Demo data.",
+    "demoData": true,
+    "scrub": true
+  },
+  {
+    "id": "music-studio-docket",
+    "case": "music-studio",
+    "usedOn": [
+      "home",
+      "autoplanner"
+    ],
+    "av1": "/media/music-studio/music-studio-docket.av1.mp4",
+    "h264": "/media/music-studio/music-studio-docket.h264.mp4",
+    "poster": "/media/music-studio/music-studio-docket-poster.webp",
+    "width": 1600,
+    "height": 1600,
+    "duration": 4.433,
+    "caption": "A lesson invite in the Music Studio portal: its attendees, one click on Create event & send invites, then Event created. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "music-studio-detail-1",
+    "case": "music-studio",
+    "usedOn": [
+      "music-studio"
+    ],
+    "av1": "/media/music-studio/music-studio-detail-1.av1.mp4",
+    "h264": "/media/music-studio/music-studio-detail-1.h264.mp4",
+    "poster": "/media/music-studio/music-studio-detail-1-poster.webp",
+    "width": 1080,
+    "height": 1080,
+    "duration": 5.067,
+    "caption": "Choosing a student opens their full profile beside the roster. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "music-studio-detail-2",
+    "case": "music-studio",
+    "usedOn": [
+      "music-studio"
+    ],
+    "av1": "/media/music-studio/music-studio-detail-2.av1.mp4",
+    "h264": "/media/music-studio/music-studio-detail-2.h264.mp4",
+    "poster": "/media/music-studio/music-studio-detail-2-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 5.733,
+    "caption": "The Recaps page, filtered to one student, shows the recap written after their last lesson. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "pomfret-voices-hero",
+    "case": "pomfret-voices",
+    "usedOn": [
+      "pomfret-voices"
+    ],
+    "av1": "/media/pomfret-voices/pomfret-voices-hero.av1.mp4",
+    "h264": "/media/pomfret-voices/pomfret-voices-hero.h264.mp4",
+    "poster": "/media/pomfret-voices/pomfret-voices-hero-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 10,
+    "caption": "On the Pomfret Voices home page as built in September 2026, six quotes from the Pomfret archive, 1936 to 1972, lit up one at a time, each year fading in behind them.",
+    "demoData": false,
+    "mobile": {
+      "av1": "/media/pomfret-voices/pomfret-voices-hero-mobile.av1.mp4",
+      "h264": "/media/pomfret-voices/pomfret-voices-hero-mobile.h264.mp4",
+      "poster": "/media/pomfret-voices/pomfret-voices-hero-mobile-poster.webp",
+      "width": 1080,
+      "height": 1350
+    }
+  },
+  {
+    "id": "pomfret-voices-scrub",
+    "case": "pomfret-voices",
+    "usedOn": [
+      "pomfret-voices"
+    ],
+    "h264": "/media/pomfret-voices/pomfret-voices-scrub.h264.mp4",
+    "poster": "/media/pomfret-voices/pomfret-voices-scrub-poster.webp",
+    "width": 1600,
+    "height": 900,
+    "duration": 9,
+    "caption": "The Pomfret Voices timeline as built in September 2026 slid sideways through 53 moments from 1894 to 2026, its cards turning from sepia to white as the decades passed.",
+    "demoData": false,
+    "scrub": true
+  },
+  {
+    "id": "pomfret-voices-docket",
+    "case": "pomfret-voices",
+    "usedOn": [
+      "home",
+      "music-studio"
+    ],
+    "av1": "/media/pomfret-voices/pomfret-voices-docket.av1.mp4",
+    "h264": "/media/pomfret-voices/pomfret-voices-docket.h264.mp4",
+    "poster": "/media/pomfret-voices/pomfret-voices-docket-poster.webp",
+    "width": 1600,
+    "height": 1600,
+    "duration": 8.2,
+    "caption": "Six quotes from the Pomfret archive, 1936 to 1972, lit up one at a time on the Pomfret Voices home page, September 2026.",
+    "demoData": false
+  },
+  {
+    "id": "pomfret-voices-detail-1",
+    "case": "pomfret-voices",
+    "usedOn": [
+      "pomfret-voices"
+    ],
+    "av1": "/media/pomfret-voices/pomfret-voices-detail-1.av1.mp4",
+    "h264": "/media/pomfret-voices/pomfret-voices-detail-1.h264.mp4",
+    "poster": "/media/pomfret-voices/pomfret-voices-detail-1-poster.webp",
+    "width": 1080,
+    "height": 1080,
+    "duration": 6.5,
+    "caption": "On the Pomfret Voices timeline as built in September 2026, the 1975 card for the first institutional financial aid package lifted and opened into its full story.",
+    "demoData": false
+  },
+  {
+    "id": "pomfret-voices-detail-2",
+    "case": "pomfret-voices",
+    "usedOn": [
+      "pomfret-voices"
+    ],
+    "av1": "/media/pomfret-voices/pomfret-voices-detail-2.av1.mp4",
+    "h264": "/media/pomfret-voices/pomfret-voices-detail-2.h264.mp4",
+    "poster": "/media/pomfret-voices/pomfret-voices-detail-2-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 8,
+    "caption": "Three of the five signature exhibits (the magazine archive, a campus tour and an AI bias module) drifted slowly past on the Pomfret Voices home page, September 2026.",
+    "demoData": false
+  },
+  {
+    "id": "roster-export-hero",
+    "case": "roster-export",
+    "usedOn": [
+      "roster-export"
+    ],
+    "av1": "/media/roster-export/roster-export-hero.av1.mp4",
+    "h264": "/media/roster-export/roster-export-hero.h264.mp4",
+    "poster": "/media/roster-export/roster-export-hero-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 8.7,
+    "caption": "A teacher ticks three classes in the Generate Comments Template dialog and gets one comment Doc per class, each with its student count. Demo data.",
+    "demoData": true,
+    "mobile": {
+      "av1": "/media/roster-export/roster-export-hero-mobile.av1.mp4",
+      "h264": "/media/roster-export/roster-export-hero-mobile.h264.mp4",
+      "poster": "/media/roster-export/roster-export-hero-mobile-poster.webp",
+      "width": 1080,
+      "height": 1350
+    }
+  },
+  {
+    "id": "roster-export-scrub",
+    "case": "roster-export",
+    "usedOn": [
+      "roster-export"
+    ],
+    "h264": "/media/roster-export/roster-export-scrub.h264.mp4",
+    "poster": "/media/roster-export/roster-export-scrub-poster.webp",
+    "width": 1600,
+    "height": 900,
+    "duration": 9.133,
+    "caption": "The Roster Export dialog loads classes from Canvas, the teacher ticks three, and it creates three comment Docs with links. Demo data.",
+    "demoData": true,
+    "scrub": true
+  },
+  {
+    "id": "roster-export-docket",
+    "case": "roster-export",
+    "usedOn": [
+      "home",
+      "pomfret-voices"
+    ],
+    "av1": "/media/roster-export/roster-export-docket.av1.mp4",
+    "h264": "/media/roster-export/roster-export-docket.h264.mp4",
+    "poster": "/media/roster-export/roster-export-docket-poster.webp",
+    "width": 1600,
+    "height": 1600,
+    "duration": 3.667,
+    "caption": "Roster Export works through three ticked classes, then lists the three comment Docs it created, with a link to each. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "roster-export-detail-1",
+    "case": "roster-export",
+    "usedOn": [
+      "roster-export"
+    ],
+    "av1": "/media/roster-export/roster-export-detail-1.av1.mp4",
+    "h264": "/media/roster-export/roster-export-detail-1.h264.mp4",
+    "poster": "/media/roster-export/roster-export-detail-1-poster.webp",
+    "width": 1080,
+    "height": 1080,
+    "duration": 4.667,
+    "caption": "The results list: one comment Doc per class with its student count, and a link to the Drive folder that holds them. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "home-reel",
+    "case": "home",
+    "usedOn": [
+      "home"
+    ],
+    "av1": "/media/home/home-reel.av1.mp4",
+    "h264": "/media/home/home-reel.h264.mp4",
+    "poster": "/media/home/home-reel-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 12,
+    "caption": "A 12-second loop of the club’s tools at work: AutoPlanner’s color-coded weekly tables, a Music Studio lesson invite being sent, quotes and timeline cards from Pomfret Voices as built in September 2026, and Roster Export’s comment Docs. Pomfret Voices shows the school’s own archive; the other tools show demo data.",
+    "demoData": false,
+    "mobile": {
+      "av1": "/media/home/home-reel-mobile.av1.mp4",
+      "h264": "/media/home/home-reel-mobile.h264.mp4",
+      "poster": "/media/home/home-reel-mobile-poster.webp",
+      "width": 1080,
+      "height": 1350
+    }
+  },
+  {
+    "id": "home-showreel",
+    "case": "home",
+    "usedOn": [
+      "home-player"
+    ],
+    "av1": "/media/home/home-showreel.av1.mp4",
+    "h264": "/media/home/home-showreel.h264.mp4",
+    "poster": "/media/home/home-showreel-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 35.033,
+    "caption": "The full reel, one tool at a time: AutoPlanner fetched three students’ schedules and wrote a Google Doc; Music Studio previewed a lesson invite, then opened a student’s profile and a lesson recap; Pomfret Voices, as built in September 2026, lit up its archive quotes, glided through the timeline and opened a 1975 milestone; Roster Export turned three classes into three comment Docs; then a merged pull request on the club’s GitHub. Pomfret Voices shows the school’s own archive; the other tools show demo data.",
+    "demoData": false
+  },
+  {
+    "id": "glance-1",
+    "case": "home",
+    "usedOn": [
+      "home"
+    ],
+    "av1": "/media/home/glance-1.av1.mp4",
+    "h264": "/media/home/glance-1.h264.mp4",
+    "poster": "/media/home/glance-1-poster.webp",
+    "width": 1080,
+    "height": 1080,
+    "duration": 3.967,
+    "caption": "AutoPlanner switches between three students’ color-coded weekly tables. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "glance-2",
+    "case": "home",
+    "usedOn": [
+      "home"
+    ],
+    "av1": "/media/home/glance-2.av1.mp4",
+    "h264": "/media/home/glance-2.h264.mp4",
+    "poster": "/media/home/glance-2-poster.webp",
+    "width": 1080,
+    "height": 1080,
+    "duration": 3.233,
+    "caption": "In the Music Studio portal, one click on View recap opens the note from a student’s last lesson. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "glance-3",
+    "case": "home",
+    "usedOn": [
+      "home"
+    ],
+    "av1": "/media/home/glance-3.av1.mp4",
+    "h264": "/media/home/glance-3.h264.mp4",
+    "poster": "/media/home/glance-3-poster.webp",
+    "width": 1080,
+    "height": 1080,
+    "duration": 3.7,
+    "caption": "On the Pomfret Voices timeline as built in September 2026, the 1975 card for the first institutional financial aid package lifted and opened into its full story.",
+    "demoData": false
+  },
+  {
+    "id": "about-workshop",
+    "case": "about",
+    "usedOn": [
+      "about"
+    ],
+    "av1": "/media/about/about-workshop.av1.mp4",
+    "h264": "/media/about/about-workshop.h264.mp4",
+    "poster": "/media/about/about-workshop-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 9.7,
+    "caption": "The club’s public GitHub: a search showing its 50 merged pull requests, then one of them, which adds plain-English comments to the roster-export code.",
+    "demoData": false
+  },
+  {
+    "id": "about-club-photo",
+    "kind": "image",
+    "case": "about",
+    "usedOn": [
+      "about"
+    ],
+    "width": 2400,
+    "height": 1800,
+    "alt": "About a dozen students seated around a long dark conference table, turned toward the camera; a wall screen behind them reads “Club Photo”.",
+    "caption": "Members of the Civic AI Club around a conference table, with “Club Photo” on the screen behind them.",
+    "files": {
+      "avif": {
+        "800": "/media/about/about-club-photo-800.avif",
+        "1600": "/media/about/about-club-photo-1600.avif",
+        "2400": "/media/about/about-club-photo-2400.avif"
+      },
+      "webp": {
+        "800": "/media/about/about-club-photo-800.webp",
+        "1600": "/media/about/about-club-photo-1600.webp",
+        "2400": "/media/about/about-club-photo-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/about/about-club-photo-800.jpg",
+        "1600": "/media/about/about-club-photo-1600.jpg"
+      },
+      "bw": {
+        "avif": {
+          "800": "/media/about/about-club-photo-bw-800.avif",
+          "1600": "/media/about/about-club-photo-bw-1600.avif",
+          "2400": "/media/about/about-club-photo-bw-2400.avif"
+        },
+        "webp": {
+          "800": "/media/about/about-club-photo-bw-800.webp",
+          "1600": "/media/about/about-club-photo-bw-1600.webp",
+          "2400": "/media/about/about-club-photo-bw-2400.webp"
+        },
+        "jpg": {
+          "800": "/media/about/about-club-photo-bw-800.jpg",
+          "1600": "/media/about/about-club-photo-bw-1600.jpg"
+        }
+      }
+    }
+  }
+]

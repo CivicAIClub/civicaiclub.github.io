@@ -1,0 +1,259 @@
+---
+// Video.astro: shows one silent, looping video clip, asked for by its id.
+//
+// How to use it:  <Video id="autoplanner-hero" />
+// The id is looked up in src/data/media.json (the list of every clip; see MEDIA-IDS.md). From
+// that entry this component writes a <video> with:
+//   - an AV1 file first (small; modern browsers) and an H.264 file second (plays everywhere),
+//   - a poster: a still picture shown before it plays, or instead of it if playback is blocked,
+//   - a written caption saying what the clip shows, ending "Demo data." for tool recordings,
+//   - a small "Pause"/"Play" button over the bottom-left corner.
+// The clip has no autoplay attribute. src/scripts/motion/modules/video.js plays it only while it
+// is on screen and motion is allowed, and pauses it otherwise. Without JavaScript the browser's
+// own play controls are shown instead.
+//
+// If the id is not in media.json yet (the footage isn't ready), a quiet typographic placeholder
+// with the same shape takes its place, so the page never shows a broken video.
+import { getClip } from '../lib/media';
+
+interface Props {
+  // The clip's id in src/data/media.json.
+  id?: string;
+  // The frame's shape, e.g. "16 / 9" or "1 / 1". Defaults to the clip's own shape.
+  ratio?: string;
+  // Replace the manifest caption, or pass false to hide it visually (screen readers still hear it).
+  caption?: string | false;
+  // Fill the parent element instead of keeping a fixed shape (for full-screen heroes).
+  fill?: boolean;
+  // Open the frame with the clip-path reveal when it scrolls into view (motion M3).
+  open?: boolean;
+  // Move the footage inside its frame while scrolling, e.g. "-12,12" (percent, motion M4).
+  parallax?: string;
+  // Enlarge the footage a little so the parallax never shows an edge, e.g. 1.3.
+  scale?: number;
+  // Show the footage in black and white (the color fades in on hover, where a page asks for it).
+  grayscale?: boolean;
+  // Show the Pause/Play button. Always keep it for loops that run longer than 5 seconds.
+  toggle?: boolean;
+  // Big text for the placeholder (for example the case letter) while footage is missing.
+  placeholder?: string;
+  // Load the video's first bytes early. Only for the one clip at the very top of a page.
+  priority?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  ratio,
+  caption,
+  fill = false,
+  open = false,
+  parallax,
+  scale,
+  grayscale = false,
+  toggle = true,
+  placeholder,
+  priority = false,
+  class: className,
+} = Astro.props;
+
+const clip = getClip(id);
+// Scroll-driven ("scrub") clips never play by themselves, so they get no Pause/Play button and
+// no "Pause" cursor label; scrolling moves them instead.
+const showToggle = toggle && !clip?.scrub;
+
+// Warn the person running "npm run dev" when a page asks for a clip that isn't listed yet.
+// (The production build stays quiet: "npm run check:media" lists every missing clip instead.)
+if (!clip && id && import.meta.env.DEV) {
+  console.warn(`[Video] "${id}" is not in src/data/media.json yet; showing a placeholder.`);
+}
+
+const frameRatio = ratio ?? (clip ? `${clip.width} / ${clip.height}` : '16 / 9');
+const captionText = caption === false ? clip?.caption : (caption ?? clip?.caption);
+const captionHidden = caption === false;
+// A unique id so the video can point at its caption for screen readers.
+const captionId = `cap-${id ?? 'clip'}-${Math.abs(hash(`${id}${className}${frameRatio}`)).toString(36)}`;
+
+// A tiny, repeatable "fingerprint" of some text, used only to make the id above unique.
+function hash(text: string): number {
+  let h = 0;
+  for (let i = 0; i < text.length; i++) h = (Math.imul(31, h) + text.charCodeAt(i)) | 0;
+  return h;
+}
+
+// The codec label for AV1 files. Browsers that can't decode AV1 skip this source and use H.264.
+const AV1 = 'video/mp4; codecs="av01.0.08M.08"';
+---
+
+{
+  clip ? (
+    <figure
+      class:list={['video', { 'video--fill': fill, 'video--grayscale': grayscale }, className]}
+      style={`--ratio: ${frameRatio}`}
+      data-video
+      data-video-id={clip.id}
+      data-cursor={showToggle ? 'Pause' : undefined}
+    >
+      <div class="video__frame" data-media-open={open ? '' : undefined}>
+        <div class="video__inner" data-media-inner>
+          <video
+            class="video__el"
+            muted
+            playsinline
+            loop
+            controls
+            preload={priority ? 'metadata' : 'none'}
+            poster={clip.poster}
+            width={clip.width}
+            height={clip.height}
+            aria-describedby={captionText ? captionId : undefined}
+            data-video-el
+            data-poster-mobile={clip.mobile?.poster}
+            data-scrub={clip.scrub ? '' : undefined}
+            data-parallax-y={parallax}
+            data-parallax-scale={scale}
+          >
+            {clip.mobile && <source src={clip.mobile.av1} type={AV1} media="(max-width: 767px)" />}
+            {clip.mobile && <source src={clip.mobile.h264} type="video/mp4" media="(max-width: 767px)" />}
+            {clip.av1 && <source src={clip.av1} type={AV1} />}
+            <source src={clip.h264} type="video/mp4" />
+          </video>
+        </div>
+        {showToggle && (
+          <button type="button" class="video__toggle t-mono" data-video-toggle hidden>
+            <span data-video-toggle-label>Play</span>
+            <span class="sr-only"> video</span>
+          </button>
+        )}
+      </div>
+      {captionText && (
+        <figcaption id={captionId} class:list={['video__caption', { 'sr-only': captionHidden }]}>
+          {captionText}
+        </figcaption>
+      )}
+    </figure>
+  ) : (
+    <figure
+      class:list={['video', 'video--placeholder', { 'video--fill': fill }, className]}
+      style={`--ratio: ${frameRatio}`}
+      data-missing-clip={id}
+    >
+      <div class="video__frame" data-media-open={open ? '' : undefined}>
+        <div class="placeholder" data-media-inner>
+          {placeholder && (
+            <span
+              class:list={['placeholder__glyph', { 'placeholder__glyph--word': placeholder.length > 2 }]}
+              aria-hidden="true"
+            >
+              {placeholder}
+            </span>
+          )}
+          <span class="placeholder__label t-mono">Footage in production</span>
+        </div>
+      </div>
+      {typeof caption === 'string' && <figcaption class="video__caption">{caption}</figcaption>}
+    </figure>
+  )
+}
+
+<style>
+  .video {
+    position: relative;
+    margin: 0;
+  }
+  .video__frame {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--ratio);
+    background: color-mix(in srgb, currentColor 8%, transparent);
+  }
+  .video__inner,
+  .placeholder {
+    position: absolute;
+    inset: 0;
+  }
+  .video__el {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .video--grayscale .video__el {
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.6s linear;
+  }
+
+  /* Fill mode: the frame takes the size of whatever holds it (e.g. a full-screen hero). */
+  .video--fill,
+  .video--fill .video__frame {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+  }
+
+  /* The Pause/Play button: small mono capitals, over the footage's bottom-left corner.
+     The "difference" blend keeps it readable on light and dark footage alike. */
+  .video__toggle {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 2;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 6px 8px;
+    color: var(--paper);
+    mix-blend-mode: difference;
+    border: 1px solid currentColor;
+  }
+  .video__toggle:focus-visible {
+    outline-color: currentColor;
+  }
+  /* Touch screens: a 44px-tall tap area. The extra padding is cancelled out by a negative
+     margin, so the button stays anchored in the same corner. */
+  @media (pointer: coarse) {
+    .video__toggle {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 10px 12px;
+      margin: -4px;
+    }
+  }
+
+  .video__caption {
+    margin-top: 12px;
+    max-width: 48ch;
+    font-size: var(--fs-ui);
+    line-height: 1.4;
+    color: var(--text-2, currentColor);
+  }
+
+  /* The placeholder: the frame's shape, a faint tint, big light type and a small label. */
+  .placeholder {
+    display: grid;
+    place-items: center;
+    container-type: inline-size;
+    border: 1px solid var(--rule);
+  }
+  .placeholder__glyph {
+    font-size: 38cqi;
+    font-weight: var(--fw-light);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    opacity: 0.18;
+  }
+  /* In a full-screen hero the page's own text sits at the bottom left, so the label moves up. */
+  .video--fill .placeholder__label {
+    top: calc(var(--header-height) + 12px);
+    right: var(--margin);
+    bottom: auto;
+    left: auto;
+  }
+  .placeholder__glyph--word {
+    font-size: 12cqi;
+  }
+  .placeholder__label {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    color: var(--text-2, currentColor);
+  }
+</style>

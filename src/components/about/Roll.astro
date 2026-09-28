@@ -1,0 +1,171 @@
+---
+// about/Roll.astro: the whole club. Section 7 of 10 on the About page.
+//
+// Members asked for public credit, so this section names every student in the club: a large
+// roll of all of them, "Name ’YY", sorted by last name and set in columns like the credits of a
+// film, followed by the club's two advisors (the faculty advisor and the alumni advisor).
+// A name is never split: each one stays whole on its line and in its column.
+//
+// Where the names come from: src/data/members.json. Add, remove or correct a member there and
+// this roll follows (the columns re-balance by themselves). Names are formatted and sorted by
+// src/lib/people.ts. No emails or anything else about a student ever appears here.
+//
+// Motion (src/scripts/motion/modules/about-roll.js, asked for with data-about-roll): as the roll
+// scrolls into view, the names rise out of their line masks row by row, a beat apart. Without
+// motion they are simply there.
+import Divider from '../Divider.astro';
+import members from '../../data/members.json';
+import { formatPerson, sortByLastName } from '../../lib/people';
+
+// Every student, sorted by last name, then first name.
+const students = sortByLastName(members.members).map(formatPerson);
+
+// The two advisors, with their roles written after their names.
+const advisors = [
+  { name: members.facultyAdvisor.name, role: members.facultyAdvisor.role },
+  ...members.alumni.map((person) => ({ name: formatPerson(person), role: person.role })),
+];
+
+// How many rows each column layout needs, so the names fill the columns top to bottom
+// (3 columns on laptops, 2 on tablets, 1 on phones).
+const rows3 = Math.ceil(students.length / 3);
+const rows2 = Math.ceil(students.length / 2);
+---
+
+<section class="everyone theme-paper" aria-labelledby="roll-title">
+  <div class="everyone__head grid">
+    <Divider class="everyone__rule" />
+    <h2 id="roll-title" class="everyone__title t-statement" data-reveal="lines">
+      Everyone who makes it happen.
+    </h2>
+    <p class="everyone__count t-mono" data-reveal="lines">
+      {students.length} students, {advisors.length} advisors
+    </p>
+  </div>
+
+  <ul
+    class="everyone__list wrap"
+    style={`--rows-3: ${rows3}; --rows-2: ${rows2}; --rows-1: ${students.length}`}
+    data-about-roll
+  >
+    {
+      students.map((name) => (
+        <li class="everyone__item">
+          <span class="everyone__line" data-about-roll-line>
+            {name}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <ul class="everyone__advisors wrap" data-about-roll>
+    {
+      advisors.map((person) => (
+        <li class="everyone__item">
+          <span class="everyone__line" data-about-roll-line>
+            <span class="everyone__name">{person.name}</span><span class="everyone__sep">, </span><span class="everyone__role">{person.role}</span>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  /* Names are set at the site's name size (--fs-name, 40px on a 1440px-wide laptop), which
+     shrinks on tablets and phones so the longest name still fits its column. */
+  .everyone {
+    --everyone-size: var(--fs-name);
+    padding-block: 0 var(--space-section-lg);
+  }
+  .everyone__head {
+    row-gap: 0;
+    margin-bottom: clamp(56px, 7vw, 112px);
+  }
+  .everyone__head :global(.everyone__rule) {
+    grid-column: 1 / -1;
+    margin-bottom: clamp(20px, 2vw, 28px);
+  }
+  .everyone__title {
+    grid-column: 1 / span 9;
+  }
+  .everyone__count {
+    grid-column: 10 / -1;
+    justify-self: end;
+    align-self: start;
+    margin-top: 0.9em;
+    color: var(--text-2);
+  }
+
+  /* The roll: names flow down the first column, then the next, like a phone book. Each name is
+     its own grid cell, so a name can never be split between two columns, and "nowrap" keeps it
+     on one line. */
+  .everyone__list {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(var(--rows-3), auto);
+    column-gap: var(--gutter);
+  }
+  .everyone__item {
+    font-size: var(--everyone-size);
+    line-height: 1.24;
+    letter-spacing: -0.025em;
+    white-space: nowrap;
+    /* The window each name rises into (motion). It is cut a little larger than the line, so the
+       tails of g, j, p and y are never clipped. */
+    clip-path: inset(-0.12em -0.3em -0.16em -0.3em);
+  }
+  .everyone__line {
+    display: inline-block;
+  }
+
+  /* The advisors, after a gap, in the same size, with their roles in grey. They share the two
+     halves of the grid. */
+  .everyone__advisors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    margin-top: calc(var(--everyone-size) * 1.4);
+  }
+  .everyone__role {
+    color: var(--text-2);
+  }
+
+  /* With motion on, the names wait hidden until about-roll.js has tucked them under their masks. */
+  :global(html.js-motion) [data-about-roll]:not(.is-ready) .everyone__line {
+    visibility: hidden;
+  }
+
+  @media (max-width: 1023px) {
+    .everyone__title {
+      grid-column: 1 / -1;
+    }
+    .everyone__count {
+      grid-column: 1 / -1;
+      justify-self: start;
+      margin-top: 16px;
+    }
+    .everyone__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(var(--rows-2), auto);
+    }
+    .everyone__advisors {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 767px) {
+    .everyone__list {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: repeat(var(--rows-1), auto);
+    }
+    /* On phones each advisor's role drops to its own line, in grey, under the name. */
+    .everyone__sep {
+      display: none;
+    }
+    .everyone__role {
+      display: block;
+    }
+  }
+</style>

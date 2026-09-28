@@ -1,0 +1,32 @@
+---
+// Griffin.astro: the Pomfret School griffin, drawn in the current text color.
+//
+// The artwork is the school's own (see README.md, "Credits"); we only changed its fill so it can
+// be ink on paper or paper on ink. It is decorative next to the words "Pomfret School", so
+// screen readers skip it by default. Pass a label to make it speak, e.g. label="Pomfret School".
+// Used by: Header.astro, Footer.astro, Preloader.astro.
+import GriffinArt from '../assets/brand/griffin.svg';
+
+interface Props {
+  class?: string;
+  // What a screen reader should say. Leave empty when the name is already written beside it.
+  label?: string;
+}
+const { class: className, label } = Astro.props;
+---
+
+<GriffinArt
+  class:list={['griffin', className]}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+/>
+
+<style>
+  .griffin {
+    display: block;
+    height: auto;
+    fill: currentColor;
+  }
+</style>

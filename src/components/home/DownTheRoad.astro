@@ -1,0 +1,121 @@
+---
+// DownTheRoad.astro: "Down the road" (section 6 of the home page), the first paper section.
+//
+// It lists the local businesses the club is working with (two, for now). Each row shows who it
+// is for, one plain line about the chore, and where it stands, with the crimson "in progress"
+// dot. The page turns from ink to paper at this section's top edge, with no fade.
+// Open school cases without a page yet (Case E) are not repeated here: they already stand in
+// the docket above, as an outlined letter marked "In progress".
+//
+// Rules for this section (from the club's client playbook): business names and one plain line
+// only. No logos, no AI words, no contact names, no details of how their business runs, and
+// never a prospect that has not agreed to be listed.
+//
+// Where the facts come from: src/data/clients.json (the businesses).
+// Motion: the heading and each row's text rise line by line (data-reveal, M1) and each row's
+// divider draws itself (Divider, M2).
+import Divider from '../Divider.astro';
+import clients from '../../data/clients.json';
+
+// One row per business, in the order clients.json lists them.
+const rows = clients.items.map((client) => ({
+  name: client.name,
+  place: client.place,
+  line: client.line,
+  status: client.status,
+  stage: client.stage,
+}));
+---
+
+<section class="road theme-paper" aria-labelledby="road-title">
+  <div class="grid road__head">
+    <h2 id="road-title" class="road__title t-statement" data-reveal="lines">Same playbook, off the hilltop.</h2>
+  </div>
+
+  <ul class="road__list">
+    {
+      rows.map((row) => (
+        <li class="road__row grid">
+          <Divider class="road__rule" />
+          <p class="road__name t-label" data-reveal="lines">
+            {row.name}
+            {row.place && <span class="t-secondary">, {row.place}</span>}
+          </p>
+          <p class="road__line t-label" data-reveal="lines">
+            {row.line}
+          </p>
+          <div class="road__status">
+            <p class="t-mono">
+              <span class="status-dot" aria-hidden="true" />
+              {row.status}
+            </p>
+            <p class="road__stage t-ui" data-reveal="lines">
+              {row.stage}
+            </p>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .road {
+    padding-block: var(--space-section) clamp(80px, 9vw, 140px);
+  }
+  .road__title {
+    grid-column: 1 / -1;
+    text-indent: calc((100% + var(--gutter)) * var(--statement-indent) / var(--cols));
+  }
+  .road__list {
+    margin-top: clamp(56px, 7vw, 104px);
+  }
+  .road__row {
+    row-gap: 18px;
+    padding-bottom: clamp(28px, 3vw, 40px);
+  }
+  .road__row :global(.road__rule) {
+    grid-column: 1 / -1;
+  }
+  .road__name {
+    grid-column: 1 / span 4;
+  }
+  .road__line {
+    grid-column: 5 / span 5;
+    max-width: 28ch;
+  }
+  .road__status {
+    grid-column: 10 / -1;
+    display: grid;
+    align-content: start;
+    gap: 8px;
+  }
+  .road__stage {
+    color: var(--text-2);
+    font-weight: var(--fw-light);
+  }
+  @media (max-width: 1023px) {
+    .road__name {
+      grid-column: 1 / span 3;
+    }
+    .road__line {
+      grid-column: 4 / span 3;
+    }
+    .road__status {
+      grid-column: 7 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .road__row {
+      row-gap: 10px;
+    }
+    .road__name,
+    .road__line {
+      grid-column: 1 / -1;
+    }
+    .road__status {
+      grid-column: 1 / -1;
+      margin-top: 6px;
+    }
+  }
+</style>

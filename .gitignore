@@ -1,0 +1,17 @@
+# Installed packages and build output (made again by "npm install" and "npm run build").
+node_modules/
+dist/
+.astro/
+
+# Secrets. This site needs none; if that ever changes, add a placeholder to .env.example.
+.env
+.env.*
+!.env.example
+
+# Computer and editor clutter.
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+.idea/
+.claude/
+*.log

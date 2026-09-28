@@ -1,0 +1,64 @@
+---
+// KeyValue.astro: one labeled row, with a divider line above it.
+//
+// A short label sits on the left (columns 1 to 6) and the value on the right (from column 7),
+// both at 20px. With motion on, the divider draws itself (M2) and both sides rise in line by
+// line (M1). Put the value's text in the default slot. Anything that should not be split into
+// lines, like a link with an arrow, goes in the "after" slot:
+//   <KeyValue label="Makes">A Google Doc for each student.<ArrowLink slot="after" ...>...</KeyValue>
+import Divider from './Divider.astro';
+
+interface Props {
+  label: string;
+  // The label's element: a plain paragraph, or a heading when the row starts a section.
+  labelAs?: 'p' | 'h2' | 'h3';
+  draw?: boolean;
+  class?: string;
+}
+const { label, labelAs: Label = 'p', draw = true, class: className } = Astro.props;
+---
+
+<div class:list={['kv', 'grid', className]}>
+  <Divider draw={draw} class="kv__rule" />
+  <Label class="kv__label t-label" data-reveal="lines">{label}</Label>
+  <div class="kv__value">
+    <p class="t-label" data-reveal="lines"><slot /></p>
+    {Astro.slots.has('after') && <div class="kv__after"><slot name="after" /></div>}
+  </div>
+</div>
+
+<style>
+  .kv {
+    row-gap: 16px;
+    padding-block: 0 clamp(24px, 3vw, 40px);
+  }
+  .kv :global(.kv__rule) {
+    grid-column: 1 / -1;
+  }
+  .kv__label {
+    grid-column: 1 / span 6;
+    font-weight: var(--fw-light);
+  }
+  .kv__value {
+    grid-column: 7 / -1;
+  }
+  .kv__after {
+    margin-top: 20px;
+  }
+  @media (max-width: 1023px) {
+    .kv__label {
+      grid-column: 1 / span 3;
+    }
+    .kv__value {
+      grid-column: 4 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .kv__label {
+      grid-column: 1 / span 2;
+    }
+    .kv__value {
+      grid-column: 3 / -1;
+    }
+  }
+</style>

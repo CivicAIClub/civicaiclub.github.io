@@ -1,0 +1,112 @@
+---
+// cases/[slug].astro: one page per public case, e.g. /cases/autoplanner/.
+//
+// Astro builds one page for every case file in src/content/cases/ that has "public: true"
+// (Case E is not public yet, so it gets no page). The "[slug]" in this file's name is filled in
+// from each case's slug field. Every fact on the page comes from that case file, and every clip
+// from src/data/media.json by its id; nothing here is specific to one case.
+//
+// The page, top to bottom (each part is a component in src/components/case/):
+//   1. CaseHero     "Case A · office · Built by ..." and the case name in huge type on ink,
+//                   then the hero clip in an exhibit frame that grows to full width.
+//   2. CaseChore    the chore, as a big statement with the page's one crimson marker.
+//   3. CaseFix      what the tool does, as labeled rows.
+//   4. Playhead     "How it works": the steps, then the recording you play by scrolling
+//                   ("scroll is the playhead"), with captions at the right moments.
+//   5. CaseFootage  two close-ups in an uneven layout, with written captions.
+//   6. CaseCredits  one sentence saying who built it and for whom, then what it runs on, its
+//                   status, and its links.
+//   7. NextCase     the next case's letter as a window onto its footage (D leads back to A).
+// The page-change styles for the hero (the footage hand-off) are in src/styles/case.css.
+import Base from '../../layouts/Base.astro';
+import CaseHero from '../../components/case/CaseHero.astro';
+import CaseChore from '../../components/case/CaseChore.astro';
+import CaseFix from '../../components/case/CaseFix.astro';
+import Playhead from '../../components/case/Playhead.astro';
+import CaseFootage from '../../components/case/CaseFootage.astro';
+import CaseCredits from '../../components/case/CaseCredits.astro';
+import NextCase from '../../components/case/NextCase.astro';
+import { getPublicCases, getNextCase, caseUrl, type Case } from '../../lib/cases';
+import { stripMarks } from '../../lib/marked';
+import { getClip } from '../../lib/media';
+import '../../styles/case.css';
+
+// Tell Astro which pages to build: one per public case.
+export async function getStaticPaths() {
+  const cases = await getPublicCases();
+  return cases.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+
+interface Props {
+  entry: Case;
+}
+const { entry } = Astro.props;
+const data = entry.data;
+const next = await getNextCase(data.slug);
+
+// The "how it works" steps are the numbered list under the case file's frontmatter
+// ("1. Each student makes a Canvas access token..."). Read each numbered line as one step.
+// Phones fetch the hero's 4:5 still first (it is their largest first picture), and laptops the
+// wide one, so the first screen isn't waiting on it behind the scripts and fonts.
+const heroClip = getClip(data.clips.hero);
+const heroPreload = [
+  heroClip?.mobile?.poster && { href: heroClip.mobile.poster, media: '(max-width: 767px)' },
+  heroClip?.poster && { href: heroClip.poster, media: heroClip.mobile?.poster ? '(min-width: 768px)' : undefined },
+].filter((image): image is { href: string; media: string | undefined } => Boolean(image));
+
+const steps = (entry.body ?? '')
+  .split('\n')
+  .map((line) => line.match(/^\s*\d+\.\s+(.+)$/)?.[1]?.trim())
+  .filter((step): step is string => Boolean(step));
+---
+
+<Base
+  title={data.title}
+  description={`Case ${data.letter}: ${stripMarks(data.chore)}`}
+  current="cases"
+  theme="ink"
+  preloadImages={heroPreload}
+>
+  <CaseHero
+    letter={data.letter}
+    slug={data.slug}
+    title={data.title}
+    office={data.office}
+    team={data.team}
+    clipId={data.clips.hero}
+    focus={data.heroFocus}
+  />
+
+  <CaseChore chore={data.chore} />
+
+  <CaseFix fix={data.fix} rows={data.keyValues} />
+
+  <Playhead letter={data.letter} clipId={data.clips.scrub} beats={data.beats} steps={steps} />
+
+  <CaseFootage ids={[data.clips.detail1, data.clips.detail2]} letter={data.letter} />
+
+  <CaseCredits
+    team={data.team}
+    office={data.office}
+    officeIn={data.officeIn}
+    runsOn={data.runsOn}
+    status={data.status}
+    rows={data.keyValues}
+    repo={data.repo}
+    liveUrl={data.liveUrl}
+  />
+
+  {
+    next && (
+      <NextCase
+        letter={next.data.letter}
+        slug={next.data.slug}
+        title={next.data.title}
+        office={next.data.office}
+        fix={next.data.fix}
+        href={caseUrl(next.data.slug)}
+        clipId={next.data.clips.docket}
+      />
+    )
+  }
+</Base>

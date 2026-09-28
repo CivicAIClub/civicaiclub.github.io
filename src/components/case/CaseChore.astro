@@ -1,0 +1,58 @@
+---
+// CaseChore.astro: "The chore", the problem the client brought, in the site's big statement type.
+//
+// The sentence comes from the case file's "chore" field (src/content/cases/<case>.md). Its first
+// line is pushed in by three columns, and the small mono label "The chore" sits in that gap.
+// The one phrase in [square brackets] gets the page's crimson marker.
+// Motion: the lines rise as the statement scrolls into view (M1), then the marker sweeps in
+// behind the phrase (M5). This section also tells the header to swap its name for the small
+// CIVIC once it reaches the top (data-header-swap), as the reel does on the home page.
+import Statement from '../Statement.astro';
+import MarkedText from '../MarkedText.astro';
+
+interface Props {
+  chore: string;
+}
+const { chore } = Astro.props;
+---
+
+<section class="chore theme-paper" data-header-swap aria-labelledby="chore-title">
+  <div class="chore__grid grid">
+    <h2 id="chore-title" class="chore__label t-mono">The chore</h2>
+    <Statement class="chore__statement">
+      <MarkedText text={chore} />
+    </Statement>
+  </div>
+</section>
+
+<style>
+  .chore {
+    padding-block: var(--space-section) clamp(80px, 10vw, 140px);
+  }
+  /* The label and the statement share the first row: the label in columns 1 to 3, inside the
+     statement's indent, lined up with its first line. */
+  .chore__label {
+    grid-column: 1 / span 3;
+    grid-row: 1;
+    align-self: start;
+    padding-top: calc(var(--fs-statement) * 0.8 - 8px);
+    color: var(--text-2);
+  }
+  .chore__grid > :global(.chore__statement) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  /* Phones: the indent is only one column, so the label sits above the statement instead. */
+  @media (max-width: 767px) {
+    .chore__grid {
+      row-gap: 20px;
+    }
+    .chore__label {
+      grid-column: 1 / -1;
+      padding-top: 0;
+    }
+    .chore__grid > :global(.chore__statement) {
+      grid-row: 2;
+    }
+  }
+</style>

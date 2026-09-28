@@ -1,0 +1,449 @@
+---
+// Glance.astro: "The club at a glance." (section 7 of the home page), on paper.
+//
+// A strip of mixed-size cards: the club's checked numbers (never animated as counters: each
+// number is simply printed, and rises into place with its card), three short clips of the tools
+// (they play while the pointer is over them and rewind at double speed when it leaves), and one
+// live card showing this week the way AutoPlanner labels a student's week ("Week of Sep 21 –
+// Sep 27"), worked out from today's date in the school's time zone.
+// Above the strip: "The club at a glance." and the date the numbers were last checked.
+//
+// How it behaves:
+//   - Laptops with motion on: the strip drifts slowly to the left, stops while the pointer is
+//     over it, can be dragged (it keeps a little momentum), and has a visible Pause button
+//     (src/scripts/motion/modules/home-glance.js). The cards "deal in" when the strip first
+//     comes into view.
+//   - Phones and touch screens: a row you swipe sideways; the clips play while on screen, and
+//     the Pause button stops them (src/scripts/motion/modules/home-glance-clips.js).
+//   - Motion off, or no JavaScript: a plain row that scrolls sideways (with the keyboard's
+//     arrow keys too, once it has focus). Clips wait for their own Play button (or the
+//     browser's controls without JavaScript).
+//
+// Where the facts come from: src/data/numbers.json (every number and the "checked" date),
+// src/data/home.json (which three clips) and src/data/media.json (the clips' files and captions).
+import Divider from '../Divider.astro';
+import numbers from '../../data/numbers.json';
+import home from '../../data/home.json';
+import { getClip } from '../../lib/media';
+import { getAllCases } from '../../lib/cases';
+
+// ---- The live week card ----
+// AutoPlanner labels a week from its Monday to its Sunday, like "Sep 21 – Sep 27". This works
+// out the label for the week a date falls in, in the school's time zone (Pomfret, Connecticut).
+// The page is built ahead of time, so this first label is the build day's week; a small script
+// below updates it to the visitor's today when the page opens.
+function weekLabel(date: Date): string {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).formatToParts(date);
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value);
+  const day = new Date(Date.UTC(get('year'), get('month') - 1, get('day')));
+  const monday = new Date(day);
+  monday.setUTCDate(day.getUTCDate() - ((day.getUTCDay() + 6) % 7));
+  const sunday = new Date(monday);
+  sunday.setUTCDate(monday.getUTCDate() + 6);
+  const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  // No-break spaces inside each date, so a narrow card breaks the line only after the dash.
+  return `${fmt(monday)}\u00a0– ${fmt(sunday)}`.replace(/(\w{3}) (\d)/g, '$1\u00a0$2');
+}
+
+// ---- The cards, in the order they appear ----
+// "tone": an ink card or an outlined paper card. "size": short or tall. "wide": four columns
+// instead of three. Numbers are looked up by their id in numbers.json, so the facts live in one
+// place; a number that is removed there simply disappears here.
+type Card =
+  | { kind: 'number'; id: string; tone: 'ink' | 'line'; size: 'short' | 'tall'; wide?: boolean }
+  | { kind: 'clip'; index: number }
+  | { kind: 'week' };
+const layout: Card[] = [
+  { kind: 'number', id: 'faculty-cases', tone: 'ink', size: 'short' },
+  { kind: 'clip', index: 0 },
+  { kind: 'number', id: 'members', tone: 'line', size: 'tall' },
+  { kind: 'number', id: 'pull-requests', tone: 'ink', size: 'short' },
+  { kind: 'week' },
+  { kind: 'number', id: 'lines-of-code', tone: 'line', size: 'short', wide: true },
+  { kind: 'clip', index: 1 },
+  { kind: 'number', id: 'developers', tone: 'ink', size: 'tall' },
+  { kind: 'number', id: 'business-projects', tone: 'line', size: 'short' },
+  { kind: 'number', id: 'repositories', tone: 'ink', size: 'short' },
+  { kind: 'clip', index: 2 },
+  { kind: 'number', id: 'voices-moments', tone: 'line', size: 'tall' },
+  { kind: 'number', id: 'studio-phases', tone: 'ink', size: 'short' },
+];
+
+// Each clip card also names its case ("Case A · AutoPlanner").
+const cases = await getAllCases();
+const clips = home.glances.map((glance) => {
+  const clip = getClip(glance.media);
+  const entry = cases.find((c) => c.data.slug === glance.case);
+  return clip ? { clip, label: entry ? `Case ${entry.data.letter} · ${entry.data.title}` : '' } : undefined;
+});
+
+const cards = layout
+  .map((card) => {
+    if (card.kind === 'number') {
+      const item = numbers.items.find((n) => n.id === card.id) as
+        | { value: string; label: string; note?: string; source?: string }
+        | undefined;
+      return item ? { ...card, item } : undefined;
+    }
+    if (card.kind === 'clip') return clips[card.index] ? { ...card, ...clips[card.index]! } : undefined;
+    return card;
+  })
+  .filter((card) => card !== undefined);
+
+const AV1 = 'video/mp4; codecs="av01.0.08M.08"';
+---
+
+<section class="glance theme-paper" aria-labelledby="glance-title" data-glance>
+  <div class="grid glance__head">
+    <Divider class="glance__rule" />
+    <h2 id="glance-title" class="glance__title t-label" data-reveal="lines">The club at a glance.</h2>
+    <p class="glance__checked t-mono">{numbers.checkedLabel}</p>
+  </div>
+
+  <!-- The strip. It can take keyboard focus so the arrow keys can move it. -->
+  <div
+    class="glance__viewport"
+    role="region"
+    aria-label="The club at a glance, cards"
+    tabindex="0"
+    data-glance-viewport
+  >
+    <ul class="glance__track" data-glance-track>
+      {
+        cards.map((card) => {
+          if (card.kind === 'number') {
+            return (
+              <li
+                class:list={[
+                  'gl-card',
+                  `gl-card--${card.tone}`,
+                  `gl-card--${card.size}`,
+                  { 'gl-card--wide': card.wide },
+                ]}
+                data-glance-card
+              >
+                <p class="gl-card__value" data-gl-value>
+                  {card.item.value}
+                </p>
+                {/* The label and its note sit on one line of code, so no stray space lands before the comma. */}
+                {/* The source gets a real space before it: "moments since 1894 (Pomfret Voices)". */}
+                <p class="gl-card__label">
+                  {card.item.label}{card.item.note && <span class="gl-card__note">, {card.item.note}</span>}
+                  {card.item.source && <>{' '}<span class="gl-card__note">({card.item.source})</span></>}
+                </p>
+              </li>
+            );
+          }
+          if (card.kind === 'clip') {
+            return (
+              <li class="gl-card gl-card--clip gl-card--wide" data-glance-card>
+                <figure class="gl-clip" data-glance-clip>
+                  <div class="gl-clip__frame">
+                    <video
+                      class="gl-clip__video"
+                      muted
+                      playsinline
+                      loop
+                      controls
+                      preload="none"
+                      poster={card.clip.poster}
+                      width={card.clip.width}
+                      height={card.clip.height}
+                      draggable="false"
+                      aria-describedby={`gl-cap-${card.clip.id}`}
+                    >
+                      {card.clip.av1 && <source src={card.clip.av1} type={AV1} />}
+                      <source src={card.clip.h264} type="video/mp4" />
+                    </video>
+                    <button type="button" class="gl-clip__toggle t-mono" data-glance-toggle hidden>
+                      <span data-glance-toggle-label>Play</span>
+                      <span class="sr-only"> video</span>
+                    </button>
+                  </div>
+                  <figcaption class="gl-clip__text">
+                    <span class="gl-clip__label t-mono">{card.label}</span>
+                    <span id={`gl-cap-${card.clip.id}`} class="gl-clip__caption">
+                      {card.clip.caption}
+                    </span>
+                  </figcaption>
+                </figure>
+              </li>
+            );
+          }
+          return (
+            <li class="gl-card gl-card--ink gl-card--tall gl-card--wide gl-card--week" data-glance-card>
+              <p class="gl-card__kicker t-mono">AutoPlanner, this week</p>
+              <p class="gl-card__value gl-card__value--week" data-gl-value>
+                <span class="gl-card__week-of">Week of</span> <span data-glance-week>{weekLabel(new Date())}</span>
+              </p>
+              <p class="gl-card__label">How AutoPlanner labels every student’s week.</p>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  <div class="grid glance__foot">
+    <button type="button" class="glance__pause t-mono" data-glance-pause hidden>
+      <span data-glance-pause-label>Pause</span><span class="sr-only"> the strip</span>
+    </button>
+    <p class="glance__hint t-mono" aria-hidden="true" data-glance-hint>Scroll sideways</p>
+  </div>
+</section>
+
+<script>
+  // Update the live week card to the visitor's today (the page was built on an earlier day).
+  // Same rule as AutoPlanner: a week runs Monday to Sunday, in the school's time zone, and is
+  // written like "Sep 21 – Sep 27". No animation here, so this is not in src/scripts/motion/.
+  const el = document.querySelector('[data-glance-week]');
+  if (el) {
+    try {
+      // Today's year, month and day in Pomfret, Connecticut.
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+      }).formatToParts(new Date());
+      const get = (type: string) => Number(parts.find((p) => p.type === type)?.value);
+      const today = new Date(Date.UTC(get('year'), get('month') - 1, get('day')));
+      // Step back to that week's Monday (Sunday counts as the end of the week), then on to Sunday.
+      const monday = new Date(today);
+      monday.setUTCDate(today.getUTCDate() - ((today.getUTCDay() + 6) % 7));
+      const sunday = new Date(monday);
+      sunday.setUTCDate(monday.getUTCDate() + 6);
+      const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+      // No-break spaces inside each date, so a narrow card breaks the line only after the dash.
+      el.textContent = `${fmt(monday)}\u00a0– ${fmt(sunday)}`.replace(/(\w{3}) (\d)/g, '$1\u00a0$2');
+    } catch {
+      // A very old browser without time-zone support keeps the label from the build day.
+    }
+  }
+</script>
+
+<style>
+  .glance {
+    container-type: inline-size;
+    padding-block: clamp(40px, 5vw, 80px) clamp(72px, 8vw, 120px);
+    /* One grid column's width, so cards line up with the page grid. */
+    --col: calc((100cqw - 2 * var(--margin) - (var(--cols) - 1) * var(--gutter)) / var(--cols));
+    --narrow: 3;
+    --wide: 4;
+  }
+  @media (max-width: 767px) {
+    .glance {
+      --narrow: 4;
+      --wide: 5;
+    }
+  }
+
+  .glance__head {
+    row-gap: 16px;
+  }
+  .glance__head :global(.glance__rule) {
+    grid-column: 1 / -1;
+  }
+  .glance__title {
+    grid-column: 1 / span 6;
+    font-weight: var(--fw-light);
+  }
+  .glance__checked {
+    grid-column: 7 / -1;
+    justify-self: end;
+    align-self: center;
+    color: var(--text-2);
+  }
+  @media (max-width: 767px) {
+    .glance__title,
+    .glance__checked {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+  }
+
+  /* ---- The strip ---- */
+  /* Without the drift (phones, motion off, no JavaScript) it is a row that scrolls sideways. */
+  .glance__viewport {
+    margin-top: clamp(32px, 3.5vw, 48px);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--margin);
+    scrollbar-width: none;
+  }
+  .glance__viewport::-webkit-scrollbar {
+    display: none;
+  }
+  .glance__viewport:focus-visible {
+    outline-offset: -4px;
+  }
+  .glance__track {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gutter);
+    width: max-content;
+    padding-inline: var(--margin);
+  }
+  /* With the drift on (laptops, motion on), the script moves the cards itself. */
+  .glance:global(.is-drifting) .glance__viewport {
+    overflow: hidden;
+    scroll-snap-type: none;
+    touch-action: pan-y;
+    cursor: grab;
+  }
+  .glance:global(.is-dragging) .glance__viewport {
+    cursor: grabbing;
+    user-select: none;
+  }
+  .glance:global(.is-drifting) .glance__track {
+    padding-inline: 0;
+  }
+
+  /* ---- Cards ---- */
+  .gl-card {
+    --span: var(--narrow);
+    flex: none;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: calc(var(--span) * var(--col) + (var(--span) - 1) * var(--gutter));
+    padding: clamp(16px, 1.6vw, 24px);
+    scroll-snap-align: start;
+  }
+  .gl-card--wide {
+    --span: var(--wide);
+  }
+  .gl-card--short {
+    height: calc(var(--narrow) * var(--col) + (var(--narrow) - 1) * var(--gutter));
+  }
+  .gl-card--tall {
+    height: calc(var(--wide) * var(--col) + (var(--wide) - 1) * var(--gutter));
+  }
+  .gl-card--ink {
+    background: var(--ink);
+    color: var(--paper);
+    --text-2: var(--paper-2);
+    --focus: var(--crimson-on-ink);
+  }
+  .gl-card--line {
+    border: 1px solid var(--rule);
+  }
+  /* The big numbers use the site's figure size (6.6% of the screen width), but never smaller
+     than 48px, so they still read as figures on a phone. */
+  .gl-card__value {
+    font-size: max(var(--fs-figure, 6.6vw), 48px);
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+    font-weight: var(--fw-light);
+    margin-left: -0.04em;
+  }
+  .gl-card__label {
+    font-size: var(--fs-label);
+    line-height: var(--lh-label);
+    letter-spacing: -0.01em;
+    max-width: 16ch;
+  }
+  .gl-card__note {
+    color: var(--text-2);
+  }
+  .gl-card__kicker {
+    color: var(--text-2);
+  }
+  .gl-card__value--week {
+    font-size: var(--fs-statement);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-top: auto;
+    margin-bottom: 20px;
+  }
+  .gl-card__week-of {
+    display: block;
+    font-size: var(--fs-label);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5em;
+    color: var(--text-2);
+  }
+
+  /* The clip cards: a square of footage, then its case and caption underneath. */
+  .gl-card--clip {
+    padding: 0;
+    justify-content: flex-start;
+  }
+  .gl-clip {
+    margin: 0;
+  }
+  .gl-clip__frame {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: color-mix(in srgb, currentColor 8%, transparent);
+  }
+  .gl-clip__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  :global(html:not(.js)) .gl-clip__video {
+    pointer-events: auto;
+  }
+  .gl-clip__toggle {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 6px 8px;
+    color: var(--paper);
+    mix-blend-mode: difference;
+    border: 1px solid currentColor;
+  }
+  .gl-clip__toggle:focus-visible {
+    outline-color: currentColor;
+  }
+  .gl-clip__text {
+    display: grid;
+    gap: 6px;
+    margin-top: 12px;
+    max-width: 44ch;
+  }
+  .gl-clip__caption {
+    font-size: var(--fs-ui);
+    line-height: 1.4;
+    color: var(--text-2);
+  }
+
+  /* ---- Under the strip: the Pause button and a hint ---- */
+  .glance__foot {
+    margin-top: 24px;
+    align-items: center;
+  }
+  .glance__pause {
+    grid-column: 1 / span 2;
+    justify-self: start;
+    min-height: 24px;
+    padding: 6px 8px;
+    border: 1px solid currentColor;
+    letter-spacing: inherit;
+  }
+  .glance__hint {
+    grid-column: 3 / span 4;
+    color: var(--text-2);
+  }
+  @media (max-width: 767px) {
+    .glance__pause {
+      grid-column: 1 / span 3;
+    }
+    .glance__hint {
+      grid-column: 4 / -1;
+      justify-self: end;
+    }
+  }
+</style>

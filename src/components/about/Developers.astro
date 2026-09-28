@@ -1,0 +1,215 @@
+---
+// about/Developers.astro: "+8 developers". Section 6 of 10 on the About page.
+//
+// What it shows: the label "+8 developers" on the left (it stays at the bottom of the window
+// while the list scrolls past) and, on the right, a two-column list of everyone who built a
+// case: each name with its class year ("Luke Ryan ’27") and, in grey underneath, the tool they
+// built. Keke Li appears twice (Pomfret Voices, and the first version of Roster Export), and
+// Jay Youm ’26 appears as the alumni advisor on Roster Export. Each entry links to its case page.
+//
+// Where the names come from: each case's "team" list in src/content/cases/*.md, in case order
+// (A, B, C, D). The "8" comes from src/data/numbers.json.
+//
+// Hover card (screens 1280px and wider, mouse or trackpad only, motion on;
+// src/scripts/motion/modules/about-developers.js): pointing at a name opens a small upright card
+// in columns 1 and 2, beside the list and level with that name, playing that person's case loop
+// (the same clip the home page shows through the case letter), with the case's name under it.
+// The card is decoration: screen readers skip it, and on touch screens it never appears. Its
+// posters are kept in data-poster (not poster), so they are only downloaded when a mouse first
+// comes over the list.
+// The case pages link here with /about/#developers.
+import Divider from '../Divider.astro';
+import numbers from '../../data/numbers.json';
+import { getPublicCases, caseUrl } from '../../lib/cases';
+import { formatPerson } from '../../lib/people';
+import { getClip } from '../../lib/media';
+
+const cases = await getPublicCases();
+
+// One entry per person per case, in credit order. A person with a special role (for example
+// "Alumni advisor") gets it added to the grey line: "Roster Export, alumni advisor".
+const entries = cases.flatMap((entry) =>
+  entry.data.team.map((person) => ({
+    name: formatPerson(person),
+    tool: person.role
+      ? `${entry.data.title}, ${person.role.charAt(0).toLowerCase()}${person.role.slice(1)}`
+      : entry.data.title,
+    slug: entry.data.slug,
+    href: caseUrl(entry.data.slug),
+    card: `Case ${entry.data.letter} · ${entry.data.title}`,
+  }))
+);
+
+// The loops the hover card can play: each case's square "docket" clip (see MEDIA-IDS.md).
+// A case without that clip yet is simply left out, and its names show no card.
+const loops = cases
+  .map((entry) => ({ slug: entry.data.slug, clip: getClip(entry.data.clips.docket) }))
+  .filter((loop) => loop.clip);
+
+const developers = numbers.items.find((item) => item.id === 'developers')?.value ?? '8';
+
+// The codec label for AV1 files; browsers that can't play AV1 use the H.264 file instead.
+const AV1 = 'video/mp4; codecs="av01.0.08M.08"';
+---
+
+<section id="developers" class="devs theme-paper" aria-labelledby="devs-label" data-about-people>
+  <div class="people grid">
+    <h2 id="devs-label" class="people__label t-label">+{developers} developers</h2>
+    <ul class="people__body devs__list">
+      {
+        entries.map((person) => (
+          <li class="dev">
+            <Divider class="dev__rule" />
+            <a
+              class="dev__link"
+              href={person.href}
+              data-about-person={loops.some((loop) => loop.slug === person.slug) ? person.slug : undefined}
+              data-about-person-label={person.card}
+            >
+              <span class="dev__name" data-reveal="lines">
+                {person.name}
+              </span>
+              <span class="dev__tool t-label" data-reveal="lines">
+                {person.tool}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <!-- The hover card. Hidden until the motion code switches it on (mouse devices only). -->
+  <div class="dev-card" aria-hidden="true" data-about-card>
+    <div class="dev-card__frame" data-about-card-frame>
+      <div class="dev-card__media" data-about-card-media>
+        {
+          loops.map(({ slug, clip }) => (
+            <video
+              class="dev-card__video"
+              muted
+              playsinline
+              loop
+              preload="none"
+              data-poster={clip!.poster}
+              width={clip!.width}
+              height={clip!.height}
+              data-about-card-video={slug}
+            >
+              {clip!.av1 && <source src={clip!.av1} type={AV1} />}
+              <source src={clip!.h264} type="video/mp4" />
+            </video>
+          ))
+        }
+      </div>
+    </div>
+    <p class="dev-card__label t-mono" data-about-card-label><span data-about-card-label-text></span></p>
+  </div>
+</section>
+
+<style>
+  .devs {
+    padding-block: 0 var(--space-section-lg);
+  }
+  .devs__list {
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: 0;
+  }
+  .dev {
+    grid-column: span 5;
+  }
+  .dev :global(.dev__rule) {
+    margin-bottom: clamp(18px, 1.8vw, 26px);
+  }
+  .dev__link {
+    display: block;
+    padding-bottom: clamp(40px, 4.4vw, 64px);
+    transition: opacity 0.35s linear;
+  }
+  .dev__name {
+    display: block;
+    font-size: var(--fs-name);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  .dev__tool {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-2);
+  }
+
+  /* Mouse and trackpad: pointing at one entry fades the others back, like Rejouice's tiles
+     dimming under their hover card. */
+  @media (hover: hover) and (pointer: fine) {
+    .devs__list:has(.dev__link:hover) .dev__link:not(:hover) {
+      opacity: 0.32;
+    }
+  }
+
+  /* The hover card: 3:4, beside the list in columns 1 and 2, never catching the pointer. It is
+     exactly two columns and one gap wide (the section spans the whole window, so its width minus
+     the margins and the eleven gaps, divided by twelve, is one column). It stays switched off
+     (display: none) unless the motion code adds "has-card" to this section, and only on screens
+     1280px and wider. */
+  .dev-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    display: none;
+    width: calc((100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 * 2 + var(--gutter));
+    pointer-events: none;
+    will-change: transform;
+  }
+  @media (min-width: 1280px) {
+    :global(.devs.has-card) .dev-card {
+      display: block;
+    }
+  }
+  /* The case's name, in small capitals under the picture. */
+  .dev-card__label {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 10px);
+    white-space: nowrap;
+    opacity: 0;
+  }
+  .dev-card__frame {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--ink);
+    clip-path: inset(50% 50% 50% 50%);
+  }
+  .dev-card__media,
+  .dev-card__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .dev-card__video {
+    object-fit: cover;
+    opacity: 0;
+  }
+
+  @media (max-width: 1023px) {
+    .devs__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--gutter);
+    }
+    .dev {
+      grid-column: auto;
+    }
+  }
+  @media (max-width: 767px) {
+    .devs__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .dev__link {
+      padding-bottom: 32px;
+    }
+  }
+</style>

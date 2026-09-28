@@ -1,0 +1,31 @@
+---
+// CaseFix.astro: "The fix", what the tool does, as labeled rows with a line above each.
+//
+// The first row is "The fix" with the case's one-line summary (the "fix" field of the case
+// file). The rows after it come from the case file's "keyValues" list. Two kinds of row are left
+// out here because the credits at the bottom of the page show them: "Runs on" and "Status".
+// Motion: each line draws itself from the left (M2) and the words rise (M1), as the rows
+// scroll into view (both come with KeyValue.astro).
+import KeyValue from '../KeyValue.astro';
+
+interface Props {
+  fix: string;
+  rows: { key: string; value: string }[];
+}
+const { fix, rows } = Astro.props;
+
+// The rows that belong to the credits instead.
+const CREDIT_KEYS = /^(runs on|status)$/i;
+const shown = rows.filter((row) => !CREDIT_KEYS.test(row.key.trim()));
+---
+
+<section class="fix theme-paper">
+  <KeyValue label="The fix" labelAs="h2" class="fix__lead">{fix}</KeyValue>
+  {shown.map((row) => <KeyValue label={row.key}>{row.value}</KeyValue>)}
+</section>
+
+<style>
+  .fix {
+    padding-bottom: var(--space-section);
+  }
+</style>

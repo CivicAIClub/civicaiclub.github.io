@@ -1,0 +1,381 @@
+---
+// HomeReel.astro: the reel (section 2 of the home page) and its pop-up player.
+//
+// The reel: a 12-second silent loop of the club's tools at work, full screen on laptops and in
+// full color (no dark layer over it), with the word "Casework" in the middle on a solid ink
+// slate. On tablets held upright it takes the footage's own 16:9 shape, and on phones it sits in
+// a 4:5 frame and plays its own taller 4:5 copy of the loop, so nothing important is cut off.
+// A small "Pause" button sits in the bottom-left corner (every loop has one) and "Watch the reel
+// 0:35" in the bottom-right, both on small ink chips so they read over any footage.
+//
+// The whole reel is also a button: clicking it (or pressing Enter on it) opens the player, a
+// full-screen <dialog> that plays the 35-second showreel, one tool at a time. The player has
+// mono Pause, Full screen and Close buttons, a thin line showing how far the video has played
+// (it can be dragged, or moved with the arrow keys), Space to pause or play, and Esc to close.
+// When it closes, the keyboard focus goes back to the reel button.
+//
+// Where the footage comes from: src/data/home.json names the two clips ("home-reel" and
+// "home-showreel"), and src/data/media.json lists their files (see MEDIA-IDS.md). The showreel
+// is only downloaded when someone opens the player.
+//
+// Motion:
+//   - src/scripts/motion/modules/home-reel.js: the footage is enlarged a little and drifts
+//     inside its frame while you scroll (less on phones), and "Casework" rises in.
+//   - src/scripts/motion/modules/home-player.js: opens and closes the player (the page behind
+//     darkens at once, then a sheet rises from the bottom while the video settles from 110% to
+//     its size), and runs its controls. The player works with motion off too; it just opens
+//     without the animation.
+//   - data-header-swap: when this section reaches the top, the header swaps "Civic AI Club /
+//     Pomfret School" for a small CIVIC (modules/header.js).
+//   - data-cursor: mouse users see a trailing "Watch the reel" label.
+// Without JavaScript the reel keeps the browser's own play controls and the player is not shown.
+import Video from '../Video.astro';
+import home from '../../data/home.json';
+import { getClip } from '../../lib/media';
+
+const reel = getClip(home.media.reel);
+const showreel = getClip(home.media.showreel);
+
+// "0:35" for the showreel's length, and "35 seconds" for screen readers.
+const seconds = Math.round(showreel?.duration ?? 0);
+const clock = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+const AV1 = 'video/mp4; codecs="av01.0.08M.08"';
+---
+
+<section id="reel" class="home-reel theme-ink" data-header-swap data-home-reel aria-label="Reel">
+  <div class="home-reel__frame" data-header-solid>
+    <Video id={reel?.id ?? home.media.reel} fill caption={false} class="home-reel__video" />
+    <script is:inline>
+      // Phones get the reel's taller 4:5 copy. Show its own still picture from the very first
+      // paint (instead of the 16:9 one), so nothing jumps when the video starts. 767px matches
+      // the phone copy's media="(max-width: 767px)" in src/components/Video.astro.
+      (function () {
+        var figure = document.currentScript && document.currentScript.previousElementSibling;
+        var video = figure && figure.querySelector('video[data-poster-mobile]');
+        if (video && window.matchMedia('(max-width: 767px)').matches) {
+          video.poster = video.getAttribute('data-poster-mobile');
+        }
+      })();
+    </script>
+
+    <!-- "Casework" in the middle of the reel, on a solid ink slate so it reads over any footage.
+         It is just a title: the button below does the opening. -->
+    <p class="home-reel__title t-statement">
+      <span class="home-reel__slate" data-reel-title>Casework</span>
+    </p>
+
+    {
+      showreel && (
+        <button
+          type="button"
+          class="home-reel__open"
+          aria-haspopup="dialog"
+          aria-controls="reel-player"
+          data-reel-open
+          data-cursor="Watch the reel"
+        >
+          {/* (No spaces between the parts, so screen readers hear "Watch the reel, 35 seconds".) */}
+          <span class="home-reel__cta t-mono">
+            Watch the reel<span aria-hidden="true">{clock}</span><span class="sr-only">, {seconds} seconds</span>
+          </span>
+        </button>
+      )
+    }
+  </div>
+</section>
+
+{
+  showreel && (
+    <dialog id="reel-player" class="player theme-ink" aria-label="Reel player" data-reel-player>
+      {/* The dark layer over the page. It darkens first, in the same moment as the click. */}
+      <div class="player__shade" aria-hidden="true" data-player-shade data-cursor="Close" />
+      {/* The sheet rises from the bottom; everything inside it moves the other way at the same
+          time, so the video and its controls stay still while the sheet uncovers them. */}
+      <div class="player__sheet" data-player-sheet data-cursor="Close">
+        <div class="player__body" data-player-body>
+          <div class="player__frame" data-player-frame data-cursor="Pause">
+            <video
+              class="player__video"
+              muted
+              playsinline
+              preload="none"
+              width={showreel.width}
+              height={showreel.height}
+              aria-describedby="reel-player-caption"
+              data-player-video
+              data-poster={showreel.poster}
+            >
+              {showreel.av1 && <source data-src={showreel.av1} type={AV1} />}
+              <source data-src={showreel.h264} type="video/mp4" />
+            </video>
+          </div>
+
+          <div class="player__bar t-mono">
+            <button type="button" class="player__button" data-player-toggle>
+              <span data-player-toggle-label>Pause</span>
+              <span class="sr-only"> reel</span>
+            </button>
+            <div class="player__progress">
+              <span class="player__track" aria-hidden="true" />
+              <span class="player__played" aria-hidden="true" data-player-played />
+              <input
+                class="player__seek"
+                type="range"
+                min="0"
+                max={showreel.duration}
+                step="0.1"
+                value="0"
+                aria-label="Reel position"
+                aria-valuetext={`0 of ${seconds} seconds`}
+                data-player-seek
+              />
+            </div>
+            <span class="player__time" aria-hidden="true">
+              <span data-player-time>0:00</span> / {clock}
+            </span>
+            <button type="button" class="player__button player__button--full" data-player-full hidden>
+              Full screen
+            </button>
+            <button type="button" class="player__button player__button--close" data-player-close>
+              Close<span class="sr-only"> reel</span>
+            </button>
+          </div>
+          <p id="reel-player-caption" class="sr-only">{showreel.caption}</p>
+        </div>
+      </div>
+    </dialog>
+  )
+}
+
+<style>
+  /* ---- The reel ---- */
+  .home-reel {
+    position: relative;
+    overflow: hidden;
+  }
+  .home-reel__frame {
+    position: relative;
+    height: 100svh;
+    overflow: hidden;
+  }
+  /* Tablets: the frame takes the footage's own 16:9 shape. Phones: the 4:5 copy in a 4:5 frame. */
+  /* The same for tablets held upright up to 1100px wide (an iPad Pro is 1024px): a full-screen
+     frame that tall would show only a narrow slice of the 16:9 footage. */
+  @media (max-width: 1023px), (orientation: portrait) and (max-width: 1100px) {
+    .home-reel__frame {
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+  }
+  @media (max-width: 767px) {
+    .home-reel__frame {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  /* The whole reel is the button that opens the player. It sits above the footage and below
+     the Pause button (which the Video component places at layer 2). */
+  .home-reel__open {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    color: var(--paper);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .home-reel__open:focus-visible {
+    outline-offset: -8px;
+  }
+  .home-reel__title {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--paper);
+    pointer-events: none;
+  }
+  /* The solid ink slate behind "Casework". */
+  .home-reel__slate {
+    display: inline-block;
+    padding: 0.06em 0.35em 0.16em;
+    background: var(--ink);
+  }
+  /* "Watch the reel 0:35" on its own small ink chip, the same size as the Pause chip. */
+  .home-reel__cta {
+    position: absolute;
+    right: var(--margin);
+    bottom: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9em;
+    min-height: 26px;
+    padding: 7px 9px;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  /* Without JavaScript the player can't open, so the button steps aside and the reel keeps the
+     browser's own play controls instead. */
+  :global(html:not(.js)) .home-reel__open {
+    display: none;
+  }
+
+  /* The Video component's Pause button, moved onto the page margin to line up with the grid,
+     on a solid ink chip (instead of its usual see-through "difference" blend). */
+  .home-reel :global(.video__toggle) {
+    left: var(--margin);
+    bottom: 18px;
+    mix-blend-mode: normal;
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  /* ---- The player ---- */
+  .player {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+  .player::backdrop {
+    background: transparent;
+  }
+  .player__shade {
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    opacity: 0.95;
+  }
+  .player__sheet {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: var(--overlay-player);
+  }
+  /* The video is as wide as the page's margins allow, but never so tall that it and the control
+     bar (measured by home-player.js as --player-bar) don't fit on the screen together. On tall
+     screens it also keeps up to 80px of breathing room; on a phone turned sideways, just 12px. */
+  .player__body {
+    width: min(
+      100vw - 2 * var(--margin),
+      (100svh - var(--player-bar, 60px) - clamp(12px, (100svh - 420px) / 4, 80px)) * 16 / 9
+    );
+  }
+  .player__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--paper) 6%, transparent);
+  }
+  .player__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The control bar: Pause, the progress line, the time, Close. */
+  .player__bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto;
+    align-items: center;
+    gap: 20px;
+    margin-top: 18px;
+    color: var(--paper);
+  }
+  .player__button {
+    position: relative;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 6px 8px;
+    border: 1px solid currentColor;
+    text-transform: inherit;
+    letter-spacing: inherit;
+  }
+  /* On touch screens each button answers to a finger-sized area (at least 44px tall) around it,
+     without changing how it looks or where it sits. */
+  @media (pointer: coarse) {
+    .player__button::after {
+      content: '';
+      position: absolute;
+      inset: -9px -4px;
+    }
+  }
+  .player__time {
+    color: var(--paper-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .player__progress {
+    position: relative;
+    height: 24px;
+  }
+  .player__track,
+  .player__played {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+  }
+  .player__track {
+    background: var(--paper);
+    opacity: 0.25;
+  }
+  .player__played {
+    background: var(--hairline);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+  /* The real slider is invisible and sits on top of the line, so it can be dragged and used
+     with the arrow keys; the line underneath shows the position. */
+  .player__seek {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .player__progress:has(.player__seek:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* Phones: the progress line gets a row of its own above the buttons. */
+  @media (max-width: 767px) {
+    .player__body {
+      width: calc(100vw - 2 * var(--margin));
+    }
+    .player__bar {
+      grid-template-columns: auto 1fr auto auto;
+      grid-template-areas:
+        'line line line line'
+        'toggle . full close';
+      row-gap: 12px;
+      column-gap: 12px;
+    }
+    .player__progress {
+      grid-area: line;
+    }
+    .player__bar > [data-player-toggle] {
+      grid-area: toggle;
+    }
+    .player__button--full {
+      grid-area: full;
+    }
+    .player__button--close {
+      grid-area: close;
+    }
+    .player__time {
+      display: none;
+    }
+  }
+</style>

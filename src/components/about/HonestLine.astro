@@ -1,0 +1,45 @@
+---
+// about/HonestLine.astro: the second statement. Section 4 of 10 on the About page.
+//
+// What it shows: the club's honest line about AI, at statement size with its first line pushed
+// in: "The AI is in our workshop, not stamped on your tool. ..." The phrase "not stamped on your
+// tool" gets the page's one crimson marker (motion M5, modules/mark.js), which sweeps in just
+// after the lines have risen (M1, modules/reveal-lines.js).
+//
+// The sentence itself lives in src/data/site.json ("honestAi"), so the wording is changed in
+// one place. This file only finds the marked phrase inside it.
+import Statement from '../Statement.astro';
+import site from '../../data/site.json';
+
+// Split the sentence around the marked phrase. If the phrase is ever reworded in site.json, the
+// sentence still shows in full, just without the marker.
+const phrase = 'not stamped on your tool';
+const text = site.lines.honestAi;
+const at = text.indexOf(phrase);
+const before = at >= 0 ? text.slice(0, at) : text;
+const after = at >= 0 ? text.slice(at + phrase.length) : '';
+---
+
+<section class="honest theme-paper" aria-label="How we use AI">
+  <div class="grid">
+    <Statement class="honest__statement">
+      {before}{at >= 0 && <mark data-mark>{phrase}</mark>}{after}
+    </Statement>
+  </div>
+</section>
+
+<style>
+  .honest {
+    padding-block: 0 var(--space-section-lg);
+  }
+  .honest :global(.honest__statement) {
+    grid-column: 1 / span 11;
+    --span: 11;
+  }
+  @media (max-width: 1023px) {
+    .honest :global(.honest__statement) {
+      grid-column: 1 / -1;
+      --span: var(--cols);
+    }
+  }
+</style>

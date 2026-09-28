@@ -1,0 +1,650 @@
+---
+// Playhead.astro: "How it works", the centerpiece of every case page.
+//
+// The idea is "scroll is the playhead": a real screen recording of the tool (demo data only)
+// that the visitor plays by scrolling. It has two parts:
+//   1. A head: "How it works" in big type, and the case's steps as numbered rows (01), (02)...
+//      (the numbered list under the frontmatter in src/content/cases/<case>.md).
+//   2. The recording. On laptops and desktops with motion on, this part is three screens tall
+//      and its "stage" sticks to the window while you scroll through it. A grey 16:10 window
+//      opens to fill the screen while the footage turns from black and white to color, and the
+//      scroll position picks the moment of the clip that is shown. Captions (the case file's
+//      "beats") rise in the bar under the footage when the playhead passes them, next to a
+//      timecode (for Pomfret Voices, a year counter instead), a small "Case A" tag and a thin
+//      crimson progress line. The case letter (A, B, C, D) stands beside the window and steps
+//      back (shrinking and fading) as the window opens.
+// The moving parts live in src/scripts/motion/modules/case-playhead.js (scrolling, and phones,
+// where the clip simply plays while on screen with a Pause button) and case-player.js (motion
+// off: a still picture with a Play button). Without JavaScript the browser's own video controls
+// appear, and every caption is always written out below the clip with its time.
+//
+// Used by src/pages/cases/[slug].astro. The clip comes from src/data/media.json by its id.
+import Divider from '../Divider.astro';
+import { getClip } from '../../lib/media';
+
+interface Props {
+  // The case letter, shown huge beside the window ("A").
+  letter: string;
+  // The id of the scroll-driven clip in src/data/media.json, e.g. "autoplanner-scrub".
+  clipId?: string;
+  // The captions and the second of the clip each belongs to (the case file's "beats").
+  beats: { t: number; text: string }[];
+  // The "how it works" steps, one sentence each (from the numbered list in the case file).
+  steps: string[];
+}
+const { letter, clipId, beats, steps } = Astro.props;
+const clip = getClip(clipId);
+
+// Pomfret Voices is a timeline: every one of its beats starts with a year ("1894. Pomfret
+// opens..."). When that is true for every beat, the chapter shows a year counter instead of a
+// timecode. The counter always shows the year of the caption on screen (it rolls to the next
+// year as the next caption rises), so the captions in the bar leave their "1894. " off.
+// The written list below keeps every caption whole, year and all.
+const YEAR = /^(\d{4})\.\s+/;
+const yearMode = beats.length > 0 && beats.every((beat) => YEAR.test(beat.text));
+const rows = beats.map((beat) => {
+  const match = beat.text.match(YEAR);
+  return {
+    t: beat.t,
+    year: yearMode && match ? Number(match[1]) : undefined,
+    caption: beat.text,
+    text: yearMode && match ? beat.text.slice(match[0].length) : beat.text,
+  };
+});
+
+// A number of seconds as a timecode: 4.23 becomes "00:04.2". (The motion code writes the same
+// format while the clip moves; see src/scripts/motion/helpers/case-playhead.js.)
+function clock(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const whole = Math.floor(seconds % 60);
+  const tenths = Math.floor((seconds * 10) % 10);
+  return `${String(minutes).padStart(2, '0')}:${String(whole).padStart(2, '0')}.${tenths}`;
+}
+const total = clip ? clock(clip.duration) : '';
+// Step numbers as "(01)", "(02)"...
+const stepNumber = (i: number) => `(${String(i + 1).padStart(2, '0')})`;
+// The same moment read aloud for screen readers, cut to tenths like the timecode: 0.57 becomes
+// "0.5 seconds" (shown as 00:00.5).
+function spoken(seconds: number): string {
+  const tenths = Math.floor(seconds * 10) / 10;
+  return tenths === 1 ? '1 second' : `${tenths} seconds`;
+}
+// A unique id so the video can point at its written description for screen readers.
+const descriptionId = `playhead-description-${letter.toLowerCase()}`;
+---
+
+<section class="playhead theme-ink" aria-labelledby="how-title">
+  <!-- 1. The head: the title on the left, the numbered steps on the right. -->
+  <div class="playhead__head grid">
+    <h2 id="how-title" class="playhead__title t-statement" data-reveal="lines">How it works</h2>
+    <ol class="playhead__steps">
+      {
+        steps.map((step, i) => (
+          <li class="playhead__step">
+            <Divider class="playhead__step-rule" />
+            <span class="playhead__step-number t-mono" aria-hidden="true">
+              {stepNumber(i)}
+            </span>
+            <p class="playhead__step-text t-label" data-reveal="lines">
+              {step}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <!-- 2. The recording. data-playhead switches on the motion code; data-duration is the clip's
+       length in seconds. -->
+  <div
+    class:list={['playhead__track', { 'playhead__track--static': !clip }]}
+    data-playhead={clip ? '' : undefined}
+    data-duration={clip?.duration}
+    data-year-mode={yearMode ? '' : undefined}
+  >
+    <div class="playhead__stage" data-playhead-stage>
+      <!-- The huge case letter. It rises into view, then shrinks as the window opens. -->
+      <span class="playhead__letter" aria-hidden="true" data-playhead-letter>
+        <span class="playhead__letter-inner" data-playhead-letter-inner>{letter}</span>
+      </span>
+
+      <!-- An invisible box with the grey window's starting size and place, so the motion code
+           can measure it. -->
+      <span class="playhead__window" aria-hidden="true" data-playhead-window></span>
+
+      <!-- The screen: the footage, and the Play/Pause button for phones and motion-off. Once it is
+           open it runs under the header, so the header gets its plain ink strip over it
+           (data-header-solid, see src/scripts/site/header-backdrop.js). -->
+      <div class="playhead__screen" data-playhead-screen data-header-solid>
+        {
+          clip ? (
+            <video
+              class="playhead__video"
+              muted
+              playsinline
+              controls
+              preload="none"
+              poster={clip.poster}
+              width={clip.width}
+              height={clip.height}
+              aria-describedby={descriptionId}
+              data-playhead-video
+            >
+              <source src={clip.h264} type="video/mp4" />
+            </video>
+          ) : (
+            <div class="playhead__placeholder">
+              <span class="t-mono">Footage in production</span>
+            </div>
+          )
+        }
+        {
+          clip && (
+            <button type="button" class="playhead__toggle t-mono" data-playhead-toggle hidden>
+              <span data-playhead-toggle-label>Play</span>
+              <span class="sr-only"> the recording</span>
+            </button>
+          )
+        }
+      </div>
+
+      <!-- The bar under the footage: the progress line, the rising captions, the timecode (or
+           year) and the "Demo data" label. The written list below says the same for screen
+           readers, so the bar is hidden from them. -->
+      {
+        clip && (
+          <div class="playhead__bar" aria-hidden="true">
+            <span class="playhead__progress" data-playhead-progress />
+            <div class="playhead__captions">
+              <p class="playhead__caption playhead__caption--hint" data-playhead-hint>
+                Scroll to play
+              </p>
+              {rows.map((row) => (
+                <p class="playhead__caption" data-playhead-caption>
+                  {row.text}
+                </p>
+              ))}
+            </div>
+            <div class="playhead__readout">
+              {yearMode ? (
+                <p class="playhead__year" data-playhead-year>
+                  {rows[0]?.year}
+                </p>
+              ) : (
+                <p class="playhead__clock t-mono">
+                  <span data-playhead-clock>{clock(0)}</span> / {total}
+                </p>
+              )}
+              <p class="playhead__tag t-mono">Case {letter}</p>
+              {clip.demoData && <p class="playhead__demo t-mono">Demo data</p>}
+            </div>
+          </div>
+        )
+      }
+    </div>
+
+    {clip && <p id={descriptionId} class="sr-only">{clip.caption}</p>}
+
+    <!-- Every caption, written out with its moment in the clip. Always there for screen readers;
+         shown on screen when motion is off (or JavaScript is), where the current one lights up
+         while the clip plays. -->
+    {
+      rows.length > 0 && (
+        <ol class="playhead__beats" aria-label="What the recording shows">
+          {rows.map((row) => (
+            <li class="playhead__beat" data-beat data-t={row.t} data-year={row.year}>
+              <span class="playhead__beat-time t-mono" aria-hidden="true">
+                {clock(row.t)}
+              </span>
+              <span class="sr-only">At {spoken(row.t)}:</span>
+              <span class="playhead__beat-text">{row.caption}</span>
+            </li>
+          ))}
+        </ol>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .playhead {
+    padding-top: clamp(80px, 11vw, 160px);
+  }
+
+  /* ---- 1. The head ------------------------------------------------------------------------ */
+  .playhead__head {
+    row-gap: 48px;
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .playhead__title {
+    grid-column: 1 / span 6;
+    align-self: start;
+  }
+  /* The steps sit on the columns from 7 to 12. Each row: a line above, the number in the first
+     of those columns, the sentence across the other five. */
+  .playhead__steps {
+    grid-column: 7 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: 28px;
+  }
+  .playhead__step {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: 16px;
+  }
+  .playhead__step :global(.playhead__step-rule) {
+    grid-column: 1 / -1;
+  }
+  .playhead__step-number {
+    grid-column: 1;
+    padding-top: 0.45em;
+    color: var(--text-2);
+  }
+  .playhead__step-text {
+    grid-column: 2 / -1;
+    max-width: 34ch;
+  }
+
+  /* ---- 2. The recording, still version (motion off, no JavaScript, and the base for phones) --
+     The letter on the left, the clip on columns 7 to 12, the bar and the written list below. */
+  .playhead__track {
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    column-gap: var(--gutter);
+    padding-inline: var(--margin);
+    padding-bottom: clamp(80px, 11vw, 160px);
+  }
+  /* The stage's pieces take part in the track's grid directly. */
+  .playhead__stage {
+    display: contents;
+  }
+  .playhead__letter {
+    /* The letter is exactly as tall as the clip beside it: the clip is six columns wide at
+       16:9, and a capital letter is 0.7 of the type size (Host Grotesk). "text-box" trims the
+       letter's box to the capital's top and the baseline, so it lines up with the clip. */
+    --clip-h: calc((50cqw - var(--gutter) / 2) * 0.5625);
+    grid-column: 1 / span 5;
+    grid-row: 1;
+    align-self: end;
+    display: block;
+    font-size: calc(var(--clip-h) / 0.7);
+    font-weight: var(--fw-light);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-box: trim-both cap alphabetic;
+    /* The window the letter rises into: a little larger than the letter, so nothing is cut. */
+    clip-path: inset(-12% -8% -6% -8%);
+  }
+  .playhead__letter-inner {
+    display: block;
+  }
+  .playhead__window {
+    display: none;
+  }
+  .playhead__screen {
+    position: relative;
+    grid-column: 7 / -1;
+    grid-row: 1;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #1b1b1a;
+  }
+  .playhead__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .playhead__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--rule);
+    color: var(--text-2);
+  }
+  /* The Play/Pause button: small mono capitals on an ink chip over the clip's bottom-left
+     corner, readable on any footage (like the hero's Pause button). */
+  .playhead__toggle {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 2;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 6px 8px;
+    color: var(--paper);
+    background: var(--ink);
+    border: 1px solid currentColor;
+  }
+  .playhead__toggle:focus-visible {
+    outline-color: currentColor;
+  }
+
+  .playhead__bar {
+    position: relative;
+    grid-column: 7 / -1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--gutter);
+    align-items: start;
+    padding-top: 14px;
+  }
+  /* A faint full-width line with the crimson progress line on top of it. */
+  .playhead__bar::before,
+  .playhead__progress {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+  .playhead__bar::before {
+    background: currentColor;
+    opacity: var(--rule-opacity);
+  }
+  .playhead__progress {
+    background: var(--hairline);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+  /* The rising captions are only used while the clip moves (see the motion rules below). */
+  .playhead__captions {
+    display: none;
+  }
+  .playhead__readout {
+    grid-column: 2;
+    display: grid;
+    justify-items: end;
+    row-gap: 6px;
+    text-align: right;
+  }
+  .playhead__clock,
+  .playhead__year {
+    font-variant-numeric: tabular-nums;
+  }
+  .playhead__year {
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    letter-spacing: var(--ls-mono);
+  }
+  .playhead__demo {
+    color: var(--text-2);
+  }
+  /* "Case A": the case's name tag in the bar, so the letter can step back over the footage. */
+  .playhead__tag {
+    color: var(--text);
+  }
+
+  /* The written list of captions: the moment on the left (mono), the sentence on the right. */
+  .playhead__beats {
+    grid-column: 7 / -1;
+    grid-row: 3;
+    margin-top: 28px;
+    display: grid;
+    row-gap: 10px;
+  }
+  .playhead__beat {
+    display: grid;
+    grid-template-columns: 9ch minmax(0, 1fr);
+    column-gap: var(--gutter);
+    align-items: baseline;
+    color: var(--text-2);
+  }
+  .playhead__beat-time {
+    font-variant-numeric: tabular-nums;
+  }
+  .playhead__beat-text {
+    font-size: var(--fs-label);
+    line-height: var(--lh-label);
+  }
+  /* While the clip plays with motion off, the caption for the current moment is lit up. */
+  .playhead__beat:global(.is-current) {
+    color: var(--text);
+  }
+
+  /* Tablets: the letter takes three of the eight columns, the clip the other five. */
+  @media (max-width: 1023px) {
+    .playhead__title,
+    .playhead__steps {
+      grid-column: 1 / -1;
+    }
+    .playhead__letter {
+      --clip-h: calc((62.5cqw - var(--gutter) * 0.375) * 0.5625);
+      grid-column: 1 / span 3;
+      font-size: min(calc(var(--clip-h) / 0.7), 30cqw);
+    }
+    .playhead__screen,
+    .playhead__bar,
+    .playhead__beats {
+      grid-column: 4 / -1;
+    }
+  }
+
+  /* Phones: one column. The letter, then the clip, the bar and the list. */
+  @media (max-width: 767px) {
+    .playhead__head {
+      row-gap: 32px;
+    }
+    .playhead__steps {
+      row-gap: 20px;
+    }
+    .playhead__step-number {
+      padding-top: 0.3em;
+    }
+    .playhead__letter {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      font-size: 48cqw;
+      margin-bottom: 24px;
+    }
+    .playhead__screen {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    .playhead__bar {
+      grid-column: 1 / -1;
+      grid-row: 3;
+    }
+    .playhead__beats {
+      grid-column: 1 / -1;
+      grid-row: 4;
+    }
+    .playhead__beat {
+      grid-template-columns: 8ch minmax(0, 1fr);
+    }
+  }
+
+  /* ---- 3. Motion on (html.js-motion): phones and tablets --------------------------------------
+     The clip plays by itself while on screen. The written list stays for screen readers only,
+     and the bar shows one caption at a time instead, rising in as the clip reaches it. */
+  :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__beats {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  :global(html.js-motion) .playhead__captions {
+    display: block;
+    position: relative;
+    grid-column: 1;
+    /* Room for a caption of up to two lines. */
+    min-height: calc(2 * 1.2em);
+    font-size: var(--fs-label);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  :global(html.js-motion) .playhead__caption {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+  }
+  /* Captions and the letter wait out of sight until the motion code has set them up (class
+     "is-live"), so nothing flashes before they rise. */
+  :global(html.js-motion) .playhead__track:not(.is-live) .playhead__caption,
+  :global(html.js-motion) .playhead__track:not(.is-live) .playhead__letter-inner {
+    visibility: hidden;
+  }
+  :global(html.js-motion) .playhead__caption--hint {
+    color: var(--text-2);
+  }
+  /* The hint "Scroll to play" is only for the scroll-driven version below. */
+  :global(html.js-motion) .playhead__track:not(.is-scrub) .playhead__caption--hint {
+    display: none;
+  }
+
+  /* Touch screens 768px and wider (tablets): the clip plays by itself while on screen, shown in
+     its open end state: across all the columns and in color, with no big letter beside it (the
+     "Case A" tag in the bar names the case). */
+  @media (min-width: 768px) and (hover: none), (min-width: 768px) and (pointer: coarse) {
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__letter {
+      display: none;
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__screen,
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__bar {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ---- 4. Motion on, laptops and desktops: scroll is the playhead -----------------------------
+     The track becomes three screens tall and its stage sticks to the window. Everything that
+     moves reads two numbers the motion code sets on the stage while you scroll:
+       --open  0 → 1  the window opening to fill the screen (and the color coming in),
+     and the letter's rise, which the motion code plays when the chapter comes into view.
+     The window's position is worked out here from the grid: six columns wide (7 to 12), 16:10,
+     centered in the space above the bar. "cqw" and "cqh" are percentages of the stage's own
+     width and height. */
+  @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) {
+      display: block;
+      height: 300vh;
+      padding: 0;
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__stage {
+      --open: 0;
+      display: block;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      height: 100svh;
+      overflow: hidden;
+      container-type: size;
+      /* The bar under the footage: at least 128px, more when the window is taller than 16:9. */
+      --bar-h: max(128px, calc(100cqh - 56.25cqw));
+      /* The window at the start: columns 7 to 12, 16:10, centered above the bar. */
+      --win-w: calc((100cqw - 2 * var(--margin) + var(--gutter)) / 2 - var(--gutter));
+      --win-h: calc(var(--win-w) * 0.625);
+      --win-x: calc(100cqw - var(--margin) - var(--win-w));
+      --win-y: calc((100cqh - var(--bar-h) - var(--win-h)) / 2);
+      /* How far the window's center sits from the screen's center (the footage starts there). */
+      --win-dx: calc(var(--win-x) + var(--win-w) / 2 - 50cqw);
+      --shut: calc(1 - var(--open));
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: var(--bar-h);
+      aspect-ratio: auto;
+      /* The window: cut from the full screen, and opened as --open goes from 0 to 1. */
+      clip-path: inset(
+        calc(var(--win-y) * var(--shut)) calc(var(--margin) * var(--shut)) calc(var(--win-y) * var(--shut))
+          calc(var(--win-x) * var(--shut))
+      );
+    }
+    /* The footage itself: at the start it is shrunk to fit the window (--z0, measured by the
+       motion code) and moved to the window's center; it grows back to full size as the window
+       opens, while black and white turns to color. */
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__video {
+      transform: translateX(calc(var(--win-dx) * var(--shut)))
+        scale(calc(var(--z0, 1) + (1 - var(--z0, 1)) * var(--open)));
+      filter: grayscale(var(--shut));
+    }
+    /* The letter: exactly as tall as the window and level with it, on the left margin. As the
+       window opens it steps back: it shrinks a little towards its bottom left corner and fades
+       out before the footage reaches it (gone by the time the window is half open), so no text
+       ever sits on the footage. The "Case A" tag in the bar below keeps the name of the case. */
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__letter {
+      position: absolute;
+      left: var(--margin);
+      top: var(--win-y);
+      font-size: calc(var(--win-h) / 0.7);
+      z-index: 2;
+      transform-origin: 0 100%;
+      transform: scale(calc(1 - 0.3 * var(--open)));
+      opacity: max(0, calc(1 - 2.2 * var(--open)));
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: var(--bar-h);
+      display: grid;
+      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+      column-gap: var(--gutter);
+      align-items: end;
+      padding: 0 var(--margin) 28px;
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__captions {
+      grid-column: 1 / span 8;
+      height: calc(2 * 1.1em);
+      min-height: 0;
+      font-size: clamp(24px, 2.5vw, 36px);
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__caption {
+      top: auto;
+      bottom: 0;
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__readout {
+      grid-column: 10 / -1;
+      justify-self: end;
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__year {
+      font-family: var(--font-sans);
+      font-size: clamp(24px, 2.5vw, 36px);
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+    }
+    /* The invisible measuring box sits exactly where the window starts. */
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__window {
+      display: block;
+      position: absolute;
+      top: var(--win-y);
+      left: var(--win-x);
+      width: var(--win-w);
+      height: var(--win-h);
+      visibility: hidden;
+      pointer-events: none;
+    }
+    /* No Play/Pause button: scrolling is the control. */
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__toggle {
+      display: none;
+    }
+  }
+
+  /* Tablets with a mouse or trackpad (768 to 1023px, 8 columns): the same, on fewer columns. */
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__stage {
+      --win-w: calc((100cqw - 2 * var(--margin) - 7 * var(--gutter)) / 8 * 5 + 4 * var(--gutter));
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__captions {
+      grid-column: 1 / span 6;
+    }
+    :global(html.js-motion) .playhead__track:not(.playhead__track--static) .playhead__readout {
+      grid-column: 7 / -1;
+    }
+  }
+</style>

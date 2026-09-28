@@ -1,0 +1,12 @@
+{
+  "_note": "The home page's footage. Every value under a \"media\" key is a clip id in src/data/media.json (see MEDIA-IDS.md); npm run check:media lists any that are missing. The reel is a 12 s loop (its end joins its start without a jump) with a 4:5 phone copy built in (its \"mobile\" entry), so pages just use <Video id=\"home-reel\" />. The showreel is 35 s, title-free and not a loop: load it only when someone opens the reel player (it is not counted in the 8 MB home budget). The glances are 1:1 loops for the \"at a glance\" strip, each from the case named next to it. Each case's docket clip comes from its case file (clips.docket).",
+  "media": {
+    "reel": "home-reel",
+    "showreel": "home-showreel"
+  },
+  "glances": [
+    { "media": "glance-1", "case": "autoplanner" },
+    { "media": "glance-2", "case": "music-studio" },
+    { "media": "glance-3", "case": "pomfret-voices" }
+  ]
+}

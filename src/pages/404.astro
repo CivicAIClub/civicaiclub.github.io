@@ -1,0 +1,154 @@
+---
+// 404.astro: the page shown for an address that doesn't exist on the site.
+// GitHub Pages serves the built 404.html for any unknown address.
+//
+// One ink screen, like an empty slot in the home page's docket of cases:
+//   - a huge question mark drawn as a thin 1px outline, like the docket's open Case E (the same
+//     traced letters, from src/components/home/docket-letters.json; if that file or its "?" is
+//     missing, a typed "?" in light type takes its place),
+//   - a small mono "Error 404" and "No case filed here." in statement type,
+//   - the cases that do exist, as small mono links (read from the case files, so a new case
+//     shows up here by itself), and "Back to the cases ←", which goes to the list of cases on the
+//     home page.
+// Motion, all through data attributes (see MOTION.md): the question mark's frame opens from the
+// top (M3), the sentence rises out of its masks from 0.2s (M1), the case links roll on hover (M6)
+// and the back link's arrow swaps (M7).
+import Base from '../layouts/Base.astro';
+import Statement from '../components/Statement.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import RollLink from '../components/RollLink.astro';
+import { getPublicCases, caseUrl } from '../lib/cases';
+
+// The traced "?" outline, if the file and the letter are there ("import.meta.glob" quietly finds
+// nothing when the file is missing, instead of stopping the build).
+interface Outline {
+  d: string;
+  width: number;
+  top: number;
+  bottom: number;
+}
+const found = import.meta.glob<{ default: { letters: Record<string, Outline> } }>(
+  '../components/home/docket-letters.json',
+  { eager: true }
+);
+const mark = Object.values(found)[0]?.default?.letters?.['?'];
+// The outline's box in its own units, with a little room so the 1px line is never cut.
+const box = mark ? { x: -8, y: mark.top - 8, w: mark.width + 16, h: mark.bottom - mark.top + 16 } : null;
+
+// Every case with its own page, A to D, as "Case A · AutoPlanner".
+const cases = (await getPublicCases()).map((entry) => ({
+  href: caseUrl(entry.data.slug),
+  label: `Case ${entry.data.letter} · ${entry.data.title}`,
+}));
+---
+
+<Base title="Not found" description="There is no page at this address." theme="ink" noindex>
+  <section class="missing theme-ink" aria-labelledby="missing-title">
+    <!-- The question mark: decoration only, so screen readers skip it. -->
+    <div class="missing__mark" aria-hidden="true" data-media-open>
+      <div class="missing__mark-inner" data-media-inner>
+        {
+          box && mark ? (
+            <svg class="missing__outline" viewBox={`${box.x} ${box.y} ${box.w} ${box.h}`} focusable="false">
+              <path d={mark.d} vector-effect="non-scaling-stroke" />
+            </svg>
+          ) : (
+            <span class="missing__typed">?</span>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="missing__foot grid">
+      <p class="missing__code t-mono">Error 404</p>
+      <Statement as="h1" id="missing-title" class="missing__title" indent={false} revealOn="intro" delay={0.2}>
+        No case filed here.
+      </Statement>
+      <nav class="missing__nav" aria-label="Cases">
+        <ul class="missing__cases t-mono">
+          {
+            cases.map((item) => (
+              <li>
+                <RollLink href={item.href} label={item.label} />
+              </li>
+            ))
+          }
+        </ul>
+        <p class="missing__back t-label">
+          <ArrowLink href="/#cases" dir="left">Back to the cases</ArrowLink>
+        </p>
+      </nav>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .missing {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    row-gap: 48px;
+    padding-top: calc(var(--header-height) + clamp(24px, 4vh, 48px));
+    padding-bottom: clamp(24px, 3vw, 40px);
+    overflow: hidden;
+  }
+  /* The question mark: as tall as about half the screen, on the left margin. */
+  .missing__mark {
+    margin-left: var(--margin);
+    height: clamp(220px, 48vh, 520px);
+    width: fit-content;
+  }
+  .missing__mark-inner {
+    height: 100%;
+  }
+  .missing__outline {
+    display: block;
+    height: 100%;
+    width: auto;
+    overflow: visible;
+  }
+  .missing__outline path {
+    fill: none;
+    stroke: var(--paper);
+    stroke-width: 1px;
+  }
+  .missing__typed {
+    display: block;
+    font-size: clamp(220px, 48vh, 520px);
+    font-weight: var(--fw-light);
+    line-height: 0.75;
+    letter-spacing: -0.04em;
+  }
+
+  .missing__foot {
+    row-gap: 20px;
+    align-items: end;
+  }
+  .missing__code {
+    grid-column: 1 / -1;
+    color: var(--text-2);
+  }
+  .missing__foot > :global(.missing__title) {
+    grid-column: 1 / span 7;
+  }
+  /* The case links and the way back, on the right. */
+  .missing__nav {
+    grid-column: 9 / -1;
+    display: grid;
+    row-gap: 20px;
+    justify-items: start;
+  }
+  .missing__cases {
+    display: grid;
+    row-gap: 4px;
+    list-style: none;
+  }
+  @media (max-width: 1023px) {
+    .missing__foot > :global(.missing__title),
+    .missing__nav {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -1,0 +1,135 @@
+---
+// about/Lead.astro: "Leadership". Section 5 of 10 on the About page.
+//
+// What it shows: the label "Leadership" on the left (it stays at the bottom of the window while
+// this section scrolls past), and on the right, in large type, the club lead's name and class
+// year with one line on what the lead does and a link to their GitHub profile; then the vice
+// president's name and class year with their title; then the club's faculty advisor. There are
+// no portraits: the club has none, and this site never invents one.
+//
+// Where the names come from: src/data/members.json ("lead", "vicePresident" and
+// "facultyAdvisor"). Each name is printed as "Name ’YY" by src/lib/people.ts, like every name
+// on the site. To change who holds a role, change the name in members.json, not here.
+// Motion: the lines rise into place as they scroll in (M1, data-reveal="lines") and the divider
+// draws (M2). The GitHub link uses the arrow swap on hover (M7, in ArrowLink.astro).
+import Divider from '../Divider.astro';
+import ArrowLink from '../ArrowLink.astro';
+import members from '../../data/members.json';
+import { formatPerson } from '../../lib/people';
+
+// Find a person in the member list by name, so their class year is printed with them.
+// If the name isn't in the list, print the name on its own.
+function named(name: string | undefined): string {
+  if (!name) return '';
+  const person = members.members.find((entry) => entry.name === name);
+  return person ? formatPerson(person) : name;
+}
+
+// The club lead and the vice president.
+const leadName = named(members.lead);
+const vicePresidentName = named(members.vicePresident);
+
+// The lead's public GitHub profile (their own account; no email is ever shown).
+const leadGithub = 'https://github.com/CaydenAuyang';
+// Screen readers hear the link as "Cayden’s GitHub", so it isn't confused with the club's own
+// GitHub link in the footer. The page itself just shows "GitHub".
+const leadFirstName = members.lead.split(' ')[0];
+---
+
+<section class="lead theme-paper" aria-labelledby="lead-label">
+  <div class="people grid">
+    <Divider class="people__rule" />
+    <h2 id="lead-label" class="people__label t-label">Leadership</h2>
+    <div class="people__body lead__body">
+      <!-- The club lead: name, what they do, and their GitHub. -->
+      <p class="lead__name" data-reveal="lines">{leadName}</p>
+      <div class="lead__about">
+        <p class="t-label" data-reveal="lines">
+          Club lead. Sits in on every discovery call, assigns the cases, reviews the pull requests,
+          runs the demos.
+        </p>
+        <ArrowLink href={leadGithub} external class="lead__link t-label"
+          ><span class="sr-only">{leadFirstName}’s </span>GitHub</ArrowLink
+        >
+      </div>
+
+      <!-- The vice president: name and title. Left out if members.json has no vice president. -->
+      {
+        vicePresidentName && (
+          <>
+            <p class="lead__name lead__name--second" data-reveal="lines">
+              {vicePresidentName}
+            </p>
+            <div class="lead__about">
+              <p class="t-label" data-reveal="lines">
+                Vice President.
+              </p>
+            </div>
+          </>
+        )
+      }
+
+      <!-- The faculty advisor, on the right beside the last title (below it on smaller screens). -->
+      <dl class="lead__advisor t-label">
+        <dt class="t-secondary" data-reveal="lines">{members.facultyAdvisor.role}</dt>
+        <dd data-reveal="lines">{members.facultyAdvisor.name}</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lead {
+    padding-block: 0 var(--space-section-lg);
+  }
+  /* The body uses the page's own columns (a "subgrid"), so its pieces line up with the grid. */
+  .lead__body {
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: clamp(40px, 5vw, 72px);
+  }
+  /* Each leader's name at the size of a case name (--fs-case-hero). */
+  .lead__name {
+    grid-column: 1 / -1;
+    font-size: var(--fs-case-hero);
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+    font-weight: var(--fw-light);
+    white-space: nowrap;
+  }
+  /* A little extra space above the second name, so the two people read as separate entries. */
+  .lead__name--second {
+    margin-top: clamp(16px, 3vw, 48px);
+  }
+  .lead__about {
+    grid-column: 1 / span 4;
+  }
+  .lead__about :global(.lead__link) {
+    margin-top: 20px;
+  }
+  .lead__advisor {
+    grid-column: 7 / -1;
+    align-self: start;
+  }
+  .lead__advisor dd {
+    margin: 0;
+  }
+
+  @media (max-width: 1023px) {
+    .lead__about {
+      grid-column: 1 / span 5;
+    }
+    .lead__advisor {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    /* On phones a case name may wrap, but a person's name stays on one line, so it is smaller. */
+    .lead__name {
+      font-size: 10.6vw;
+    }
+    .lead__about {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

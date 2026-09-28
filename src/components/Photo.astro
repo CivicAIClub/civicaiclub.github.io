@@ -1,0 +1,124 @@
+---
+// Photo.astro: shows one photo (not a video), asked for by its id, e.g. the club photo on About.
+//
+// How to use it:  <Photo id="about-club-photo" sizes="(min-width: 1024px) 58vw, 100vw" />
+// The id is looked up in src/data/media.json, where a photo is an entry with "kind": "image".
+// That entry lists the same photo in several widths (800, 1600, 2400 px) and formats (AVIF, WebP,
+// JPEG). This component writes a <picture> that offers all of them, and the visitor's browser
+// downloads only the one that suits its screen: AVIF if it can (smallest), else WebP, else JPEG.
+// "sizes" tells the browser how wide the photo will be on the page, so it can pick the right file.
+//
+// A photo that also has a black-and-white set ("bw" in its files) shows it with tone="bw".
+// Use bare={true} when the photo already sits inside a <figure> of its own (with its own
+// caption): then only the <picture> is written, so there is never a figure inside a figure.
+// If the id is not in media.json, nothing is shown (and "npm run check:media" lists the id).
+import { getImage } from '../lib/media';
+
+interface Props {
+  // The photo's id in src/data/media.json.
+  id: string;
+  // How wide the photo is shown, in CSS terms. Defaults to the full width of the window.
+  sizes?: string;
+  // "bw" shows the black-and-white set instead of the color one (when the photo has one).
+  tone?: 'color' | 'bw';
+  // Replace the caption from media.json, or pass false to show none.
+  caption?: string | false;
+  // Load straight away (only for a photo at the very top of a page). Others wait until needed.
+  priority?: boolean;
+  // Write only the picture, without a <figure> around it (the page supplies its own figure).
+  bare?: boolean;
+  class?: string;
+}
+
+const { id, sizes = '100vw', tone = 'color', caption, priority = false, bare = false, class: className } = Astro.props;
+const image = getImage(id);
+
+// Warn the person running "npm run dev" when a page asks for a photo that isn't listed yet.
+if (!image && import.meta.env.DEV) {
+  console.warn(`[Photo] "${id}" is not in src/data/media.json; nothing is shown.`);
+}
+
+// The files for one tone, grouped by format: { avif: { "800": "/media/...", ... }, webp: ..., jpg: ... }.
+type FileSet = Record<string, Record<string, string>>;
+const allFiles = (image?.files ?? {}) as Record<string, unknown>;
+const files = (tone === 'bw' && allFiles.bw ? allFiles.bw : allFiles) as FileSet;
+
+// Turn one format's files into a "srcset": "path-800 800w, path-1600 1600w, ...", smallest first.
+function srcset(byWidth: Record<string, string> | undefined): string | undefined {
+  if (!byWidth || typeof byWidth !== 'object') return undefined;
+  return Object.entries(byWidth)
+    .filter(([width, path]) => /^\d+$/.test(width) && typeof path === 'string')
+    .sort(([a], [b]) => Number(a) - Number(b))
+    .map(([width, path]) => `${path} ${width}w`)
+    .join(', ');
+}
+
+// The JPEG set is the last resort for very old browsers; its largest file is also the plain
+// "src" that any browser can fall back on.
+const jpgSet = srcset(files.jpg);
+const jpgWidths = Object.keys(files.jpg ?? {}).filter((w) => /^\d+$/.test(w)).map(Number);
+const fallback = jpgWidths.length ? files.jpg[String(Math.max(...jpgWidths))] : undefined;
+const captionText = caption === false ? undefined : (caption ?? (image?.caption as string | undefined));
+---
+
+{
+  image && fallback && bare && (
+    <picture class:list={['photo', className]}>
+      {files.avif && <source type="image/avif" srcset={srcset(files.avif)} sizes={sizes} />}
+      {files.webp && <source type="image/webp" srcset={srcset(files.webp)} sizes={sizes} />}
+      <img
+        src={fallback}
+        srcset={jpgSet}
+        sizes={sizes}
+        width={image.width}
+        height={image.height}
+        alt={image.alt}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+    </picture>
+  )
+}
+{
+  image && fallback && !bare && (
+    <figure class:list={['photo', className]}>
+      <picture>
+        {files.avif && <source type="image/avif" srcset={srcset(files.avif)} sizes={sizes} />}
+        {files.webp && <source type="image/webp" srcset={srcset(files.webp)} sizes={sizes} />}
+        <img
+          src={fallback}
+          srcset={jpgSet}
+          sizes={sizes}
+          width={image.width}
+          height={image.height}
+          alt={image.alt}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+      </picture>
+      {captionText && <figcaption class="photo__caption">{captionText}</figcaption>}
+    </figure>
+  )
+}
+
+<style>
+  .photo {
+    margin: 0;
+  }
+  .photo,
+  .photo img {
+    display: block;
+  }
+  .photo img {
+    width: 100%;
+    height: auto;
+    background: color-mix(in srgb, currentColor 8%, transparent);
+  }
+  .photo__caption {
+    margin-top: 12px;
+    max-width: 48ch;
+    font-size: var(--fs-ui);
+    line-height: 1.4;
+    color: var(--text-2, currentColor);
+  }
+</style>

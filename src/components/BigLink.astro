@@ -1,0 +1,70 @@
+---
+// BigLink.astro: one huge centered link near the end of a page, like "Who builds this?".
+//
+// It is set at statement size with a 2px underline and plenty of space around it. With motion
+// on, hovering rolls the letters up and out and a second phrase rolls in ("Meet the club"),
+// and the underline stretches or shrinks to fit the new phrase (motion M6, modules/roll.js).
+// Screen readers hear both phrases as the link's name (aria-label), for example "Who builds this?
+// Meet the club", or "Got a chore? Bring us a problem (opens in a new tab)" for a link that opens
+// a new tab. That name stays the same whether or not the letters are cut apart for the roll.
+interface Props {
+  href: string;
+  label: string;
+  second: string;
+  external?: boolean;
+  cursor?: string;
+  class?: string;
+}
+const { href, label, second, external = false, cursor, class: className } = Astro.props;
+
+// The spoken name: both phrases, without decorative arrows, plus a note for links that open a
+// new tab.
+const plain = (text: string) => text.replace(/[↗↓←→]/g, '').replace(/\s+/g, ' ').trim();
+const spokenName = `${plain(label)} ${plain(second)}${external ? ' (opens in a new tab)' : ''}`;
+---
+
+<div class:list={['big-link-wrap', className]}>
+  <a
+    href={href}
+    class="big-link roll roll--center"
+    aria-label={spokenName}
+    target={external ? '_blank' : undefined}
+    rel={external ? 'noopener' : undefined}
+    data-roll={second}
+    data-cursor={cursor}
+  >
+    <span class="roll__stack">
+      <span class="roll__a">{label}</span>
+      <span class="roll__b" aria-hidden="true">{second}</span>
+    </span>
+    <span class="roll__line" aria-hidden="true"></span>
+    {external && <span class="sr-only"> (opens in a new tab)</span>}
+  </a>
+</div>
+
+<style>
+  .big-link-wrap {
+    display: flex;
+    justify-content: center;
+    padding: clamp(32px, 3.5vw, 50px) var(--margin) clamp(48px, 4.9vw, 70px);
+  }
+  .big-link {
+    position: relative;
+    display: inline-block;
+    font-size: var(--fs-statement);
+    line-height: var(--lh-statement);
+    letter-spacing: var(--ls-statement);
+    font-weight: var(--fw-light);
+    padding-bottom: 0.12em;
+    text-align: center;
+  }
+  .roll__line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: currentColor;
+    transform-origin: 50% 50%;
+  }
+</style>

@@ -1,0 +1,414 @@
+---
+// about/Frame.astro: "the Frame", how a case goes from a problem to a tool someone owns.
+// Section 8 of 10 on the About page, and its signature moment (ink background).
+//
+// The club scopes every case with four questions, drawn here as the four sides of a rectangle:
+// GOAL (top), DATA SOURCE (right), PROBLEM (bottom) and VISION (left). Inside the rectangle are
+// the five steps of working with the club, and at the end a short clip of a finished tool (the
+// AutoPlanner writing its Google Doc). "Built to hand over." is the section's title.
+//
+// How it looks:
+//   - Without motion (JavaScript off, reduced motion, Motion: Off) and on phones and tablets:
+//     the title, then the rectangle with its four labels, all five steps listed inside it, and
+//     the clip below them. On phones and tablets with motion on, the rectangle's four sides
+//     draw themselves once, one after another, when it scrolls into view.
+//   - On laptops with motion on (src/scripts/motion/modules/about-frame.js adds "is-pinned"):
+//     the section holds still on screen for three screens' worth of scrolling. The four sides
+//     draw one at a time over the first 60% of that scroll, the steps take turns inside the
+//     rectangle (a new one every 20%), and at 80% a window inside the rectangle opens onto the
+//     finished tool. "Built to hand over." stays at the bottom left the whole time.
+// The home page links here with /about/#frame.
+import Video from '../Video.astro';
+
+// The four sides, clockwise from the top. This is also the order they draw in.
+const sides = [
+  { key: 'top', label: 'Goal' },
+  { key: 'right', label: 'Data source' },
+  { key: 'bottom', label: 'Problem' },
+  { key: 'left', label: 'Vision' },
+];
+
+// The five steps: a short headline and one more sentence each. Step 3 promises no timeline on
+// purpose, to match the About page's rule (03) "No timeline promised on the first call."
+const steps = [
+  { head: 'Bring us a problem.', body: 'A form or an email is enough.' },
+  { head: 'We fill in the Frame.', body: 'A short recorded call, read back to you before we build.' },
+  { head: 'A first working version.', body: 'Shown to you before we build more.' },
+  {
+    head: 'Demo, feedback, repeat.',
+    body: 'Every change is a branch and a pull request. Nobody pushes straight to main.',
+  },
+  { head: 'Hand it over.', body: 'A live link, or a script in your own Google account.' },
+];
+
+// The finished-tool clip shown at the end (an id in src/data/media.json).
+const finishedClip = 'autoplanner-detail-2';
+---
+
+<section id="frame" class="frame theme-ink" aria-labelledby="frame-title" data-about-frame>
+  <div class="frame__stage">
+    <h2 id="frame-title" class="frame__title t-statement" data-about-frame-title>Built to hand over.</h2>
+
+    <div class="frame__box">
+      <!-- The four 1px sides. They are drawn lines only, so screen readers skip them. -->
+      {
+        sides.map((side) => (
+          <span class:list={['frame__side', `frame__side--${side.key}`]} aria-hidden="true" data-about-frame-side />
+        ))
+      }
+      <ul class="frame__labels" aria-label="The four sides of the Frame">
+        {
+          sides.map((side) => (
+            <li class:list={['frame__label', `frame__label--${side.key}`, 't-mono']}>
+              <span class="frame__label-text" data-about-frame-label>
+                {side.label}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <ol class="frame__steps">
+        {
+          steps.map((step, i) => (
+            <li class="frame__step" data-about-frame-step>
+              <p class="frame__num t-mono" data-about-frame-lines>
+                ({String(i + 1).padStart(2, '0')})
+              </p>
+              <p class="frame__head" data-about-frame-lines>
+                {step.head}
+              </p>
+              {step.body && (
+                <p class="frame__body t-label" data-about-frame-lines>
+                  {step.body}
+                </p>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="frame__media" data-about-frame-media>
+        <Video id={finishedClip} class="frame__video" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ---- The plain layout (no motion, phones, tablets) ---- */
+  .frame {
+    --pad: clamp(28px, 4vw, 64px);
+    padding-block: var(--space-section);
+  }
+  .frame__stage {
+    padding-inline: var(--margin);
+  }
+  .frame__title {
+    margin-bottom: clamp(48px, 6vw, 96px);
+  }
+  .frame__box {
+    position: relative;
+    /* On narrow screens, leave room outside the box for the turned side labels. */
+    margin-inline: max(0px, calc(30px - var(--margin)));
+    padding: calc(var(--pad) + 8px) var(--pad);
+  }
+
+  /* The sides: 1px paper-colored lines along the box's edges. */
+  .frame__side {
+    position: absolute;
+    background: var(--text);
+  }
+  .frame__side--top,
+  .frame__side--bottom {
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+  .frame__side--top {
+    top: 0;
+    transform-origin: 0 50%;
+  }
+  .frame__side--bottom {
+    bottom: 0;
+    transform-origin: 100% 50%;
+  }
+  .frame__side--left,
+  .frame__side--right {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+  .frame__side--right {
+    right: 0;
+    transform-origin: 50% 0;
+  }
+  .frame__side--left {
+    left: 0;
+    transform-origin: 50% 100%;
+  }
+
+  /* The labels sit just outside the middle of each side, like notes on a drawing. The left and
+     right ones are turned to run along their sides. Each is centered on its side first, then
+     turned, then pushed outward by half its own height plus a small gap. */
+  .frame__label {
+    --gap: 12px;
+    position: absolute;
+    z-index: 1;
+    color: var(--text);
+    white-space: nowrap;
+    line-height: 1;
+    /* Each word sits in its own little window, so it can rise into place (motion). */
+    overflow: clip;
+  }
+  .frame__label-text {
+    display: inline-block;
+  }
+  .frame__label--top {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(calc(-50% - var(--gap)));
+  }
+  .frame__label--bottom {
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(calc(50% + var(--gap)));
+  }
+  .frame__label--right {
+    top: 50%;
+    left: 100%;
+    transform: translate(-50%, -50%) rotate(90deg) translateY(calc(-50% - var(--gap)));
+  }
+  .frame__label--left {
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%) rotate(-90deg) translateY(calc(-50% - var(--gap)));
+  }
+
+  /* The steps, listed. */
+  .frame__steps {
+    display: grid;
+    gap: clamp(28px, 3vw, 44px);
+  }
+  .frame__step {
+    display: grid;
+    grid-template-columns: 4.5em minmax(0, 1fr);
+    column-gap: var(--gutter);
+    row-gap: 10px;
+    align-items: baseline;
+  }
+  .frame__num {
+    grid-row: 1 / span 2;
+    color: var(--text-2);
+  }
+  .frame__head {
+    font-size: var(--fs-footer-tagline);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .frame__body {
+    grid-column: 2;
+    max-width: 36ch;
+    color: var(--text-2);
+  }
+  .frame__media {
+    margin-top: clamp(40px, 5vw, 72px);
+  }
+
+  /* ---- Laptops (1024px and wider): the Frame sits on the page's columns ----
+     The title and the rectangle run from column 2 to column 11, and inside the rectangle each
+     step's words start on column 3 (its number sits in column 2). The rectangle shares the
+     page's columns ("subgrid"), so this holds at every width. */
+  @media (min-width: 1024px) {
+    .frame__stage {
+      display: grid;
+      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+      column-gap: var(--gutter);
+    }
+    .frame__title,
+    .frame__box {
+      grid-column: 2 / span 10;
+    }
+    .frame__box {
+      display: grid;
+      grid-template-columns: subgrid;
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+    .frame__steps,
+    .frame__step {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+    }
+    .frame__step {
+      column-gap: var(--gutter);
+    }
+    .frame__num {
+      grid-column: 1;
+      padding-left: 24px;
+    }
+    .frame__head {
+      grid-column: 2 / -2;
+    }
+    .frame__body {
+      grid-column: 2 / span 6;
+    }
+    .frame__media {
+      grid-column: 2 / -2;
+    }
+  }
+
+  /* ---- The pinned layout (laptops with motion on; about-frame.js adds "is-pinned") ----
+     The section is four screens tall; its stage sticks to the window for the last three.
+     Inside the stage, the rectangle and the title are placed on columns 2 to 11 (worked out from
+     the stage's width in --col-2, which every browser agrees on). The rectangle starts short,
+     hugging the step's words in a band at its top (steps 1 to 4), centered in the space the full
+     rectangle takes, and grows to its full height when the finished tool opens below that band
+     (step 5). about-frame.js sets --media-top (where the tool's window starts) and --lift (how
+     much of the full height is still missing, used below to keep the short one centered). */
+  .frame:global(.is-pinned) {
+    /* The left edge of column 2 (and the right edge of column 11), measured from the stage's
+       edge: one margin, one column and one gap. (100% is the stage's full width here.) */
+    --col-2: calc(var(--margin) + (100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 + var(--gutter));
+    --title-bottom: clamp(20px, 3vh, 32px);
+    --box-top: calc(var(--header-height) + 40px);
+    /* Room under the rectangle: the title, plus at least 64px of clear space above it (a little
+       more, for the "Problem" label under the bottom side). */
+    --box-bottom: calc(var(--title-bottom) + var(--lh-statement) * var(--fs-statement) + 100px);
+    --band-pad: clamp(24px, 2.2vw, 36px);
+    height: 400vh;
+    padding-block: 0;
+  }
+  /* The stage is one screen tall: 100vh, or on browsers that know it, 100svh (the screen
+     with a phone's or tablet's toolbars showing, so nothing hides under them). */
+  .frame:global(.is-pinned) .frame__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    padding-block: 0;
+  }
+  @supports (height: 100svh) {
+    .frame:global(.is-pinned) .frame__stage {
+      height: 100svh;
+    }
+  }
+  .frame:global(.is-pinned) .frame__title {
+    position: absolute;
+    grid-column: auto;
+    left: var(--col-2);
+    right: var(--col-2);
+    bottom: var(--title-bottom);
+    margin: 0;
+  }
+  .frame:global(.is-pinned) .frame__box {
+    position: absolute;
+    grid-column: auto;
+    left: var(--col-2);
+    right: var(--col-2);
+    top: var(--box-top);
+    bottom: var(--box-bottom);
+    display: block;
+    padding: 0;
+  }
+  /* While the rectangle is short it stays centered: everything tied to its top edge (the top
+     label, the steps, the tool's window) moves down by half the missing height, and the bottom
+     label moves up by the same amount. The side labels stay in the middle. */
+  .frame:global(.is-pinned) .frame__label--top,
+  .frame:global(.is-pinned) .frame__steps,
+  .frame:global(.is-pinned) .frame__media {
+    translate: 0 calc(var(--lift, 0px) / 2);
+  }
+  .frame:global(.is-pinned) .frame__label--bottom {
+    translate: 0 calc(var(--lift, 0px) / -2);
+  }
+  /* The steps all sit in the same spot, in the band at the top of the rectangle; one shows at a
+     time. Their words start on column 3: one column and one gap in from the rectangle's left
+     side (the rectangle is ten columns and nine gaps wide). The number sits in column 2. */
+  .frame:global(.is-pinned) .frame__steps {
+    position: absolute;
+    top: var(--band-pad);
+    left: 0;
+    right: 0;
+    display: grid;
+  }
+  .frame:global(.is-pinned) .frame__step {
+    position: relative;
+    grid-area: 1 / 1;
+    align-self: start;
+    display: block;
+    padding-left: calc((100% - 9 * var(--gutter)) / 10 + var(--gutter));
+    padding-right: var(--band-pad);
+  }
+  /* The number lines up with the top of the step's first line of words. */
+  .frame:global(.is-pinned) .frame__num {
+    position: absolute;
+    top: calc((var(--lh-statement) - 0.7) * var(--fs-statement) / 2);
+    left: 24px;
+    padding: 0;
+  }
+  .frame:global(.is-pinned) .frame__head {
+    font-size: var(--fs-statement);
+    line-height: var(--lh-statement);
+    letter-spacing: var(--ls-statement);
+  }
+  .frame:global(.is-pinned) .frame__body {
+    max-width: 44ch;
+    margin-top: clamp(10px, 1vw, 16px);
+  }
+  /* The finished tool opens below the band, across the rectangle's whole inside width. */
+  .frame:global(.is-pinned) .frame__media {
+    position: absolute;
+    top: var(--media-top, 50%);
+    left: var(--band-pad);
+    right: var(--band-pad);
+    bottom: var(--band-pad);
+    margin: 0;
+  }
+  .frame:global(.is-pinned) .frame__media :global(.video),
+  .frame:global(.is-pinned) .frame__media :global(.video__frame) {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  /* The window is wider than the clip, so the clip is trimmed top and bottom, keeping the
+     table's last rows and the "Doc created" line in view. */
+  .frame:global(.is-pinned) .frame__media :global(.video__el) {
+    object-position: 50% 62%;
+  }
+  .frame:global(.is-pinned) .frame__media :global(.video__caption) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* With motion on, the pieces the motion code animates wait hidden until it has set them up. */
+  :global(html.js-motion) .frame[data-about-frame]:not(.is-ready) [data-about-frame-title],
+  :global(html.js-motion) .frame[data-about-frame]:not(.is-ready) [data-about-frame-lines],
+  :global(html.js-motion) .frame[data-about-frame]:not(.is-ready) [data-about-frame-label] {
+    visibility: hidden;
+  }
+  :global(html.js-motion) .frame[data-about-frame]:not(.is-ready) [data-about-frame-side] {
+    visibility: hidden;
+  }
+
+  @media (max-width: 767px) {
+    .frame__box {
+      padding: calc(var(--pad) + 6px) calc(var(--pad) - 6px);
+    }
+    .frame__label {
+      --gap: 9px;
+    }
+    .frame__step {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .frame__num {
+      grid-row: auto;
+    }
+    .frame__body {
+      grid-column: 1;
+    }
+  }
+</style>

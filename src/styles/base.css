@@ -1,0 +1,439 @@
+/*
+  base.css: the ground rules every page shares.
+
+  In order, this file:
+    1. clears the browser's built-in spacing and styles (a "reset"), so every browser starts equal,
+    2. sets the page's default font, colors and text sizes,
+    3. defines the 12-column grid and the ink/paper section themes (with their faint grain),
+    4. styles keyboard focus, the "Skip to content" link and selected text,
+    5. sets the "starting positions" for animations. These apply ONLY when the html element has
+       the class "js-motion", which the motion code adds when it is about to run. If JavaScript
+       is off or fails, nothing is ever hidden.
+
+  Loaded once by src/layouts/Base.astro, after tokens.css.
+*/
+
+/* ---- 1. Reset ------------------------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd,
+ul,
+ol {
+  margin: 0;
+}
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+img,
+video {
+  height: auto;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  /* Browsers reset these on buttons; inheriting them lets a button inside a line of small mono
+     capitals (like the home docket's bar) look like the words around it. */
+  text-transform: inherit;
+  letter-spacing: inherit;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+[hidden] {
+  display: none !important;
+}
+
+/* ---- 2. Page defaults ---------------------------------------------------------------------- */
+html {
+  /* The page behind everything is ink, so the footer and any page-change gap read as one sheet. */
+  background: var(--ink);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: var(--fw-light);
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Leave room for the fixed header when jumping to a section or focusing a link. */
+  scroll-padding-top: calc(var(--header-height) + 12px);
+}
+body {
+  min-height: 100svh;
+  font-size: var(--fs-body);
+  line-height: 1.35;
+  overflow-x: clip;
+}
+
+/* The page content sits above the footer, so the footer can be revealed from underneath
+   like a curtain as the page lifts away (see Footer.astro and modules/footer.js). */
+.site-main {
+  position: relative;
+  z-index: var(--z-main);
+  display: block;
+  background: var(--paper);
+}
+
+/* Small, reusable text styles. */
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-mono);
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+.t-ui {
+  font-size: var(--fs-ui);
+  font-weight: var(--fw-regular);
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+}
+.t-label {
+  font-size: var(--fs-label);
+  line-height: var(--lh-label);
+  letter-spacing: -0.01em;
+}
+.t-statement {
+  font-size: var(--fs-statement);
+  line-height: var(--lh-statement);
+  letter-spacing: var(--ls-statement);
+  font-weight: var(--fw-light);
+}
+.t-secondary {
+  color: var(--text-2);
+}
+
+/* Text only screen readers can hear (visually hidden, but still read aloud). */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- 3. Grid and section themes ------------------------------------------------------------ */
+/* .grid lays its children on the site's columns. Children choose their columns in their own
+   CSS with grid-column (for example "grid-column: 7 / -1" means "from column 7 to the end"). */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  padding-inline: var(--margin);
+}
+/* .span-all makes a grid child run across every column. */
+.grid > .span-all {
+  grid-column: 1 / -1;
+}
+/* .wrap only adds the side margins, for things that don't need columns. */
+.wrap {
+  padding-inline: var(--margin);
+}
+
+/* A section is either ink (dark) or paper (light). Each theme sets the text colors and the
+   focus-ring color that are readable on it. */
+.theme-paper {
+  --bg: var(--paper);
+  --text: var(--ink);
+  --text-2: var(--ink-2);
+  --focus: var(--crimson);
+  --hairline: var(--crimson);
+  --grain-opacity: 0.05;
+  --grain-blend: multiply;
+  background-color: var(--bg);
+  color: var(--text);
+}
+.theme-ink {
+  --bg: var(--ink);
+  --text: var(--paper);
+  --text-2: var(--paper-2);
+  --focus: var(--crimson-on-ink);
+  --hairline: var(--crimson-on-ink);
+  --grain-opacity: 0.03;
+  --grain-blend: screen;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* The grain: one small noise image, tiled very faintly behind each section's content.
+   It never moves and never covers text or footage (it sits one layer below them). */
+:where(.theme-paper, .theme-ink) {
+  position: relative;
+  isolation: isolate;
+}
+.theme-paper::before,
+.theme-ink::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url('../assets/texture/grain.png');
+  background-size: 256px 256px;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+}
+
+/* A 1px divider line in the current text color at 25%. Components/Divider.astro uses it. */
+.rule {
+  display: block;
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: currentColor;
+  opacity: var(--rule-opacity);
+  transform-origin: 0 50%;
+}
+
+/* ---- 4. Focus, skip link, selection -------------------------------------------------------- */
+/* A clear ring around whatever the keyboard is on. Crimson on paper, light crimson on ink. */
+:focus-visible {
+  outline: 2px solid var(--focus, var(--crimson));
+  outline-offset: 3px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* "Skip to content" lets keyboard users jump past the header. It stays hidden until it is
+   focused with the Tab key. */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: var(--z-skip);
+  padding: 10px 14px;
+  background: var(--paper);
+  color: var(--ink);
+  outline: 2px solid var(--crimson);
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible,
+.skip-link:focus {
+  transform: none;
+}
+
+::selection {
+  background: var(--crimson);
+  color: var(--mark-text);
+}
+
+/* The marker (M5): one crimson phrase per page, with paper-colored text on it. This is how it
+   looks with no animation. The motion code grows it from the left when motion is on. */
+[data-mark] {
+  /* How much of the bar is filled, from the left (the motion code animates this from 0%). */
+  --mark-fill: 100%;
+  background-image: linear-gradient(var(--crimson), var(--crimson));
+  background-repeat: no-repeat;
+  background-size: var(--mark-fill) 100%;
+  background-position: 0 50%;
+  color: var(--mark-text);
+  /* A little breathing room either side of the bar. (No negative margin to cancel it: that
+     would make the motion code think the next word starts a new line.) */
+  padding-inline: 0.06em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+mark[data-mark] {
+  background-color: transparent;
+}
+/* Where the browser knows the "lh" unit (one line's height), the bar is exactly one line tall and
+   centered on it, so a phrase that wraps gets bars that meet but never overlap, with or without
+   the motion code. Older browsers keep the slightly taller bar above. */
+@supports (height: 1lh) {
+  [data-mark] {
+    background-size: var(--mark-fill) 1lh;
+  }
+}
+
+/* The "in progress" dot next to a status. */
+.status-dot {
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
+  margin-right: 0.5em;
+  border-radius: 50%;
+  background: var(--hairline, var(--crimson));
+  vertical-align: 0.05em;
+}
+
+/* ---- Text that the motion code splits into lines and words (M1) --------------------------- */
+/* The motion code wraps each line and word in <span> tags. These rules make those spans behave
+   like the lines and words they replace. */
+.split-line-mask,
+.split-line {
+  display: block;
+}
+/* Each line's "mask" is the window its words rise into. Letters like g, p and y reach below the
+   line (and accents above it), most of all in big headings set with tight line spacing, and a
+   window cut exactly at the line's edges would clip them. So the window is cut a little larger
+   than the line (0.15em above and below, more at the sides) with clip-path instead of the
+   motion library's own "overflow: clip". The page layout doesn't change, and words waiting to
+   rise (110% of their height below) are still fully out of sight. */
+.split-line-mask {
+  overflow: visible !important;
+  clip-path: inset(-0.15em -0.25em -0.15em -0.25em);
+}
+.split-word {
+  display: inline-block;
+}
+/* Words and letters are little boxes of their own, and an inherited first-line indent would be
+   applied again inside each one; switch it off for them. */
+.split-word,
+.split-char,
+.roll-slot__item {
+  text-indent: 0;
+}
+/* Only the first line of an indented statement keeps the indent. */
+.split-line-mask:not(:first-child),
+.split-line:not(:first-child) {
+  text-indent: 0;
+}
+/* Links inside split text keep their underline on every word. */
+a .split-word {
+  text-decoration: inherit;
+  text-underline-offset: inherit;
+}
+
+/* ---- 5. Starting positions for animations (only when html has the class js-motion) --------- */
+/* Before a block of text has been split into lines, keep it invisible so it does not flash.
+   The motion code adds "is-split" as soon as the words are hidden in their masks. */
+html.js-motion [data-reveal='lines']:not(.is-split) {
+  visibility: hidden;
+}
+/* Dividers start at zero width (M2). */
+html.js-motion [data-draw]:not(.is-drawn) {
+  transform: scaleX(0);
+}
+html.js-motion [data-draw='y']:not(.is-drawn) {
+  transform: scaleY(0);
+}
+/* Media windows start closed (M3). */
+html.js-motion [data-media-open]:not(.is-open) {
+  clip-path: inset(0 0 100% 0);
+}
+/* The marker starts empty and the text keeps its normal color until the bar passes (M5). */
+html.js-motion [data-mark]:not(.is-marked) {
+  --mark-fill: 0%;
+  color: inherit;
+}
+
+/* When someone asks their device for less motion, or turns Motion off in the footer,
+   hover animations switch off too. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+html[data-motion='off'] *,
+html[data-motion='off'] *::before,
+html[data-motion='off'] *::after {
+  transition-duration: 0.01ms !important;
+  transition-delay: 0s !important;
+}
+
+/* ---- Rolling links (M6) -------------------------------------------------------------------- */
+/* A rolling link holds two phrases stacked in one window: the one you see (roll__a) and the one
+   that rolls in on hover (roll__b). Without motion, the second phrase is never shown. */
+.roll__stack {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  overflow-x: visible;
+  overflow-y: clip;
+  /* Room below the line for descenders (g, p, y); none above, so letters that have rolled up
+     and out are fully hidden. */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.roll__a {
+  display: inline-block;
+  white-space: nowrap;
+}
+.roll__b {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  visibility: hidden;
+}
+.roll--center .roll__b {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.split-char {
+  display: inline-block;
+}
+
+/* The marker keeps its full bar once it has been swept in, even if the text is split again
+   (for example after the window is resized). */
+html.js-motion .has-marked [data-mark] {
+  --mark-fill: 100%;
+  color: var(--mark-text);
+}
+html.js-motion [data-mark] {
+  transition: color 0.3s linear;
+}
+
+/* The page content can receive focus from "Skip to content"; it doesn't need a ring for that. */
+.site-main:focus {
+  outline: none;
+}
+
+/* While the phone menu or the preloader is open, the page underneath doesn't scroll. */
+html.menu-open,
+html.js-preload:not(.preload-lifting) {
+  overflow: hidden;
+}
+
+/* Starting positions for the header and the two big CIVICs. The motion code adds "is-ready" once
+   it has moved the pieces to their starting spots (see header.js, wordmark.js, footer.js). */
+html.js-motion[data-intro='home'] [data-header]:not(.is-ready) [data-header-item] {
+  visibility: hidden;
+}
+html.js-motion [data-wordmark='hero']:not(.is-ready) path,
+html.js-motion [data-wordmark='footer']:not(.is-ready) path {
+  visibility: hidden;
+}

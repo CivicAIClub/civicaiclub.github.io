@@ -1,0 +1,148 @@
+---
+// ArrowLink.astro: a text link with an arrow, like "Bring us a problem ↗".
+//
+// On hover (mouse or trackpad) the arrow does a small swap, motion M7, done entirely in CSS:
+//   ↗  the arrow flies out up and to the right, a second ↗ slides in from the bottom left in
+//      front of the text, and the text slides right by the arrow's width. A thin underline
+//      draws in underneath at the same time.
+//   ↓ and ←  the arrow slides out in its own direction and a new one slides in behind it.
+// Everything takes 0.7 seconds on the curve --ease-arrow (see src/styles/tokens.css).
+//
+// Set external={true} for links to other websites: they open in a new tab, and screen readers
+// hear "(opens in a new tab)".
+import Arrow from './Arrow.astro';
+
+interface Props {
+  href: string;
+  external?: boolean;
+  dir?: 'ne' | 'down' | 'left';
+  // A cursor label for mouse users, e.g. "Open Case A ↗" (see Cursor.astro).
+  cursor?: string;
+  class?: string;
+  [attr: `data-${string}`]: string | undefined;
+}
+const { href, external = false, dir = 'ne', cursor, class: className, ...rest } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={['arrow-link', `arrow-link--${dir}`, className]}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener' : undefined}
+  data-cursor={cursor}
+  {...rest}
+>
+  {
+    dir === 'ne' && (
+      <span class="arrow-link__slot arrow-link__slot--in" aria-hidden="true">
+        <Arrow dir="ne" />
+      </span>
+    )
+  }
+  <span class="arrow-link__text"><slot /></span>
+  <span class="arrow-link__slot arrow-link__slot--out" aria-hidden="true">
+    <Arrow dir={dir} class="arrow-link__now" />
+    {dir !== 'ne' && <Arrow dir={dir} class="arrow-link__next" />}
+  </span>
+  {external && <span class="sr-only"> (opens in a new tab)</span>}
+</a>
+
+<style>
+  .arrow-link {
+    --gap: 0.4em;
+    --shift: calc(0.72em + var(--gap));
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap);
+    white-space: nowrap;
+    padding-block: 4px;
+  }
+  /* Touch screens: a taller tap area (at least 24px even for small mono links). The extra
+     padding is cancelled out by a negative margin, so nothing around the link moves. */
+  @media (pointer: coarse) {
+    .arrow-link {
+      padding-block: 12px;
+      margin-block: -8px;
+    }
+  }
+  .arrow-link__text {
+    display: inline-block;
+    transition: transform var(--dur-arrow) var(--ease-arrow);
+  }
+  /* Each arrow sits in its own little window, so it can slide in and out of view. */
+  .arrow-link__slot {
+    position: relative;
+    display: inline-flex;
+    overflow: clip;
+    width: 0.72em;
+    height: 0.72em;
+  }
+  .arrow-link__slot :global(.arrow) {
+    transition: transform var(--dur-arrow) var(--ease-arrow);
+  }
+  /* The arrow that comes in on hover waits at the left edge, just out of its window. */
+  .arrow-link__slot--in {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -0.36em;
+  }
+  .arrow-link__slot--in :global(.arrow) {
+    transform: translate(-110%, 110%);
+  }
+  /* For ↓ and ←, the second arrow waits just outside the same window. */
+  .arrow-link__slot--out :global(.arrow-link__next) {
+    position: absolute;
+    inset: 0;
+  }
+  .arrow-link--down .arrow-link__slot--out :global(.arrow-link__next) {
+    transform: translateY(-110%);
+  }
+  .arrow-link--left .arrow-link__slot--out :global(.arrow-link__next) {
+    transform: translateX(110%);
+  }
+  /* The underline that draws in on hover. */
+  .arrow-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--dur-arrow) var(--ease-arrow);
+  }
+
+  /* Hover and keyboard focus. Only devices with a real hover (mouse, trackpad) get the swap. */
+  @media (hover: hover) {
+    .arrow-link:hover::after,
+    .arrow-link:focus-visible::after {
+      transform: scaleX(1);
+    }
+    .arrow-link--ne:hover .arrow-link__text,
+    .arrow-link--ne:focus-visible .arrow-link__text {
+      transform: translateX(var(--shift));
+    }
+    .arrow-link--ne:hover .arrow-link__slot--out :global(.arrow),
+    .arrow-link--ne:focus-visible .arrow-link__slot--out :global(.arrow) {
+      transform: translate(110%, -110%);
+    }
+    .arrow-link--ne:hover .arrow-link__slot--in :global(.arrow),
+    .arrow-link--ne:focus-visible .arrow-link__slot--in :global(.arrow) {
+      transform: none;
+    }
+    .arrow-link--down:hover .arrow-link__slot--out :global(.arrow-link__now) {
+      transform: translateY(110%);
+    }
+    .arrow-link--left:hover .arrow-link__slot--out :global(.arrow-link__now) {
+      transform: translateX(-110%);
+    }
+    .arrow-link--down:hover .arrow-link__slot--out :global(.arrow-link__next),
+    .arrow-link--left:hover .arrow-link__slot--out :global(.arrow-link__next) {
+      transform: none;
+    }
+  }
+</style>

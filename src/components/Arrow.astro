@@ -1,0 +1,44 @@
+---
+// Arrow.astro: the only icons on the site, three arrows drawn as thin lines.
+//   dir="ne"   ↗  goes somewhere (another page, or another site)
+//   dir="down" ↓  further down this page
+//   dir="left" ←  back
+// The line is always 1.5px thick in the text color, whatever size the arrow is drawn at.
+// Decorative: the link text beside it already says where it goes, so screen readers skip it.
+interface Props {
+  dir?: 'ne' | 'down' | 'left';
+  class?: string;
+}
+const { dir = 'ne', class: className } = Astro.props;
+
+// The drawing instructions for each arrow, on a 16 x 16 grid.
+const shapes = {
+  ne: 'M3.5 12.5 12.5 3.5M5 3.5h7.5V11',
+  down: 'M8 2v12M3.5 9.5 8 14l4.5-4.5',
+  left: 'M14 8H2M6.5 3.5 2 8l4.5 4.5',
+};
+---
+
+<svg
+  class:list={['arrow', `arrow--${dir}`, className]}
+  viewBox="0 0 16 16"
+  width="16"
+  height="16"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d={shapes[dir]} vector-effect="non-scaling-stroke"></path>
+</svg>
+
+<style>
+  .arrow {
+    display: inline-block;
+    flex: none;
+    width: 0.72em;
+    height: 0.72em;
+    overflow: visible;
+  }
+</style>

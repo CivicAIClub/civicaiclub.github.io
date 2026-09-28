@@ -1,0 +1,15 @@
+---
+// MarkedText.astro: prints a sentence, putting the crimson marker behind its [bracketed] phrase.
+//
+// Case files write the chore like "Staff spent [hours each week] copying...". This component
+// shows the brackets' contents inside <mark data-mark>, which the motion code sweeps in
+// (motion M5, modules/mark.js). Use it only once per page: the marker is the page's one accent.
+import { splitMarked } from '../lib/marked';
+
+interface Props {
+  text: string;
+}
+const { before, mark, after } = splitMarked(Astro.props.text);
+---
+
+{before}{mark && <mark data-mark>{mark}</mark>}{after}

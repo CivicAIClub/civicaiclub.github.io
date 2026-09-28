@@ -1,0 +1,376 @@
+---
+// Header.astro: the thin bar across the top of every page, and the phone menu.
+//
+// Left: the Pomfret griffin with "Civic AI Club / Pomfret School". Middle (columns 7 to 10):
+// the links Cases and About. Right: "Bring us a problem ↗", which opens the intake form.
+// The bar is 62px tall and uses a "difference" blend, so it turns dark over paper sections and
+// light over ink ones without any code. Over edge-to-edge footage (marked data-header-solid) a
+// plain ink strip is shown behind it, so it stays readable there too
+// (src/scripts/site/header-backdrop.js).
+//
+// Motion (src/scripts/motion/modules/header.js):
+//   - On the home page the items drop in one after another, 0.06s apart.
+//   - When a section marked data-header-swap reaches the top (the reel on the home page), the
+//     name rolls up and out and a small CIVIC rolls in (motion M9). Scrolling back undoes it.
+// Phones (under 768px wide): the links move into a "Menu" button that opens a full-screen ink
+// panel. That panel works without any animation library: src/scripts/site/menu.js keeps the
+// keyboard inside it while it is open and closes it with the Esc key.
+import site from '../data/site.json';
+import Griffin from './Griffin.astro';
+import Wordmark from './Wordmark.astro';
+import RollLink from './RollLink.astro';
+import ArrowLink from './ArrowLink.astro';
+
+interface Props {
+  // Which main section this page belongs to, so its link can be marked as the current page.
+  current?: 'cases' | 'about' | null;
+}
+const { current = null } = Astro.props;
+
+// The main links. "Cases" jumps to the list of cases on the home page.
+const links = [
+  { key: 'cases', href: '/#cases', label: 'Cases' },
+  { key: 'about', href: '/about/', label: 'About' },
+] as const;
+---
+
+<header class="site-header">
+  <!-- A plain ink strip behind the bar, shown only while edge-to-edge footage passes under the
+       header, so the blended letters stay readable (src/scripts/site/header-backdrop.js). -->
+  <div class="header-backdrop" aria-hidden="true" hidden data-header-backdrop></div>
+  <div class="site-header__bar grid" data-header>
+    <a class="brand" href="/" aria-label="Civic AI Club, Pomfret School: home" data-menu-inert>
+      <span class="h-mask brand__griffin-mask">
+        <span class="brand__griffin" data-header-item><Griffin /></span>
+      </span>
+      <span class="brand__swap">
+        <span class="brand__tagline" data-header-tagline>
+          <span class="h-mask"><span class="brand__line" data-header-item>Civic AI Club</span></span>
+          <span class="h-mask"><span class="brand__line brand__line--2" data-header-item>Pomfret School</span></span>
+        </span>
+        <span class="brand__mark" data-header-mark aria-hidden="true">
+          <Wordmark variant="small" lockup={false} decorative />
+        </span>
+      </span>
+    </a>
+
+    <nav class="site-nav t-ui" aria-label="Main" data-menu-inert>
+      <ul>
+        {
+          links.map((link) => (
+            <li class="h-mask">
+              <span data-header-item>
+                <RollLink href={link.href} label={link.label} current={current === link.key} />
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__cta t-ui" data-menu-inert>
+      <span class="h-mask">
+        <span data-header-item>
+          <ArrowLink href={site.intakeFormUrl} external>Bring us a problem</ArrowLink>
+        </span>
+      </span>
+    </div>
+
+    <!-- The phone menu button sits in its own window too, so it drops in with the other items. -->
+    <span class="h-mask menu-button-slot">
+      <button
+        class="menu-button t-mono"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-menu"
+        data-menu-toggle
+        data-header-item
+      >
+        <span class="menu-button__labels">
+          <span class="menu-button__label">Menu</span>
+          <span class="menu-button__label" aria-hidden="true">Close</span>
+        </span>
+      </button>
+    </span>
+  </div>
+
+  <div class="menu-panel theme-ink" id="site-menu" data-menu hidden>
+    <nav class="menu-panel__nav" aria-label="Menu">
+      <ul>
+        {
+          links.map((link, i) => (
+            <li class="menu-panel__mask">
+              <a
+                class="menu-panel__link"
+                href={link.href}
+                aria-current={current === link.key ? 'page' : undefined}
+                style={`--i: ${i}`}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <ul class="menu-panel__ctas t-label">
+      <li class="menu-panel__mask" style={`--i: ${links.length}`}>
+        <span class="menu-panel__link menu-panel__link--small">
+          <ArrowLink href={site.intakeFormUrl} external>Bring us a problem</ArrowLink>
+        </span>
+      </li>
+      <li class="menu-panel__mask" style={`--i: ${links.length + 1}`}>
+        <span class="menu-panel__link menu-panel__link--small">
+          <ArrowLink href={site.joinFormUrl} external>Join the club</ArrowLink>
+        </span>
+      </li>
+    </ul>
+    <p class="menu-panel__small t-mono">{site.lines.footerSmallPrint}</p>
+  </div>
+</header>
+
+<style>
+  /* The bar is fixed to the top of the window. It must not create its own "stacking context"
+     wrapper, or the difference blend would only blend with itself. */
+  .site-header__bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-header);
+    height: var(--header-height);
+    align-items: center;
+    color: var(--paper);
+    mix-blend-mode: difference;
+  }
+  /* Without JavaScript the ink strip below can't follow the footage, so the bar stays at the top
+     of the page and scrolls away with it, instead of floating over footage where its blended
+     letters would be unreadable. */
+  :global(html:not(.js)) .site-header__bar {
+    position: absolute;
+  }
+  /* The ink strip behind the bar (see the comment in the markup). It sits just under the bar, and
+     the script cuts it to the part of the bar's height that footage covers. */
+  .header-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: calc(var(--z-header) - 1);
+    height: var(--header-height);
+    background: var(--ink);
+    pointer-events: none;
+  }
+  /* Inside the blended bar, focus rings use the bar's own color so they stay visible. */
+  .site-header__bar :global(:focus-visible) {
+    outline-color: currentColor;
+  }
+
+  /* Each header item sits in a window that clips it while it drops in on the home page. */
+  .h-mask {
+    display: block;
+  }
+  :global(.site-header__bar.is-intro) .h-mask {
+    overflow: clip;
+  }
+  [data-header-item] {
+    display: block;
+  }
+
+  /* Left: griffin and name. */
+  .brand {
+    grid-column: 1 / span 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    justify-self: start;
+    font-size: var(--fs-ui);
+    font-weight: var(--fw-regular);
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+  }
+  .brand__griffin {
+    width: 30px;
+  }
+  .brand__swap {
+    position: relative;
+    display: block;
+    overflow: clip;
+  }
+  .brand__tagline {
+    display: block;
+  }
+  /* The small CIVIC waits hidden until the motion code swaps it in. */
+  .brand__mark {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    line-height: 1;
+    visibility: hidden;
+  }
+
+  /* Middle: the main links, in columns 7 to 10. */
+  .site-nav {
+    grid-column: 7 / span 4;
+  }
+  .site-nav ul {
+    display: flex;
+    gap: 16px;
+  }
+
+  /* Touch screens: the header links get a 44px-tall tap area (padding, cancelled out by a
+     negative margin, so the bar's layout doesn't change). */
+  @media (pointer: coarse) {
+    .site-nav :global(.roll-link),
+    .site-header__cta :global(.arrow-link) {
+      padding-block: 14px;
+      margin-block: -10px;
+    }
+  }
+
+  /* Right: the call to action. */
+  .site-header__cta {
+    grid-column: 11 / -1;
+    justify-self: end;
+  }
+
+  /* The phone menu button: hidden on wider screens. */
+  .menu-button-slot,
+  .menu-button {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    /* Tablets have 8 columns: the name keeps 1 to 3, so the links (4 and 5) stay on the same row. */
+    .brand {
+      grid-column: 1 / span 3;
+    }
+    .site-nav {
+      grid-column: 4 / span 2;
+    }
+    .site-header__cta {
+      grid-column: 6 / -1;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .brand {
+      grid-column: 1 / span 4;
+    }
+    .site-nav,
+    .site-header__cta {
+      display: none;
+    }
+    .menu-button-slot {
+      grid-column: 5 / -1;
+      justify-self: end;
+      display: block;
+    }
+    .menu-button {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgb(244 243 239 / 0.14);
+    }
+    /* An invisible 44px-tall tap area around the 32px pill. */
+    .menu-button::before {
+      content: '';
+      position: absolute;
+      inset: -6px 0;
+    }
+    .menu-button__labels {
+      position: relative;
+      display: block;
+      overflow: clip;
+      height: 1.3em;
+      line-height: 1.3em;
+    }
+    .menu-button__label {
+      display: block;
+      transition: transform var(--dur-menu) var(--ease-civic);
+    }
+    :global(html.menu-open) .menu-button__label {
+      transform: translateY(-100%);
+    }
+    /* Without JavaScript the Menu button can't open anything, so show the two plain links in
+       its place ("js" is added to the page by the first script in Base.astro). */
+    :global(html:not(.js)) .menu-button-slot {
+      display: none;
+    }
+    :global(html:not(.js)) .site-nav {
+      display: block;
+      grid-column: 5 / -1;
+      justify-self: end;
+    }
+  }
+
+  /* The full-screen ink menu panel (phones). It slides down from the top in 0.85s. */
+  .menu-panel {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-menu);
+    display: flex;
+    flex-direction: column;
+    padding: calc(var(--header-height) + 24px) var(--margin) 24px;
+    transform: translateY(-100%);
+    transition: transform var(--dur-menu) var(--ease-civic);
+    overflow-y: auto;
+    /* Scrolling inside the menu never scrolls the page behind it. */
+    overscroll-behavior: contain;
+  }
+  /* The menu as a whole takes focus when opened by touch (menu.js); it needs no ring. */
+  .menu-panel__nav:focus {
+    outline: none;
+  }
+  :global(html.menu-open) .menu-panel {
+    transform: none;
+  }
+  .menu-panel__mask {
+    display: block;
+    /* The window each link rises into. It is cut with a little room above and at the sides, and
+       6px of padding below, so a link's keyboard focus ring (5px outside the link) is never
+       clipped; the links wait low enough below to stay out of sight. */
+    padding-bottom: 6px;
+    clip-path: inset(-6px -12px 0 -12px);
+  }
+  /* The links wait just below their windows and rise in 0.04s apart when the menu opens. */
+  .menu-panel__link {
+    display: inline-block;
+    font-size: 40px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    transform: translateY(calc(110% + 6px));
+    transition: transform var(--dur-menu) var(--ease-expo-out);
+    transition-delay: calc(var(--i, 0) * 0.04s);
+  }
+  .menu-panel__link[aria-current='page'] {
+    opacity: 0.6;
+  }
+  .menu-panel__link--small {
+    font-size: inherit;
+  }
+  /* The menu's links are already large enough to tap, so they keep their normal padding (the
+     taller touch padding of ArrowLink would push their focus ring out of the window above). */
+  .menu-panel__link--small :global(.arrow-link) {
+    padding-block: 4px;
+    margin-block: 0;
+  }
+  :global(html.menu-open) .menu-panel__link {
+    transform: none;
+    transition-delay: calc(0.2s + var(--i, 0) * 0.04s);
+  }
+  .menu-panel__ctas {
+    margin-top: 32px;
+    display: grid;
+    gap: 8px;
+  }
+  .menu-panel__small {
+    margin-top: auto;
+    color: var(--text-2);
+  }
+</style>

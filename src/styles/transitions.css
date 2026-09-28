@@ -1,0 +1,78 @@
+/*
+  transitions.css: what you see when you move from one page to another ("VT", the new sheet).
+
+  Modern browsers (Chrome, Edge and Safari 18.2+) can animate between two separate pages of a
+  site with no JavaScript. They take a picture of the old page and of the new page and animate
+  the two pictures. Here the new page slides up over the old one like a fresh sheet of paper,
+  while the old one drifts up a little and dims. It takes 0.8 seconds.
+
+  Firefox does not support this yet; it simply shows the new page straight away, which is fine.
+  The on switch ("@view-transition") is not in this file: it is written inside every page by
+  src/layouts/Base.astro, because this file can arrive too late for the browser to see it. That
+  same switch stays off when the device asks for reduced motion or Motion is off in the footer.
+
+  Going back with the browser's Back button plays the change in reverse (see the end of this file).
+
+  Loaded once by src/layouts/Base.astro.
+*/
+
+/* The old page: moves up by 6% of the screen height and fades to 60%. */
+::view-transition-old(root) {
+  animation: var(--dur-sheet) var(--ease-civic) both vt-sheet-out;
+}
+
+/* The new page: revealed from the bottom edge upwards. */
+::view-transition-new(root) {
+  animation: var(--dur-sheet) var(--ease-civic) both vt-sheet-in;
+}
+
+@keyframes vt-sheet-out {
+  to {
+    transform: translateY(-6vh);
+    opacity: 0.6;
+  }
+}
+
+@keyframes vt-sheet-in {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Back button (Base.astro labels the change "back"): the same sheet, the other way. The old page
+   drops 6% of the screen height and dims, while the new one is revealed from the top edge down.
+   Only the whole page (root) changes direction; footage handed between pages keeps its own move. */
+html:active-view-transition-type(back)::view-transition-old(root) {
+  animation-name: vt-sheet-back-out;
+}
+html:active-view-transition-type(back)::view-transition-new(root) {
+  animation-name: vt-sheet-back-in;
+}
+
+@keyframes vt-sheet-back-out {
+  to {
+    transform: translateY(6vh);
+    opacity: 0.6;
+  }
+}
+
+@keyframes vt-sheet-back-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Reduced motion: no page-change animation at all. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

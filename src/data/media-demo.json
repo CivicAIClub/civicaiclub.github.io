@@ -1,0 +1,15 @@
+[
+  {
+    "id": "styleguide-demo",
+    "case": "styleguide",
+    "usedOn": ["styleguide"],
+    "av1": "/media/styleguide/styleguide-demo.av1.mp4",
+    "h264": "/media/styleguide/styleguide-demo.h264.mp4",
+    "poster": "/media/styleguide/styleguide-demo-poster.webp",
+    "width": 1280,
+    "height": 720,
+    "duration": 4,
+    "caption": "A test clip for the style guide: a crimson bar sweeps across the site's 12-column grid. It is not footage of a tool.",
+    "demoData": false
+  }
+]

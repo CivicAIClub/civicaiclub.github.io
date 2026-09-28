@@ -1,0 +1,45 @@
+/*
+  home.css: a few page-wide rules for the home page (src/pages/index.astro).
+
+  Most of the home page's styles live inside its components (src/components/home/*.astro).
+  These are the ones that reach outside a single component:
+    1. While the reel player is open, the page behind it does not scroll.
+    2. Starting positions for the home page's own animations. Like base.css, these apply only
+       when the html element has the class "js-motion" (added by the motion code when it is about
+       to run), and each is released by its module (src/scripts/motion/modules/home-*.js), so
+       nothing is ever hidden when JavaScript is off or fails.
+
+  Loaded by src/pages/index.astro only.
+*/
+
+/* 1. The reel player is open (modules/home-player.js). */
+html.player-open {
+  overflow: hidden;
+}
+
+/* 2. Starting positions. */
+
+/* The docket's words wait hidden until home-docket.js has tucked them into their windows. */
+html.js-motion [data-docket]:not(.is-ready) .dk-case__text {
+  visibility: hidden;
+}
+
+/* The glance cards wait hidden until home-glance.js has set up their deal. */
+html.js-motion [data-glance]:not(.is-ready) [data-glance-card] {
+  visibility: hidden;
+}
+
+/* On screens that get the docket's stage (laptops with a mouse or trackpad), keep the stacked
+   letter windows out of sight until home-docket.js has built the stage, and hold the stage's
+   height meanwhile. Otherwise, arriving from another page's "Cases" link, the stack flashes for a
+   moment and the page below it jumps when the stage takes over. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  html.js-motion [data-docket]:not(.is-ready) {
+    height: 500vh;
+    padding: 0;
+    overflow: clip;
+  }
+  html.js-motion [data-docket]:not(.is-ready) > * {
+    visibility: hidden;
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "_note": "Names and class years for public credit, confirmed by the club lead on 2026-09-27. Names only: never add emails, photos or anything else about a student here.",
+  "lead": "Cayden Auyang",
+  "vicePresident": "Luke Ryan",
+  "facultyAdvisor": {
+    "name": "Josh Lake",
+    "role": "Faculty advisor"
+  },
+  "alumni": [
+    {
+      "name": "Jay Youm",
+      "classYear": 2026,
+      "role": "Alumni advisor",
+      "case": "roster-export"
+    }
+  ],
+  "members": [
+    {
+      "name": "Cayden Auyang",
+      "classYear": 2027,
+      "role": "Club lead"
+    },
+    {
+      "name": "Alex Tong",
+      "classYear": 2029
+    },
+    {
+      "name": "Ava Chen",
+      "classYear": 2028
+    },
+    {
+      "name": "Claire Desrosiers",
+      "classYear": 2028
+    },
+    {
+      "name": "Doyun Kim",
+      "classYear": 2027
+    },
+    {
+      "name": "Erin Park",
+      "classYear": 2029
+    },
+    {
+      "name": "Eva Katsev",
+      "classYear": 2027
+    },
+    {
+      "name": "Harry Park",
+      "classYear": 2027
+    },
+    {
+      "name": "Isabella Gachuhi",
+      "classYear": 2030
+    },
+    {
+      "name": "Jack Weinberg",
+      "classYear": 2027
+    },
+    {
+      "name": "Jacob Lee",
+      "classYear": 2029
+    },
+    {
+      "name": "James Lake",
+      "classYear": 2027
+    },
+    {
+      "name": "James Tian",
+      "classYear": 2028
+    },
+    {
+      "name": "Jason Hickey",
+      "classYear": 2030
+    },
+    {
+      "name": "JT Gannon",
+      "classYear": 2029
+    },
+    {
+      "name": "Justus Schroeder",
+      "classYear": 2029
+    },
+    {
+      "name": "Kai Frechette",
+      "classYear": 2029
+    },
+    {
+      "name": "Keke Li",
+      "classYear": 2027
+    },
+    {
+      "name": "Kevin Wang",
+      "classYear": 2028
+    },
+    {
+      "name": "Kit Chalongkul",
+      "classYear": 2027
+    },
+    {
+      "name": "Kyle Kim",
+      "classYear": 2027
+    },
+    {
+      "name": "Kyrie Thames",
+      "classYear": 2029
+    },
+    {
+      "name": "Lucas Feng",
+      "classYear": 2030
+    },
+    {
+      "name": "Luke Ryan",
+      "classYear": 2027,
+      "role": "Vice President"
+    },
+    {
+      "name": "Magnus Songhurst",
+      "classYear": 2028
+    },
+    {
+      "name": "Mark Donahue",
+      "classYear": 2029
+    },
+    {
+      "name": "Mason Gordon",
+      "classYear": 2027
+    },
+    {
+      "name": "Richard Luo",
+      "classYear": 2030
+    },
+    {
+      "name": "Riley Smith",
+      "classYear": 2030
+    },
+    {
+      "name": "Samuel Tevelde",
+      "classYear": 2030
+    },
+    {
+      "name": "Sasha Khan",
+      "classYear": 2030
+    },
+    {
+      "name": "Sein Heo",
+      "classYear": 2028
+    },
+    {
+      "name": "Serena Xu",
+      "classYear": 2028
+    },
+    {
+      "name": "Sienna Ring",
+      "classYear": 2030
+    },
+    {
+      "name": "Will Rounick",
+      "classYear": 2027
+    },
+    {
+      "name": "Zahir Williams",
+      "classYear": 2028
+    }
+  ]
+}

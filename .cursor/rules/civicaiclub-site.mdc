@@ -1,0 +1,39 @@
+---
+description: Project context for the Civic AI Club showcase site (civicaiclub.github.io) — stack, where things live, motion rules, privacy and copy rules
+alwaysApply: true
+---
+
+# civicaiclub.github.io — the club's showcase site
+
+The public site for the Civic AI Club at Pomfret School, served at https://civicaiclub.github.io (no `base` path). Design direction: "Casework" — black and white, Host Grotesk Light at huge sizes, full-bleed tool footage, one Pomfret crimson accent (`#A8172B`) used sparingly.
+
+## Stack (exact versions, installed with `--save-exact`)
+- Astro 7.3.5, static output. Node 24 (`.nvmrc`).
+- GSAP 3.15.0 (ScrollTrigger, SplitText; the `civic` ease is registered in core.js without CustomEase to save 3 KB) + Lenis 1.3.26. Native cross-document View Transitions (CSS only).
+- Plain CSS with tokens in `src/styles/tokens.css`. **No Tailwind, no UI kit, no WebGL, no icon library.**
+- Fonts through Astro's Fonts API (Fontsource): Host Grotesk 300/400, Martian Mono 400.
+
+## Where things live
+- Case facts: `src/content/cases/*.md` (schema in `src/content.config.ts`). Site data: `src/data/*.json`.
+- Video list: `src/data/media.json` (schema in `src/lib/media.ts`, ids in `MEDIA-IDS.md`). Files: `public/media/<slug>/`.
+- Components: `src/components/`. Layout: `src/layouts/Base.astro`. Pages: `src/pages/`.
+- **All GSAP and Lenis code lives in `src/scripts/motion/`.** Components ask for motion only with data attributes (`data-reveal="lines"`, `data-draw`, `data-media-open`, `data-parallax`, `data-parallax-y`, `data-mark`, `data-roll`, `data-letter-roll`, `data-cursor`, `data-header-swap`, `data-video`). See `MOTION.md`. Page-specific motion = a new file in `src/scripts/motion/modules/`; never edit another person's module. CI fails if `gsap`/`lenis` is imported anywhere else.
+
+## Rules that are easy to break
+- Content must be readable with JavaScript off and with motion off. Hide-before-animate styles go only under `html.js-motion` and must be released by the module (`is-split`, `is-drawn`, `is-open`, `is-ready`).
+- Reduced motion (device setting or the footer switch): no preloader, no smooth scroll, no pinning/scrub, no page-change animation, videos show a poster and a Play button.
+- Videos: no `autoplay` attribute; AV1 first, H.264 fallback, WebP poster that looks finished; caption ending "Demo data." for tool recordings; every loop has a visible Pause button. Budgets: any file ≤ 10 MB, home video ≤ 8 MB, posters ≤ 100 KB, each photo file ≤ 300 KB, `public/media` ≤ 150 MB (`npm run check:media`). Photos use `<Photo id>` (a `"kind": "image"` entry in `media.json`).
+- Only two easing curves: `expo.out` and `civic` (`M0,0 C0.7,0 0.3,1 1,1`, CSS `--ease-civic`). No bounce/elastic, no count-up numbers, no gradients, shadows, rounded cards or emoji. Arrows (↗ ↓ ←) and the griffin are the only icons.
+- Crimson: one marked phrase per page (paper text on crimson), focus rings, hairlines, the "in progress" dot. On ink use `#E24A5C` for rings/hairlines, never crimson text on ink.
+
+## Privacy and copy (non-negotiable)
+- Never real student data, emails, tokens, `/exec` URLs, Sheet/Form/Drive IDs, avatars, URL bars or browser chrome in footage or code. Demo data only.
+- Faculty clients by office only ("CLC Supported Study Hall", "Music Department", "Office of DEI", "Teaching faculty", "College Counseling Office"). Never a faculty member's name as a client.
+- Never link Case B's live portal or (for now) its repository. Don't claim Google Sign-In for Case B, or that Case D is in use.
+- Local businesses: name, one plain line, "In progress". No logos, no AI vocabulary. Never mention any other prospect.
+- Names as `Name ’YY` (curly apostrophe). They/them or pronoun-free copy. No invented numbers, testimonials or hours saved.
+- Banned words: empower, revolutionize, leverage, seamless, cutting-edge, unlock, harness, journey, "AI-powered". No em-dash chains.
+- Rejouice (the design reference) is inspiration only: never copy its code, text, fonts, images or video.
+
+## Commands
+`npm ci` · `npm run dev` · `npm run build` · `npm run preview` · `npm run check:media` · `npm run check:gsap` · `npm run check:a11y` (axe, needs `npm run preview` running) · `npm run wordmark` (rebuild the CIVIC outlines) · `npm run brand` (rebuild favicon, share image, grain).

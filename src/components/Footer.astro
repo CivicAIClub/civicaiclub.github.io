@@ -1,0 +1,187 @@
+---
+// Footer.astro: the ink footer at the bottom of every page.
+//
+// What it shows: the line "Bring us the chore you repeat every week.", the links to the intake
+// form, the join form and the club's GitHub, the site links (Cases, About), the small print
+// ("A student-run club at Pomfret School.", the Motion On/Off switch, the copyright), and a
+// full-width CIVIC at the very bottom.
+//
+// Motion (src/scripts/motion/modules/footer.js): the page above lifts away to reveal the footer
+// underneath like a curtain, the footer's content settles into place as it does (moving from
+// 20% higher to its resting place), and the big CIVIC rebuilds from the center out, V first,
+// once half the footer is showing.
+//
+// The Motion switch (src/scripts/site/motion-toggle.js) lets any visitor turn every animation
+// and autoplaying video off. The choice is remembered on their device.
+import site from '../data/site.json';
+import Griffin from './Griffin.astro';
+import Wordmark from './Wordmark.astro';
+import RollLink from './RollLink.astro';
+import ArrowLink from './ArrowLink.astro';
+---
+
+<footer class="site-footer theme-ink" data-footer data-menu-inert>
+  <div class="site-footer__inner" data-footer-inner>
+    <div class="site-footer__top grid">
+      <p class="site-footer__tagline">{site.lines.footer}</p>
+
+      <nav class="site-footer__nav" aria-label="Footer">
+        <ul>
+          <li><RollLink href="/#cases" label="Cases" /></li>
+          <li><RollLink href="/about/" label="About" /></li>
+        </ul>
+      </nav>
+
+      <ul class="site-footer__ctas t-label">
+        <li><ArrowLink href={site.intakeFormUrl} external>Bring us a problem</ArrowLink></li>
+        <li><ArrowLink href={site.joinFormUrl} external>Join the club</ArrowLink></li>
+        <li><ArrowLink href={site.githubUrl} external>GitHub</ArrowLink></li>
+      </ul>
+    </div>
+
+    <div class="site-footer__meta grid t-mono">
+      <p class="site-footer__school">
+        <span class="site-footer__griffin"><Griffin /></span>
+        {site.lines.footerSmallPrint}
+      </p>
+      <p class="site-footer__motion">
+        <button type="button" class="motion-toggle" data-motion-toggle aria-pressed="true">
+          Motion: <span data-motion-state>On</span>
+        </button>
+        <span class="sr-only" data-motion-note></span>
+      </p>
+      <p class="site-footer__copy">&copy; {site.copyrightYear} {site.name}</p>
+    </div>
+
+    <!-- The big CIVIC is decoration here (the club's name is already in the small print), so
+         screen readers skip it. -->
+    <div class="site-footer__word wrap">
+      <Wordmark variant="footer" decorative />
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* The footer sits behind the page (lower layer). When the motion code finds it fits on screen,
+     it adds "is-curtain" and the footer sticks to the bottom of the window, so the page lifts
+     away to reveal it. */
+  .site-footer {
+    position: relative;
+    z-index: var(--z-footer);
+    overflow: hidden;
+  }
+  .site-footer:global(.is-curtain) {
+    position: sticky;
+    bottom: 0;
+  }
+  /* While motion is starting up, the footer (far down the page, under it) stays invisible until
+     the motion code has decided whether it becomes the curtain ("is-set"), so it never visibly
+     jumps into place. With motion off or JavaScript off, "js-motion" is absent and it shows. */
+  :global(html.js-motion) .site-footer:not(:global(.is-set)) {
+    visibility: hidden;
+  }
+  .site-footer__inner {
+    padding-top: clamp(56px, 7vw, 100px);
+  }
+
+  .site-footer__top {
+    row-gap: 40px;
+  }
+  .site-footer__tagline {
+    grid-column: 1 / span 6;
+    font-size: var(--fs-footer-tagline);
+    line-height: 1.14;
+    letter-spacing: -0.015em;
+    max-width: 16ch;
+  }
+  .site-footer__nav {
+    grid-column: 7 / span 3;
+    font-size: var(--fs-footer-nav);
+    line-height: 1.2;
+  }
+  .site-footer__ctas {
+    grid-column: 10 / -1;
+    display: grid;
+    align-content: start;
+    gap: 6px;
+  }
+
+  .site-footer__meta {
+    margin-top: clamp(56px, 7vw, 100px);
+    row-gap: 12px;
+    align-items: center;
+    color: var(--text-2);
+  }
+  .site-footer__school {
+    grid-column: 1 / span 6;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .site-footer__griffin {
+    width: 26px;
+    color: var(--paper);
+  }
+  .site-footer__motion {
+    grid-column: 7 / span 3;
+  }
+  /* Without JavaScript the Motion switch can't do anything, so it isn't shown ("js" is added
+     to the page by the first script in Base.astro). */
+  :global(html:not(.js)) .site-footer__motion {
+    display: none;
+  }
+  .motion-toggle {
+    min-height: 24px;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    color: var(--paper);
+  }
+  .motion-toggle[aria-disabled='true'] {
+    color: var(--text-2);
+    cursor: default;
+  }
+  .site-footer__copy {
+    grid-column: 10 / -1;
+    justify-self: end;
+  }
+
+  .site-footer__word {
+    padding-top: clamp(40px, 5vw, 72px);
+    padding-bottom: clamp(16px, 2vw, 28px);
+  }
+
+  @media (max-width: 1023px) {
+    .site-footer__tagline {
+      grid-column: 1 / -1;
+    }
+    .site-footer__nav {
+      grid-column: 1 / span 4;
+    }
+    .site-footer__ctas {
+      grid-column: 5 / -1;
+    }
+    .site-footer__school {
+      grid-column: 1 / -1;
+    }
+    .site-footer__motion {
+      grid-column: 1 / span 4;
+    }
+    .site-footer__copy {
+      grid-column: 5 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .site-footer__nav {
+      grid-column: 1 / span 3;
+    }
+    .site-footer__ctas {
+      grid-column: 4 / -1;
+    }
+    .site-footer__motion {
+      grid-column: 1 / span 3;
+    }
+    .site-footer__copy {
+      grid-column: 4 / -1;
+    }
+  }
+</style>

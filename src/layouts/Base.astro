@@ -1,0 +1,257 @@
+---
+// Base.astro: the frame every page is built inside.
+//
+// It writes the parts of the page visitors don't see directly (the page title, the description
+// search engines show, the share image, the tab icon, the fonts) and the parts every page shares:
+// the "Skip to content" link, the header, the page content (<slot /> is where each page's own
+// content goes), the footer and the cursor label.
+//
+// It also runs two scripts:
+//   1. A tiny one at the very top (before anything is drawn) that reads the visitor's motion
+//      choices and decides whether the home page's preloader should play. Doing this first means
+//      nothing flickers.
+//   2. The site's main script (at the bottom): the motion system in src/scripts/motion/, the phone
+//      menu and the Motion On/Off switch in src/scripts/site/.
+//
+// Pages use it like:  <Base title="About" description="...">...page content...</Base>
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/transitions.css';
+import { Font } from 'astro:assets';
+import site from '../data/site.json';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Cursor from '../components/Cursor.astro';
+import Preloader from '../components/Preloader.astro';
+
+interface Props {
+  // The page's name for the browser tab. Leave empty on the home page.
+  title?: string;
+  // One or two sentences for search results and link previews.
+  description?: string;
+  // A different share image (path inside public/), 1200 x 630.
+  image?: string;
+  imageAlt?: string;
+  // Keep this page out of search engines (the style guide uses this).
+  noindex?: boolean;
+  // Play the paper-sheet preloader on the first visit of a session (home page only).
+  preloader?: boolean;
+  // "home" makes the header items drop in when the page first appears.
+  intro?: 'home' | 'page';
+  // Which header link to mark as the current page.
+  current?: 'cases' | 'about' | null;
+  // The color of the page behind the content: most pages start on ink.
+  theme?: 'ink' | 'paper';
+  // Pictures the first screen needs, fetched early and first (for example the home reel's
+  // poster on phones), e.g. [{ href: '/media/home/x.webp', media: '(max-width: 767px)' }].
+  preloadImages?: { href: string; media?: string }[];
+}
+
+const {
+  title,
+  description = site.description,
+  image = '/og.png',
+  imageAlt = 'CIVIC in large light letters on black, with the Pomfret griffin and the words Civic AI Club, Pomfret School.',
+  noindex = false,
+  preloader = false,
+  intro = 'page',
+  current = null,
+  theme = 'paper',
+  preloadImages = [],
+} = Astro.props;
+
+// The full page title, e.g. "About · Civic AI Club".
+const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.school}`;
+// The page's permanent public address, so search engines don't count copies twice.
+const canonical = new URL(Astro.url.pathname, Astro.site);
+// The "page not found" page is shown at whatever wrong address someone typed, so it has no
+// permanent address of its own: it gets no canonical link and no og:url.
+const isNotFound = /^\/404(\.html|\/)?$/.test(Astro.url.pathname);
+const imageUrl = new URL(image, Astro.site);
+---
+
+<!doctype html>
+<html lang="en" data-intro={intro} data-has-preloader={preloader ? '' : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      The page-change animation's on switch (the animation itself is in src/styles/transitions.css).
+      It must be written here, in the page itself, and not in the style file: the browser decides
+      whether to animate a page change the moment the next page starts, and the style file may not
+      have arrived yet. When it hadn't, the animation was skipped (about half the time on phones).
+      Devices that ask for reduced motion get no page-change animation.
+    -->
+    <style is:inline>@view-transition{navigation:auto}@media (prefers-reduced-motion: reduce){@view-transition{navigation:none}}</style>
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    {!noindex && !isNotFound && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#0d0d0c" />
+
+    <!-- Tab icons: the griffin on ink. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap.xml" />
+
+    <!-- What a link preview shows when someone shares this page. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    {!isNotFound && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Pictures the first screen needs, asked for before anything else finds them. -->
+    {
+      preloadImages.map((image) => (
+        <link rel="preload" as="image" href={image.href} media={image.media} fetchpriority="high" />
+      ))
+    }
+
+    <!-- Fonts. The two files needed first (Host Grotesk Light and Martian Mono) are preloaded. -->
+    <Font cssVariable="--font-host-grotesk" preload={[{ weight: 300 }]} />
+    <Font cssVariable="--font-martian-mono" preload />
+
+    <!--
+      Runs before the page is drawn. Plain-English summary:
+      - Add the class "js", so the page knows JavaScript works (the phone menu button needs it;
+        without JavaScript the header shows its plain links instead).
+      - If the visitor switched Motion off in the footer before, remember that (data-motion="off").
+      - If motion is allowed (their device doesn't ask for less motion, and they haven't switched
+        it off), add the class "js-motion", which lets elements start hidden and animate in.
+      - If this is the home page and the first page of this browser session, add "js-preload" so
+        the preloader shows. Adding ?preloader to the address forces it, for reviewing.
+      - Safety net: if the motion code hasn't started 3.5 seconds later (a script failed to load),
+        remove both classes so nothing stays hidden. (For a page prepared in the background, the
+        3.5 seconds count from when it is actually shown.)
+      - When Motion is off, switch the page-change animation off too: a small style tag
+        (id "vt-off") placed after the on switch above turns it off before it can start.
+        src/scripts/site/motion-toggle.js adds or removes that tag when the switch is flipped.
+      - Arriving through the footage hand-off (see handoff below), mark the page "vt-handoff" for
+        the length of the page change.
+      - Arriving with the browser's Back button, mark the page change as a "back" one, so it plays
+        in reverse (src/styles/transitions.css).
+    -->
+    <script is:inline>
+      (function () {
+        var html = document.documentElement;
+        html.classList.add('js');
+        var off = false;
+        try {
+          off = localStorage.getItem('civic:motion') === 'off';
+        } catch (e) {}
+        if (off) html.setAttribute('data-motion', 'off');
+        // Motion off: no page-change animation. This tag comes after the on switch, so it wins.
+        if (off) {
+          var vtOff = document.createElement('style');
+          vtOff.id = 'vt-off';
+          vtOff.textContent = '@view-transition{navigation:none}';
+          document.head.appendChild(vtOff);
+        }
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var firstPage = false;
+        try {
+          firstPage = !sessionStorage.getItem('civic:visited');
+          sessionStorage.setItem('civic:visited', '1');
+        } catch (e) {}
+        if (/[?&]preloader\b/.test(location.search)) firstPage = true;
+        if (!reduce && !off) {
+          html.classList.add('js-motion');
+          if (firstPage && html.hasAttribute('data-has-preloader')) html.classList.add('js-preload');
+          var safetyNet = function () {
+            setTimeout(function () {
+              if (!html.classList.contains('motion-ready')) html.classList.remove('js-motion', 'js-preload');
+            }, 3500);
+          };
+          // A page the browser prepared in the background (see the speculation rules below)
+          // only starts its motion once it is shown, so the safety net waits for that too.
+          if (document.prerendering) document.addEventListener('prerenderingchange', safetyNet, { once: true });
+          else safetyNet();
+        }
+        // A second safety net for Motion off: if a page change still started an animation, skip
+        // it. Skipping makes the browser report "the animation never got ready"; the empty
+        // catch below tells it that's expected, so it isn't logged as an error.
+        function skipIfOff(event) {
+          if (event.viewTransition && html.getAttribute('data-motion') === 'off') {
+            event.viewTransition.ready.catch(function () {});
+            event.viewTransition.skipTransition();
+          }
+        }
+        window.addEventListener('pageswap', skipIfOff);
+        window.addEventListener('pagereveal', skipIfOff);
+        // The Back button: when this page was reached by going back through the browser's
+        // history (a "traverse" to an earlier entry), label the page change "back". The style
+        // file then plays the page change in reverse: the old page drops away downward and this
+        // one is revealed from the top. Forward links and the Forward button keep the normal one.
+        function markBack(event) {
+          var vt = event.viewTransition;
+          var nav = window.navigation;
+          if (!vt || !vt.types || !nav || !nav.activation) return;
+          var from = nav.activation.from;
+          var entry = nav.activation.entry;
+          if (nav.activation.navigationType === 'traverse' && from && entry && entry.index < from.index) {
+            vt.types.add('back');
+          }
+        }
+        window.addEventListener('pagereveal', markBack);
+        // The footage hand-off: when the page before grew its footage into this page's hero (the
+        // home page's case letter, or a case's "Next case" band), it left this page's address in
+        // "civic:handoff". Then, for the length of the page change only, the class "vt-handoff"
+        // lifts the hero's words and the header above the growing footage (src/styles/case.css).
+        function handoff(event) {
+          var to = null;
+          try {
+            to = sessionStorage.getItem('civic:handoff');
+            sessionStorage.removeItem('civic:handoff');
+          } catch (e) {}
+          if (!event.viewTransition || to !== location.pathname) return;
+          html.classList.add('vt-handoff');
+          var done = function () {
+            html.classList.remove('vt-handoff');
+          };
+          event.viewTransition.finished.then(done, done);
+        }
+        window.addEventListener('pagereveal', handoff);
+      })();
+    </script>
+
+    <!--
+      Speculation rules: when a visitor rests the pointer on a link that opens a case with the
+      footage hand-off (the home docket's letter and "Open case", a case page's "Next case" band),
+      Chrome quietly prepares that case page in the background ("prerender"). The zoom then hands
+      over to a page that is already there, so it can start revealing at once. Other browsers
+      ignore this. A prepared page waits to start its motion until it is shown
+      (src/scripts/motion/index.js).
+    -->
+    <script type="speculationrules" is:inline>
+      {"prerender":[{"where":{"selector_matches":"[data-next-link], [data-dk-hit], [data-dk-open]"},"eagerness":"moderate"}]}
+    </script>
+  </head>
+  <body>
+    {preloader && <Preloader />}
+    <a class="skip-link" href="#main" data-menu-inert>Skip to content</a>
+    <Header current={current} />
+    <main id="main" class:list={['site-main', `theme-${theme}`]} tabindex="-1" data-menu-inert>
+      <slot />
+    </main>
+    <Footer />
+    <Cursor />
+
+    <script>
+      // The site's scripts. Astro bundles these into one small file for every page.
+      // Motion first (animations, smooth scrolling, videos), then the interface helpers that work
+      // with or without motion: the phone menu, the footer's Motion On/Off switch, and the ink
+      // strip that keeps the header readable over footage.
+      import '../scripts/motion/index.js';
+      import '../scripts/site/menu.js';
+      import '../scripts/site/motion-toggle.js';
+      import '../scripts/site/header-backdrop.js';
+    </script>
+  </body>
+</html>

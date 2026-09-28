@@ -1,0 +1,281 @@
+---
+// about/Started.astro: "How it started". Section 9 of 10 on the About page.
+//
+// What it shows:
+//   1. The club photo, in black and white, across the whole width of the window, captioned
+//      "The club, November 2025." (the photo is approved for this page; see src/data/about.json).
+//   2. The statement "From one meeting to eleven repositories."
+//   3. A strip of cards, one per moment in the club's short history (src/data/timeline.json):
+//      the month, the year and one line each.
+//
+// Motion (src/scripts/motion/modules/about-started.js):
+//   - The photo opens downward (its window grows from the top edge) over 1.8 seconds while the
+//     picture inside slides down into place from half its height above (data-about-open).
+//   - The cards flip up into place one after another, turning from a tilt as they rise, then the
+//     strip drifts slowly to the left, round and round. It stops while the pointer is over it,
+//     can be dragged sideways, and has a Pause button (data-about-strip).
+// Without motion the strip is a plain row that scrolls sideways (with a trackpad, a swipe, or
+// the arrow keys once it has keyboard focus), and the photo is simply there.
+import Photo from '../Photo.astro';
+import Statement from '../Statement.astro';
+import Divider from '../Divider.astro';
+import about from '../../data/about.json';
+import timeline from '../../data/timeline.json';
+
+// Cards 3 and 6 are ink-colored, to give the strip a rhythm. (Change the numbers to move them.)
+const inkCards = new Set([2, 5]);
+
+// Split "Nov 2025" into the month ("Nov") and the year ("2025") for the card's two sizes.
+const cards = timeline.items.map((item, i) => {
+  const [month, year] = item.label.split(' ');
+  return { ...item, month, year, index: String(i + 1).padStart(2, '0'), ink: inkCards.has(i) };
+});
+---
+
+<section class="started theme-paper" aria-labelledby="started-title">
+  <figure class="started__photo">
+    <div class="started__window" data-about-open>
+      <div class="started__inner" data-about-open-inner>
+        <Photo
+          id={about.media.photo}
+          tone="bw"
+          caption={false}
+          sizes="100vw"
+          bare
+          class="started__img"
+        />
+      </div>
+    </div>
+    <figcaption class="started__caption grid">
+      <span class="started__caption-text t-label" data-reveal="lines">The club, November 2025.</span>
+      <span class="started__caption-note t-mono">First full meeting</span>
+    </figcaption>
+  </figure>
+
+  <div class="started__head grid">
+    <Statement as="h2" id="started-title" class="started__title" indent={false}>
+      From one meeting to eleven repositories.
+    </Statement>
+  </div>
+
+  <div class="strip" data-about-strip>
+    <div class="strip__bar grid">
+      <Divider class="strip__rule" />
+      <p class="strip__label t-label" data-reveal="lines">How it started</p>
+      <button type="button" class="strip__toggle t-mono" data-about-strip-toggle hidden>
+        <span data-about-strip-toggle-label>Pause</span><span class="sr-only"> the moving timeline</span>
+      </button>
+    </div>
+    <div
+      class="strip__viewport"
+      tabindex="0"
+      role="region"
+      aria-label="The club’s timeline, November 2025 to September 2026"
+      data-about-strip-viewport
+      data-cursor="Drag"
+    >
+      <ol class="strip__track" data-about-strip-track>
+        {
+          cards.map((card) => (
+            <li class:list={['card', { 'card--ink theme-ink': card.ink }]} data-about-strip-card>
+              <p class="card__top">
+                <span class="card__month">{card.month}</span>
+                <span class="card__year t-mono">{card.year}</span>
+              </p>
+              <p class="card__index t-mono" aria-hidden="true">
+                ({card.index})
+              </p>
+              <p class="card__text">{card.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .started {
+    padding-block: 0 var(--space-section);
+  }
+
+  /* ---- The photo, from edge to edge of the window ---- */
+  .started__photo {
+    margin: 0;
+  }
+  .started__window {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .started__inner {
+    position: absolute;
+    inset: 0;
+  }
+  .started__inner :global(.started__img),
+  .started__inner :global(picture),
+  .started__inner :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  .started__inner :global(img) {
+    object-fit: cover;
+    /* Keep the table and the faces in frame when the 4:3 photo is cropped to 16:9. */
+    object-position: 50% 58%;
+  }
+  .started__caption {
+    margin-top: 16px;
+    align-items: baseline;
+  }
+  .started__caption-text {
+    grid-column: 1 / span 6;
+  }
+  .started__caption-note {
+    grid-column: 7 / -1;
+    justify-self: end;
+    color: var(--text-2);
+  }
+
+  .started__head {
+    margin-top: var(--space-section);
+    margin-bottom: clamp(56px, 7vw, 112px);
+  }
+  .started__head :global(.started__title) {
+    grid-column: 1 / -1;
+  }
+
+  /* ---- The strip of cards ---- */
+  .strip__bar {
+    row-gap: 0;
+    align-items: baseline;
+    margin-bottom: clamp(28px, 3vw, 44px);
+  }
+  .strip__bar :global(.strip__rule) {
+    grid-column: 1 / -1;
+    margin-bottom: clamp(20px, 2vw, 28px);
+  }
+  .strip__label {
+    grid-column: 1 / span 6;
+    font-weight: var(--fw-light);
+  }
+  .strip__toggle {
+    grid-column: 7 / -1;
+    justify-self: end;
+    min-height: 24px;
+    padding: 6px 8px;
+    border: 1px solid currentColor;
+  }
+
+  /* Without motion: a row that scrolls sideways on its own, snapping to each card. */
+  .strip__viewport {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--margin);
+    scrollbar-width: none;
+    /* Room for the cards' 3D flip, which would otherwise be clipped at the top. */
+    padding-block: 2px;
+  }
+  .strip__viewport::-webkit-scrollbar {
+    display: none;
+  }
+  .strip__viewport:focus-visible {
+    outline-offset: -2px;
+  }
+  .strip__track {
+    display: flex;
+    gap: var(--gutter);
+    width: max-content;
+    padding-inline: var(--margin);
+  }
+
+  /* With motion on (about-started.js adds "is-live"), the strip is moved by the motion code
+     instead of scrolled, and the cards turn in 3D, so the row gets depth. */
+  .strip:global(.is-live) .strip__viewport {
+    overflow: hidden;
+    scroll-snap-type: none;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .strip:global(.is-live.is-dragging) .strip__viewport {
+    cursor: grabbing;
+  }
+  .strip:global(.is-live) .strip__track {
+    perspective: 1400px;
+    will-change: transform;
+  }
+
+  /* One card: the month large at the top, the year beside it, its line at the bottom. */
+  .card {
+    --card-w: clamp(250px, 25.5vw, 400px);
+    position: relative;
+    flex: none;
+    width: var(--card-w);
+    aspect-ratio: 4 / 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(20px, 2vw, 32px);
+    background: #e9e7e1;
+    color: var(--ink);
+    scroll-snap-align: start;
+    transform-origin: 50% 100%;
+  }
+  .card--ink {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .card__top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  /* The month at the site's figure size (--fs-figure, like the numbers on the home page), never
+     smaller than 64px so it stays big on phones. */
+  .card__month {
+    font-size: max(var(--fs-figure), 64px);
+    line-height: 0.8;
+    letter-spacing: -0.05em;
+  }
+  .card__year {
+    margin-top: 0.3em;
+  }
+  .card__index {
+    position: absolute;
+    top: clamp(20px, 2vw, 32px);
+    right: clamp(20px, 2vw, 32px);
+    color: var(--text-2, var(--ink-2));
+  }
+  .card__text {
+    max-width: 14em;
+    font-size: clamp(22px, 1.95vw, 30px);
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+  }
+
+  /* With motion on, the photo and the cards wait hidden until the motion code has set them up. */
+  :global(html.js-motion) [data-about-open]:not(.is-open) {
+    clip-path: inset(0 0 100% 0);
+  }
+  :global(html.js-motion) [data-about-strip]:not(.is-ready) [data-about-strip-card] {
+    visibility: hidden;
+  }
+
+  @media (max-width: 767px) {
+    .started__window {
+      aspect-ratio: 4 / 3;
+    }
+    .started__caption-text {
+      grid-column: 1 / span 4;
+    }
+    .started__caption-note {
+      grid-column: 5 / -1;
+    }
+    .card {
+      --card-w: 72vw;
+    }
+  }
+</style>

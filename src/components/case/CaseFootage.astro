@@ -1,0 +1,99 @@
+---
+// CaseFootage.astro: two close-ups of the tool at work, laid out unevenly like a magazine page.
+//
+// The first close-up (the case file's clips.detail1, usually square) sits on columns 7 to 12,
+// with its written caption in columns 1 to 4, level with the clip's bottom edge. The second
+// (clips.detail2, usually 16:9) runs across all twelve columns, with its caption below it from
+// column 7. On phones both stack at full width with the caption underneath.
+// A clip that isn't in src/data/media.json yet is simply left out (Roster Export has only one),
+// and if neither exists the whole section is left out. "npm run check:media" lists missing ids.
+//
+// Motion: each frame opens from the top while its footage slides into place (M3). The clips play
+// while on screen and pause when off it, each with a Pause button (Video.astro and
+// modules/video.js).
+import Video from '../Video.astro';
+import { getClip } from '../../lib/media';
+
+interface Props {
+  ids: (string | undefined)[];
+  letter: string;
+}
+const { ids, letter } = Astro.props;
+const clips = ids.filter((id): id is string => Boolean(id && getClip(id)));
+---
+
+{
+  clips.length > 0 && (
+    <section class="footage theme-ink" aria-label={`Case ${letter} footage`}>
+      {clips.map((id, i) => (
+        <div class:list={['footage__row', 'grid', i === 0 ? 'footage__row--first' : 'footage__row--second']}>
+          <Video id={id} open placeholder={letter} class="footage__clip" />
+        </div>
+      ))}
+    </section>
+  )
+}
+
+<style>
+  .footage {
+    padding-block: var(--space-section);
+  }
+  .footage__row + .footage__row {
+    margin-top: var(--space-section);
+  }
+  /* Each clip's figure spans the whole grid and lines its own frame and caption up on the same
+     columns ("subgrid" lets a child reuse its parent's columns). */
+  .footage__row > :global(.footage__clip) {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: 20px;
+    align-items: end;
+  }
+  .footage__row :global(.video__caption) {
+    margin: 0;
+    max-width: 30ch;
+    font-size: var(--fs-label);
+    line-height: var(--lh-label);
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  /* First row: clip on columns 7 to 12, caption on 1 to 4 at the clip's bottom edge. */
+  .footage__row--first :global(.video__frame) {
+    grid-column: 7 / -1;
+    grid-row: 1;
+  }
+  .footage__row--first :global(.video__caption) {
+    grid-column: 1 / span 4;
+    grid-row: 1;
+  }
+  /* Second row: clip across all twelve columns, caption below from column 7. */
+  .footage__row--second :global(.video__frame) {
+    grid-column: 1 / -1;
+  }
+  .footage__row--second :global(.video__caption) {
+    grid-column: 7 / span 4;
+  }
+
+  /* Tablets: first clip on columns 4 to 8 with its caption on 1 to 3. */
+  @media (max-width: 1023px) {
+    .footage__row--first :global(.video__frame) {
+      grid-column: 4 / -1;
+    }
+    .footage__row--first :global(.video__caption) {
+      grid-column: 1 / span 3;
+    }
+    .footage__row--second :global(.video__caption) {
+      grid-column: 4 / -1;
+    }
+  }
+  /* Phones: everything full width, caption underneath. */
+  @media (max-width: 767px) {
+    .footage__row--first :global(.video__frame),
+    .footage__row--first :global(.video__caption),
+    .footage__row--second :global(.video__caption) {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+  }
+</style>

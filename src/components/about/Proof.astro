@@ -1,0 +1,139 @@
+---
+// about/Proof.astro: the proof. Section 2 of 10 on the About page.
+//
+// What it shows: one giant word, "Merged", across the page from margin to margin (in the Light
+// weight, letters pulled tight), with a small mono "(×50)" just above its right end: the
+// club has merged 50 pull requests (reviewed, approved changes to its code). Below it, a
+// labeled row: "Pull requests merged since April 2026." on the left and four more counts on
+// the right, then the date the numbers were last checked.
+//
+// Where the numbers come from: src/data/numbers.json (change them there, never here), and the
+// month of the first merged pull request from src/data/timeline.json.
+//
+// Motion (src/scripts/motion/modules/about-proof.js, asked for with data-about-flip): each
+// letter of "Merged" flips up from its bottom edge in 3D, one after another, and the count
+// fades in just after. The row below uses the site's divider and line-rise effects.
+// Without motion the word simply sits there, whole.
+import KeyValue from '../KeyValue.astro';
+import numbers from '../../data/numbers.json';
+import timeline from '../../data/timeline.json';
+
+// Look up one number by its id in numbers.json. If an id is ever renamed there, the build stops
+// with a clear message instead of printing an empty count.
+function count(id: string) {
+  const item = numbers.items.find((entry) => entry.id === id);
+  if (!item) throw new Error(`about/Proof.astro: numbers.json has no item with id "${id}".`);
+  return item;
+}
+
+const pullRequests = count('pull-requests');
+// The four counts listed on the right, in this order.
+const facts = ['lines-of-code', 'repositories', 'faculty-cases', 'members'].map(count);
+
+// "since April 2026": the month of the first merged pull request, from the timeline.
+const firstMerge = timeline.items.find((item) => /merged/i.test(item.text));
+const since = firstMerge
+  ? new Date(`${firstMerge.date}-01T12:00:00Z`).toLocaleString('en-US', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
+  : 'April 2026';
+
+// "Merged", one letter per <span>, so the motion code can flip each letter on its own.
+const word = 'Merged';
+---
+
+<section class="proof theme-paper" aria-labelledby="proof-title">
+  <div class="proof__head wrap">
+    <h2 id="proof-title" class="proof__word" data-about-flip>
+      <span class="proof__letters" aria-hidden="true">
+        {word.split('').map((letter) => <span class="proof__char" data-about-flip-char>{letter}</span>)}
+      </span>
+      <span class="proof__count t-mono" aria-hidden="true" data-about-flip-count>(×{pullRequests.value})</span>
+      <span class="sr-only">{word}: {pullRequests.value} {pullRequests.label}</span>
+    </h2>
+  </div>
+
+  <KeyValue label={`Pull requests merged since ${since}.`} class="proof__row">
+    {
+      facts.map((fact, i) => (
+        <>
+          {fact.value} {fact.label}
+          {i < facts.length - 1 && <br />}
+        </>
+      ))
+    }
+    <p slot="after" class="proof__checked t-mono">{numbers.checkedLabel}</p>
+  </KeyValue>
+</section>
+
+<style>
+  .proof {
+    padding-block: clamp(40px, 6vw, 96px) var(--space-section);
+  }
+
+  /* The word's row measures its own width (a "container"), so the word can be sized to fit it. */
+  .proof__head {
+    container-type: inline-size;
+  }
+  /* The giant word. It is a heading, so screen readers hear "Merged: 50 pull requests merged".
+     It fits the row exactly, from the left margin to the right one, at any window width:
+     "Merged" in this font and spacing is 3.157 times as wide as its font size (measured; the
+     0.055em pull on the M is already counted), so the font size is the row's width (100cqw)
+     divided by 3.157. Change the number if the word, font or spacing ever changes. */
+  .proof__word {
+    position: relative;
+    display: inline-block;
+    font-size: calc(100cqw / 3.157);
+    font-weight: var(--fw-light);
+    letter-spacing: var(--ls-display);
+    line-height: 0.8;
+    /* Room for the descender of the g, which a 0.8 line-height would otherwise leave hanging. */
+    padding-bottom: 0.14em;
+    /* The 3D flip needs depth: how far away the viewer's eye is from the letters. */
+    perspective: 2.4em;
+    perspective-origin: 50% 100%;
+  }
+  .proof__letters {
+    display: inline-block;
+    /* The word exactly fills its row, so it must never break onto a second line. */
+    white-space: nowrap;
+    /* Pull the first letter's side bearing in, so the M lines up with the page margin. */
+    margin-left: -0.055em;
+  }
+  .proof__char {
+    display: inline-block;
+    transform-origin: 50% 100%;
+    backface-visibility: hidden;
+  }
+  /* The count sits just above the word's right end, inside the right margin, like a footnote. */
+  .proof__count {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    font-size: clamp(12px, 1.35vw, 22px);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: var(--text-2);
+  }
+
+  .proof__head {
+    margin-bottom: clamp(40px, 5vw, 80px);
+  }
+  .proof__checked {
+    color: var(--text-2);
+  }
+
+  /* With motion on, the letters and count wait hidden until about-proof.js has placed them. */
+  :global(html.js-motion) [data-about-flip]:not(.is-ready) [data-about-flip-char],
+  :global(html.js-motion) [data-about-flip]:not(.is-ready) [data-about-flip-count] {
+    visibility: hidden;
+  }
+
+  @media (max-width: 767px) {
+    .proof__head {
+      padding-top: 24px;
+    }
+  }
+</style>

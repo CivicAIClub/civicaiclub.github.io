@@ -1,0 +1,57 @@
+---
+// Statement.astro: a big paragraph in light type, the site's main voice.
+//
+// It is set at statement size (about 62px on a laptop) with its first line pushed in by three
+// columns, like a magazine. With motion on, its lines rise out of hidden masks word by word as
+// it scrolls into view (motion M1, the data-reveal="lines" attribute, modules/reveal-lines.js).
+// Put one <mark data-mark>phrase</mark> inside to get the crimson marker (M5), and links are
+// fine too. Use as="h2" (or "h1") when the statement is also the section's heading.
+interface Props {
+  as?: 'p' | 'h1' | 'h2' | 'h3' | 'div';
+  // Push the first line in by three columns (two on tablets, one on phones).
+  indent?: boolean;
+  // Turn the line-rise animation on or off for this statement.
+  reveal?: boolean;
+  // "intro" plays the rise when the page first appears instead of on scroll (for page tops).
+  revealOn?: 'scroll' | 'intro';
+  // Extra wait before the rise starts, in seconds.
+  delay?: number;
+  id?: string;
+  class?: string;
+}
+const {
+  as: Tag = 'p',
+  indent = true,
+  reveal = true,
+  revealOn = 'scroll',
+  delay,
+  id,
+  class: className,
+} = Astro.props;
+---
+
+<Tag
+  id={id}
+  class:list={['statement', 't-statement', { 'statement--indent': indent }, className]}
+  data-reveal={reveal ? 'lines' : undefined}
+  data-reveal-on={revealOn === 'intro' ? 'intro' : undefined}
+  data-reveal-delay={delay}
+>
+  <slot />
+</Tag>
+
+<style>
+  .statement {
+    max-width: 100%;
+  }
+  /* The first-line indent. "--span" is how many columns the statement itself covers; set it on
+     the statement if it covers fewer than all of them. */
+  .statement--indent {
+    text-indent: calc((100% + var(--gutter)) * var(--statement-indent) / var(--span, var(--cols)));
+  }
+  .statement :global(a) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.12em;
+  }
+</style>

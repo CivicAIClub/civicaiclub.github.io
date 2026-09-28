@@ -1,0 +1,4 @@
+# Reviewers automatically requested on every pull request.
+# The club lead reviews everything on the public site, especially src/scripts/motion/,
+# src/styles/tokens.css and .github/workflows/.
+* @CaydenAuyang

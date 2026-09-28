@@ -1,0 +1,7 @@
+{
+  "_note": "The About page's pictures. Every value under a \"media\" key is an id in src/data/media.json (see MEDIA-IDS.md). The club photo is approved for About only; show it with <Photo id=\"about-club-photo\" /> (a black-and-white set is built in: tone=\"bw\"). The workshop clip is the club's public GitHub (merged pull requests, avatars hidden); show it with <Video id=\"about-workshop\" />.",
+  "media": {
+    "photo": "about-club-photo",
+    "workshop": "about-workshop"
+  }
+}
