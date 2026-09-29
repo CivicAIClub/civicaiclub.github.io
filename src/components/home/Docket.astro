@@ -55,7 +55,8 @@ function placeLetter(d: string, width: number): string {
 }
 
 // "Built by": the students on the case, as "Name ’YY", leaving out advisors (they are credited
-// on the case page itself). A case nobody has been assigned to yet says so.
+// on the case page itself). A case nobody has been assigned to yet says so. For an open case
+// with nothing built yet (Case E) the same row is labeled "Team" instead (see builtByLabel).
 function builtBy(team: { name: string; classYear?: number; role?: string }[]): string {
   const builders = team.filter((person) => !/advisor/i.test(person.role ?? ''));
   return builders.length ? builders.map(formatPerson).join(', ') : 'Not assigned yet';
@@ -77,6 +78,11 @@ const rows = cases.map((entry) => {
     clip,
     placed: placeLetter(glyph.d, glyph.width),
     builtBy: builtBy(data.team),
+    builtByLabel: data.inProgress ? 'Team' : 'Built by',
+    // "Team this year": this school year's case team, kept apart from "Built by" (new members
+    // haven't built the tool). Empty when the case file lists no currentTeam, and then the row
+    // is left out.
+    thisYear: data.currentTeam.map(formatPerson).join(', '),
     // "Status": the case file's own words. An open case (Case E) reads "In progress. Discovery next."
     status: data.inProgress ? `In progress. ${data.status.replace(/\.$/, '')}.` : data.status,
   };
@@ -165,11 +171,12 @@ const rows = cases.map((entry) => {
                   </span>
                 </span>
               </p>
-              {/* Two ruled rows: who built it, and where it stands. Each value rolls in and out
+              {/* Ruled rows: who built it, this year's team (when the case file lists one), and
+                  where it stands. Each value rolls in and out
                   with the rest of the case's words (data-dk-fact). */}
               <dl class="dk-case__facts t-ui">
                 <div class="dk-fact">
-                  <dt class="dk-fact__key t-mono">Built by</dt>
+                  <dt class="dk-fact__key t-mono">{row.builtByLabel}</dt>
                   <dd class="dk-fact__value">
                     <span class="dk-mask">
                       <span class="dk-mask__in" data-dk-fact>
@@ -178,6 +185,18 @@ const rows = cases.map((entry) => {
                     </span>
                   </dd>
                 </div>
+                {row.thisYear && (
+                  <div class="dk-fact">
+                    <dt class="dk-fact__key t-mono">Team this year</dt>
+                    <dd class="dk-fact__value">
+                      <span class="dk-mask">
+                        <span class="dk-mask__in" data-dk-fact>
+                          {row.thisYear}
+                        </span>
+                      </span>
+                    </dd>
+                  </div>
+                )}
                 <div class="dk-fact">
                   <dt class="dk-fact__key t-mono">Status</dt>
                   <dd class="dk-fact__value">

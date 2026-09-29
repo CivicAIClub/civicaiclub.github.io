@@ -1,5 +1,5 @@
 {
-  "_note": "Names and class years for public credit, confirmed by the club lead on 2026-09-27. Names only: never add emails, photos or anything else about a student here.",
+  "_note": "Names and class years for public credit, confirmed by the club president on 2026-09-29. Names only: never add emails, photos or anything else about a student here.",
   "lead": "Cayden Auyang",
   "vicePresident": "Luke Ryan",
   "facultyAdvisor": {
@@ -18,7 +18,7 @@
     {
       "name": "Cayden Auyang",
       "classYear": 2027,
-      "role": "Club lead"
+      "role": "President"
     },
     {
       "name": "Alex Tong",
@@ -124,6 +124,10 @@
     {
       "name": "Mason Gordon",
       "classYear": 2027
+    },
+    {
+      "name": "Raymond Liu-Cai",
+      "classYear": 2028
     },
     {
       "name": "Richard Luo",

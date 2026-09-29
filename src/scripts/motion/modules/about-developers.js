@@ -20,7 +20,7 @@
 //   - The card lives beside the list, never on it: in columns 1 and 2, left of the names (it is
 //     exactly two columns and a gap wide). Up and down, it lines up with the middle of the name
 //     being pointed at, but stays below the top of the list and above the section's sticky
-//     "+8 developers" label (at least 24px clear of it). It glides there with a smooth delay
+//     "Who built the tools" label (at least 24px clear of it). It glides there with a smooth delay
 //     (each frame it covers a share of the gap: 1 − e^(−8 × seconds since the last frame), so it
 //     feels the same on fast and slow screens).
 //   - Moving to a name from another case swaps the footage (a quick cross-fade) and rolls the
@@ -51,7 +51,7 @@ export default {
     const labelText = section.querySelector('[data-about-card-label-text]');
     const entries = [...section.querySelectorAll('[data-about-person]')];
     const list = entries[0]?.closest('ul');
-    // The section's sticky label ("+8 developers"), which the card must stay above.
+    // The section's sticky label ("Who built the tools"), which the card must stay above.
     const sticky = section.querySelector('.people__label');
     if (!card || !frame || !media || !label || !labelText || !list) return undefined;
     const wide = window.matchMedia(WIDE);

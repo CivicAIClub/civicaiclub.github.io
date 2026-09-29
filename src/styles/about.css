@@ -1,7 +1,7 @@
 /*
   about.css: layout pieces shared by more than one section of the About page.
 
-  The "people" rows (One lead, +8 developers) follow one pattern: a short label on the left
+  The "people" rows (Leadership, Who built the tools) follow one pattern: a short label on the left
   (columns 1 and 2) that stays in view at the bottom of the window while its section scrolls
   past ("sticky"), and the section's content on the right (columns 3 to 12).
   Only src/pages/about.astro loads this file. Each About section keeps the rest of its styles

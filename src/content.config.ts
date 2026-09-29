@@ -64,8 +64,13 @@ const cases = defineCollection({
       // Department."). Leave it out to get "the " + office; write it out when that reads wrong,
       // e.g. "teaching faculty".
       officeIn: z.string().optional(),
-      // The students (and advisors) who built it, in credit order.
+      // The students (and advisors) who built it, in credit order. This is the "Built by" credit.
+      // For an open case with nothing built yet (Case E), the home page labels it "Team" instead.
       team: z.array(person).default([]),
+      // This school year's case team, shown as its own labeled line ("Team this year: ...") on the
+      // case page and on the home page. It is kept apart from "team" on purpose: "team" says who
+      // built the tool, and new members haven't built it. Leave it out to show no line.
+      currentTeam: z.array(person).default([]),
       // Where the case stands today, in a few words, e.g. "Phase 1 built".
       status: z.string().min(1),
       // True shows the crimson "in progress" dot next to the status.
@@ -93,6 +98,8 @@ const cases = defineCollection({
       repo: z.url().nullable(),
       // A public link to the working tool, only where it is safe to share (Case C only).
       liveUrl: z.url().optional(),
+      // One short line shown next to that live link, e.g. that the site now goes by a new name.
+      liveNote: z.string().optional(),
       // True builds a case page at /cases/<slug>/. False lists the case on the home page only.
       public: z.boolean(),
       // The order the cases appear in (1 first).

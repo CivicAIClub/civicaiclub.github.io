@@ -1,16 +1,16 @@
 {
   "_note": "Every number the site prints. Re-check them all before changing 'checked'. No hours-saved figure (none has been measured) and no count-up animations.",
-  "checked": "2026-09-28",
-  "checkedLabel": "Numbers checked Sep 28, 2026",
+  "checked": "2026-09-29",
+  "checkedLabel": "Numbers checked Sep 29, 2026",
   "items": [
     { "id": "faculty-cases", "value": "5", "label": "faculty cases" },
     { "id": "business-projects", "value": "2", "label": "local business projects" },
-    { "id": "members", "value": "36", "label": "student members" },
-    { "id": "developers", "value": "8", "label": "student developers on cases", "note": "plus 1 alumni advisor" },
+    { "id": "members", "value": "37", "label": "student members" },
+    { "id": "developers", "value": "23", "label": "students on case teams", "note": "plus 1 alumni advisor" },
     { "id": "pull-requests", "value": "50", "label": "pull requests merged" },
     { "id": "lines-of-code", "value": "24,000+", "label": "lines of code" },
     { "id": "repositories", "value": "11", "label": "public repositories" },
-    { "id": "voices-moments", "value": "53", "label": "moments since 1894", "source": "Pomfret Voices" },
+    { "id": "voices-moments", "value": "60", "label": "moments since 1894", "source": "Pomfret Voices" },
     { "id": "studio-phases", "value": "5 of 5", "label": "phases shipped", "source": "Music Studio" }
   ]
 }

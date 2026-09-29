@@ -2,6 +2,12 @@
 # Case C. Approved by the Office of DEI. Footage: the live site’s “Six voices” quotes (hero) and
 # the repository build’s horizontal timeline. Never the slide of a teacher with students, and no
 # magazine covers with faces.
+# The live site was redesigned after the footage was recorded and now goes by “Pomfret DEI”
+# (checked 2026-09-29). Its timeline has 60 Pomfret moments from 1894, plus 16 national-context
+# entries that are not counted here. The case keeps the name “Pomfret Voices” (what the team built
+# and what the footage shows), and the footage keeps its “as built in September 2026” label.
+# currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
+# "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: C
 slug: pomfret-voices
 title: Pomfret Voices
@@ -11,12 +17,21 @@ team:
     classYear: 2028
   - name: Keke Li
     classYear: 2027
+currentTeam:
+  - name: Zahir Williams
+    classYear: 2028
+  - name: Keke Li
+    classYear: 2027
+  - name: Jacob Lee
+    classYear: 2029
+  - name: Isabella Gachuhi
+    classYear: 2030
 status: Live
 chore: "Pomfret’s history of diversity, equity and inclusion, [checked line by line]. Every claim traces to a source document."
-fix: "A checked history of inclusion at Pomfret: 53 moments since 1894."
+fix: "A checked history of inclusion at Pomfret: 60 moments since 1894."
 keyValues:
   - key: Timeline
-    value: "53 moments, 1894 onward."
+    value: "60 moments, 1894 onward."
   - key: Archive
     value: "Two Pomfret Magazine issues, page by page."
   - key: People
@@ -52,6 +67,7 @@ beats:
     text: "2026. The line reaches today."
 repo: https://github.com/CivicAIClub/case-c-dei-timeline
 liveUrl: https://pomfret-dei.vercel.app
+liveNote: "Now live as “Pomfret DEI”."
 public: true
 order: 3
 ---

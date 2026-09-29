@@ -1,14 +1,15 @@
 ---
-// about/Developers.astro: "+8 developers". Section 6 of 10 on the About page.
+// about/Developers.astro: "Who built the tools". Section 6 of 10 on the About page.
 //
-// What it shows: the label "+8 developers" on the left (it stays at the bottom of the window
+// What it shows: the label "Who built the tools" on the left (it stays at the bottom of the window
 // while the list scrolls past) and, on the right, a two-column list of everyone who built a
 // case: each name with its class year ("Luke Ryan ’27") and, in grey underneath, the tool they
 // built. Keke Li appears twice (Pomfret Voices, and the first version of Roster Export), and
 // Jay Youm ’26 appears as the alumni advisor on Roster Export. Each entry links to its case page.
 //
 // Where the names come from: each case's "team" list in src/content/cases/*.md, in case order
-// (A, B, C, D). The "8" comes from src/data/numbers.json.
+// (A, B, C, D). This is the "Built by" credit, not this year's case teams: those are the
+// "currentTeam" lists, shown on the case pages and the home page as "Team this year".
 //
 // Hover card (screens 1280px and wider, mouse or trackpad only, motion on;
 // src/scripts/motion/modules/about-developers.js): pointing at a name opens a small upright card
@@ -19,7 +20,6 @@
 // comes over the list.
 // The case pages link here with /about/#developers.
 import Divider from '../Divider.astro';
-import numbers from '../../data/numbers.json';
 import { getPublicCases, caseUrl } from '../../lib/cases';
 import { formatPerson } from '../../lib/people';
 import { getClip } from '../../lib/media';
@@ -46,7 +46,6 @@ const loops = cases
   .map((entry) => ({ slug: entry.data.slug, clip: getClip(entry.data.clips.docket) }))
   .filter((loop) => loop.clip);
 
-const developers = numbers.items.find((item) => item.id === 'developers')?.value ?? '8';
 
 // The codec label for AV1 files; browsers that can't play AV1 use the H.264 file instead.
 const AV1 = 'video/mp4; codecs="av01.0.08M.08"';
@@ -54,7 +53,7 @@ const AV1 = 'video/mp4; codecs="av01.0.08M.08"';
 
 <section id="developers" class="devs theme-paper" aria-labelledby="devs-label" data-about-people>
   <div class="people grid">
-    <h2 id="devs-label" class="people__label t-label">+{developers} developers</h2>
+    <h2 id="devs-label" class="people__label t-label">Who built the tools</h2>
     <ul class="people__body devs__list">
       {
         entries.map((person) => (

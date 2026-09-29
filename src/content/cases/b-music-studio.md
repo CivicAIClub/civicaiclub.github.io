@@ -1,6 +1,8 @@
 ---
 # Case B. Never link the live portal (it shows real data) and never claim Google Sign-In.
 # The repository link stays hidden (repo: null) while that repo is under a security review.
+# currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
+# "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: B
 slug: music-studio
 title: Music Studio
@@ -10,6 +12,15 @@ team:
     classYear: 2028
   - name: JT Gannon
     classYear: 2029
+currentTeam:
+  - name: Serena Xu
+    classYear: 2028
+  - name: JT Gannon
+    classYear: 2029
+  - name: Sienna Ring
+    classYear: 2030
+  - name: Kyle Kim
+    classYear: 2027
 status: All 5 phases shipped
 chore: "Lesson materials were scattered, every booking took back-and-forth, and [nothing tracked progress]. Music Studio puts all three in one portal."
 fix: "Lesson invites after a quick preview, a Drive folder per student, a recap after every lesson."

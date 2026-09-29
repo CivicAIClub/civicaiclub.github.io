@@ -8,8 +8,11 @@
 //    anyone with a special role in brackets ("Keke Li ’27 (first version)"), advisors after
 //    "with", and the client office (offices only, never a faculty member's name). Each name links
 //    to the club's developers on the About page (/about/#developers), underlined.
-// 2. One small mono row: "Runs on ...", "Status ..." (for Roster Export, where Phase 2 is
-//    explained) and the links: "Repository ↗", and for Pomfret Voices "Current DEI site ↗" too.
+// 2. One small mono row: "Team this year ..." (this year's case team, from "currentTeam"; kept
+//    apart from the "Built by" sentence because new members haven't built the tool), "Runs on
+//    ...", "Status ..." (for Roster Export, where the next phase is explained) and the links:
+//    "Repository ↗", and for Pomfret Voices "Current DEI site ↗" too, with its short note
+//    ("liveNote") beside it.
 //    A case whose "repo" is null in its case file (Music Studio, under a security review) has no
 //    repository link, and the Music Studio portal itself is never linked.
 // Motion: the sentence rises line by line (M1, from Statement.astro); once it has risen, the
@@ -22,6 +25,8 @@ import { formatPerson, joinNames } from '../../lib/people';
 
 interface Props {
   team: { name: string; classYear?: number; role?: string }[];
+  // This year's team (see src/content.config.ts). Empty means no "Team this year" line.
+  currentTeam?: { name: string; classYear?: number; role?: string }[];
   office: string;
   // How the office reads inside the sentence (see src/content.config.ts), e.g. "teaching faculty".
   officeIn?: string;
@@ -30,8 +35,13 @@ interface Props {
   rows: { key: string; value: string }[];
   repo: string | null;
   liveUrl?: string;
+  // A short line shown beside the live link, e.g. "Now live as “Pomfret DEI”."
+  liveNote?: string;
 }
-const { team, office, officeIn, runsOn, status, rows, repo, liveUrl } = Astro.props;
+const { team, currentTeam = [], office, officeIn, runsOn, status, rows, repo, liveUrl, liveNote } = Astro.props;
+
+// This year's team as "A ’27, B ’28 and C ’30", or nothing when the case file lists none.
+const thisYear = joinNames(currentTeam.map((person) => formatPerson(person)));
 
 // Where every name links: the list of the club's developers on the About page.
 const DEVELOPERS = '/about/#developers';
@@ -85,6 +95,13 @@ const statusText = statusRow ? statusRow.value : `${status}.`;
     <!-- The facts row: what it runs on, where it stands, and the links. -->
     <ul class="credits__facts t-mono">
       {
+        thisYear && (
+          <li class="credits__fact credits__fact--team">
+            <span class="credits__key">Team this year</span> {thisYear}.
+          </li>
+        )
+      }
+      {
         runsOn.length > 0 && (
           <li class="credits__fact">
             <span class="credits__key">Runs on</span> {joinNames(runsOn)}.
@@ -102,6 +119,7 @@ const statusText = statusRow ? statusRow.value : `${status}.`;
                 Current DEI site
               </ArrowLink>
             )}
+            {liveUrl && liveNote && <span class="credits__note">{liveNote}</span>}
             {repo && (
               <ArrowLink href={repo} external>
                 Repository
@@ -191,6 +209,11 @@ const statusText = statusRow ? statusRow.value : `${status}.`;
   .credits__fact {
     grid-column: span 4;
   }
+  /* "Team this year" gets a row of its own across the full width, so "Runs on", "Status" and the
+     links keep sharing the row below it, three across. */
+  .credits__fact--team {
+    grid-column: 1 / -1;
+  }
   .credits__key {
     color: var(--text-2);
     margin-right: 0.6em;
@@ -201,6 +224,10 @@ const statusText = statusRow ? statusRow.value : `${status}.`;
     gap: 4px 28px;
     justify-content: flex-end;
     align-items: baseline;
+  }
+  /* The short note beside the live link ("Now live as ..."): plain grey text, not a link. */
+  .credits__note {
+    color: var(--text-2);
   }
   @media (max-width: 1023px) {
     .credits__fact {
