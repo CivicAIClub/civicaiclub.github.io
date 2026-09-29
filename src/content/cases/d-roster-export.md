@@ -1,7 +1,10 @@
 ---
-# Case D. Phase 1 is built; Phase 2 waits on API access from school IT. Don’t claim it’s in use.
+# Case D. Phase 1 is built. The school’s reporting-system API isn’t available, so the next phase is
+# being rescoped around the school’s own Canvas grade process (2026-09-29). Don’t claim it’s in use.
 # Keke Li built the first version; Jay Youm ’26 advises as an alumnus (never “graduated”).
 # The credits read “teaching faculty” (officeIn), not “the Teaching faculty”.
+# currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
+# "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: D
 slug: roster-export
 title: Roster Export
@@ -18,6 +21,13 @@ team:
   - name: Jay Youm
     classYear: 2026
     role: Alumni advisor
+currentTeam:
+  - name: James Lake
+    classYear: 2027
+  - name: Magnus Songhurst
+    classYear: 2028
+  - name: Richard Luo
+    classYear: 2030
 status: Phase 1 built
 chore: "Every grading period brought [the same copy-and-paste routine] before comments could start. Roster Export builds the documents straight from Canvas."
 fix: "Canvas class lists in; one comment Doc per class out, with a tab for every student."
@@ -27,7 +37,7 @@ keyValues:
   - key: Makes
     value: "A Drive folder with one comment Doc per class and a tab per student."
   - key: Status
-    value: "Phase 1 built. Phase 2, sending comments to the school’s reporting system, waits on API access from school IT."
+    value: "Phase 1 built. The next phase is being rescoped around the school’s own Canvas grade process."
 runsOn: [Canvas, Google Sheets, Google Docs, Google Drive]
 heroFocus: "40% 50%"
 clips:

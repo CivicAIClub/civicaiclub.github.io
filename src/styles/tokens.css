@@ -6,7 +6,7 @@
   headline, it changes here and the whole site follows.
 
   Used by: base.css, transitions.css and every component's <style> block.
-  Owned by: the club lead (see .github/CODEOWNERS). Please ask before changing.
+  Owned by: the club president (see .github/CODEOWNERS). Please ask before changing.
 */
 
 :root {
@@ -56,7 +56,7 @@
   --fs-statement: clamp(30px, 4.3vw, 80px); /* the big statements */
   --lh-statement: 1.08;
   --ls-statement: -0.02em;
-  --fs-case-hero: 9vw; /* case names above their hero footage, and the club lead's name */
+  --fs-case-hero: 9vw; /* case names above their hero footage, and the leaders' names on About */
   --fs-figure: 6.6vw; /* big figures: the numbers at a glance, the months on About's timeline */
   --fs-name: clamp(28px, 2.78vw, 40px); /* people's names in lists (40px from 1440px wide) */
   --fs-display: 26vw; /* one giant word per page (About's "Merged" is sized to fit its row) */

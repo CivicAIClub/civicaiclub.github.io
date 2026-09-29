@@ -5,6 +5,8 @@
 # account connection (checked in the repo’s README and frontend/index.html, main branch).
 # The clip ids below must match src/data/media.json (see MEDIA-IDS.md). Beat times are seconds
 # into the scrub clip, timed against the final footage (re-time them if it is ever re-cut).
+# currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
+# "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: A
 slug: autoplanner
 title: AutoPlanner
@@ -14,6 +16,15 @@ team:
     classYear: 2027
   - name: Jack Weinberg
     classYear: 2027
+currentTeam:
+  - name: Luke Ryan
+    classYear: 2027
+  - name: Jack Weinberg
+    classYear: 2027
+  - name: Lucas Feng
+    classYear: 2030
+  - name: Justus Schroeder
+    classYear: 2029
 status: Demoed to the CLC, May 2026
 chore: "Study-hall staff in the CLC (Center for Learning and Collaboration) spent [hours each week] logging into student Canvas accounts and copying assignments by hand. AutoPlanner was built to do the copying."
 fix: "Each student’s Canvas assignments, rebuilt as a weekly Google Doc."

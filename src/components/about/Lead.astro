@@ -2,9 +2,9 @@
 // about/Lead.astro: "Leadership". Section 5 of 10 on the About page.
 //
 // What it shows: the label "Leadership" on the left (it stays at the bottom of the window while
-// this section scrolls past), and on the right, in large type, the club lead's name and class
-// year with one line on what the lead does and a link to their GitHub profile; then the vice
-// president's name and class year with their title; then the club's faculty advisor. There are
+// this section scrolls past), and on the right, in large type, the club president's name and
+// class year with one line on what they do and a link to their GitHub profile; then the vice
+// president's name and class year with one line on what they do; then the faculty advisor. There are
 // no portraits: the club has none, and this site never invents one.
 //
 // Where the names come from: src/data/members.json ("lead", "vicePresident" and
@@ -25,7 +25,7 @@ function named(name: string | undefined): string {
   return person ? formatPerson(person) : name;
 }
 
-// The club lead and the vice president.
+// The club president ("lead" in members.json) and the vice president.
 const leadName = named(members.lead);
 const vicePresidentName = named(members.vicePresident);
 
@@ -41,11 +41,11 @@ const leadFirstName = members.lead.split(' ')[0];
     <Divider class="people__rule" />
     <h2 id="lead-label" class="people__label t-label">Leadership</h2>
     <div class="people__body lead__body">
-      <!-- The club lead: name, what they do, and their GitHub. -->
+      <!-- The president: name, what they do, and their GitHub. -->
       <p class="lead__name" data-reveal="lines">{leadName}</p>
       <div class="lead__about">
         <p class="t-label" data-reveal="lines">
-          Club lead. Sits in on every discovery call, assigns the cases, reviews the pull requests,
+          President. Sits in on every discovery call, assigns the cases, reviews the pull requests,
           runs the demos.
         </p>
         <ArrowLink href={leadGithub} external class="lead__link t-label"
@@ -53,7 +53,7 @@ const leadFirstName = members.lead.split(' ')[0];
         >
       </div>
 
-      <!-- The vice president: name and title. Left out if members.json has no vice president. -->
+      <!-- The vice president: name and what they do. Left out if members.json has no vice president. -->
       {
         vicePresidentName && (
           <>
@@ -62,7 +62,8 @@ const leadFirstName = members.lead.split(' ')[0];
             </p>
             <div class="lead__about">
               <p class="t-label" data-reveal="lines">
-                Vice President.
+                Vice President. Oversees every case with Cayden, reviews pull requests, and joins client
+                meetings.
               </p>
             </div>
           </>
