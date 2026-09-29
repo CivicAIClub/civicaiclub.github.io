@@ -7,7 +7,7 @@
     { "id": "business-projects", "value": "2", "label": "local business projects" },
     { "id": "members", "value": "37", "label": "student members" },
     { "id": "developers", "value": "23", "label": "students on case teams", "note": "plus 1 alumni advisor" },
-    { "id": "pull-requests", "value": "50", "label": "pull requests merged" },
+    { "id": "pull-requests", "value": "52", "label": "pull requests merged" },
     { "id": "lines-of-code", "value": "24,000+", "label": "lines of code" },
     { "id": "repositories", "value": "11", "label": "public repositories" },
     { "id": "voices-moments", "value": "60", "label": "moments since 1894", "source": "Pomfret Voices" },

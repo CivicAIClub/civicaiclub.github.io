@@ -2,8 +2,8 @@
 // about/Proof.astro: the proof. Section 2 of 10 on the About page.
 //
 // What it shows: one giant word, "Merged", across the page from margin to margin (in the Light
-// weight, letters pulled tight), with a small mono "(×50)" just above its right end: the
-// club has merged 50 pull requests (reviewed, approved changes to its code). Below it, a
+// weight, letters pulled tight), with a small mono count such as "(×52)" just above its right end:
+// how many pull requests (reviewed, approved changes to its code) the club has merged. Below it, a
 // labeled row: "Pull requests merged since April 2026." on the left and four more counts on
 // the right, then the date the numbers were last checked.
 //
@@ -77,7 +77,8 @@ const word = 'Merged';
   .proof__head {
     container-type: inline-size;
   }
-  /* The giant word. It is a heading, so screen readers hear "Merged: 50 pull requests merged".
+  /* The giant word. It is a heading, so screen readers hear "Merged: 52 pull requests merged"
+     (the number comes from numbers.json).
      It fits the row exactly, from the left margin to the right one, at any window width:
      "Merged" in this font and spacing is 3.157 times as wide as its font size (measured; the
      0.055em pull on the M is already counted), so the font size is the row's width (100cqw)
