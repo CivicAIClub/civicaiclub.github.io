@@ -1,0 +1,208 @@
+---
+// EventChapter.astro: one row of an event's program ("02  AI Tools: Beyond Chatbots, a line, Luke
+// Ryan ’27"). Used by EventProgram.astro, once per part of the event.
+//
+// Laid out like a line in a printed program, on the page's columns:
+//   - a thin rule across the page,
+//   - the number (01, 02 ...) in columns 1 to 2, or "Also" for an unnumbered part,
+//   - the part's name, then a leader line that runs across to who gave it (the speakers with
+//     their class years, or a role such as "Faculty"), in columns 3 to 12,
+//   - one line about it (columns 3 to 8) and, when the file has one, a link further down the page,
+//   - then, depending on the part: the demo "sheet" (EventSheet.astro: the prompt, then the deck
+//     it built), a pair of photos (EventPair.astro) or the closing game (EventGame.astro).
+// Tablets: no leader; who gave it sits under the name. Phones: the number becomes a small mono
+// "(01)" above the name.
+//
+// Motion: the rule draws (M2), the words rise (M1), the leader draws from the left when it is
+// 80% of the way up the window (M2), links do their arrow swap (M7).
+import Divider from '../Divider.astro';
+import ArrowLink from '../ArrowLink.astro';
+import EventSheet from './EventSheet.astro';
+import EventPair from './EventPair.astro';
+import EventGame from './EventGame.astro';
+import { formatSpeaker } from '../../lib/events';
+
+interface Props {
+  // One chapter from the event file (see "chapter" in src/content.config.ts).
+  chapter: any;
+  // "01", "02" ... or nothing for an unnumbered chapter ("Also").
+  number?: string;
+  // The plate numbers of this chapter's photos, in order.
+  plates: number[];
+}
+const { chapter, number, plates } = Astro.props;
+
+// Who gave this part: the speakers ("Jay Youm ’26, alumni advisor"), or else its role.
+const speakers = (chapter.speakers ?? []) as { name: string; classYear?: number; role?: string }[];
+const who = speakers.length ? speakers.map(formatSpeaker).join(', ') : (chapter.role ?? '');
+const hasPairs = (chapter.plates ?? []).length > 0;
+---
+
+<li class="chapter grid" id={chapter.anchor}>
+  <Divider class="chapter__rule" />
+
+  <!-- The number. On phones it turns into a mono "(01)" (the brackets only show there). -->
+  <p class:list={['chapter__no', { 'chapter__no--also t-mono': !number }]} data-reveal="lines">
+    {number ? (<><span class="chapter__paren">(</span>{number}<span class="chapter__paren">)</span></>) : 'Also'}
+  </p>
+
+  <div class:list={['chapter__head', { 'chapter__head--who': who }]}>
+    <h3 class="chapter__title" data-reveal="lines" data-reveal-delay="0.04">{chapter.title}</h3>
+    {
+      who && (
+        <>
+          <span class="chapter__leader rule" data-draw data-draw-start="top 80%" aria-hidden="true" />
+          <p class="chapter__who t-label" data-reveal="lines" data-reveal-delay="0.2">
+            {who}
+          </p>
+        </>
+      )
+    }
+  </div>
+
+  <p class="chapter__line t-label" data-reveal="lines" data-reveal-delay="0.1">{chapter.line}</p>
+
+  {
+    chapter.link && (
+      <div class="chapter__link">
+        <ArrowLink href={chapter.link.href} dir="down">
+          {chapter.link.label}
+        </ArrowLink>
+      </div>
+    )
+  }
+
+  {chapter.sheet && <EventSheet sheet={chapter.sheet} plates={plates} chapter={number} />}
+
+  {hasPairs && <EventPair plates={chapter.plates} numbers={plates} />}
+
+  {chapter.game && <EventGame game={chapter.game} />}
+</li>
+
+<style>
+  .chapter {
+    row-gap: 14px;
+    padding-bottom: clamp(32px, 3.4vw, 48px);
+  }
+  .chapter :global(.chapter__rule) {
+    grid-column: 1 / -1;
+    margin-bottom: 6px;
+  }
+
+  /* The number, at statement size, on the same baseline as the name. */
+  .chapter__no {
+    grid-column: 1 / span 2;
+    align-self: baseline;
+    font-size: var(--fs-statement);
+    font-weight: var(--fw-light);
+    line-height: 1;
+    letter-spacing: var(--ls-statement);
+  }
+  .chapter__no--also {
+    font-size: var(--fs-mono);
+    line-height: 1.3;
+    letter-spacing: var(--ls-mono);
+    color: var(--text-2);
+  }
+  /* The brackets of "(01)" only show on phones. */
+  .chapter__paren {
+    display: none;
+  }
+
+  /* The name, the leader and who gave it, all on one baseline. */
+  .chapter__head {
+    grid-column: 3 / -1;
+    align-self: baseline;
+    display: flex;
+    align-items: last baseline;
+    column-gap: 0.4em;
+    font-size: var(--fs-name);
+  }
+  .chapter__title {
+    font-size: var(--fs-name);
+    font-weight: var(--fw-light);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  /* The leader: a 1px line that stretches to fill the gap between the name and the speaker. */
+  .chapter__leader {
+    flex: 1;
+    min-width: 40px;
+    height: 1px;
+    align-self: last baseline;
+  }
+  .chapter__who {
+    flex: none;
+    max-width: 50%;
+    text-align: right;
+  }
+
+  .chapter__line {
+    grid-column: 3 / span 6;
+    max-width: 44ch;
+    color: var(--text-2);
+  }
+  .chapter__link {
+    grid-column: 3 / span 6;
+    margin-top: 2px;
+  }
+  /* The demo sheet is a full-width ink band: it spans every column and reaches past the page
+     margins to the window's edges (width stays automatic, never 100vw, so no sideways scroll). */
+  .chapter :global(.sheet) {
+    grid-column: 1 / -1;
+    width: auto;
+    margin-inline: calc(-1 * var(--margin));
+    margin-top: clamp(24px, 3vw, 40px);
+  }
+
+  /* Tablets: no leader; who gave it sits under the name, in the secondary color. */
+  @media (max-width: 1023px) {
+    .chapter__head {
+      display: block;
+    }
+    .chapter__leader {
+      display: none;
+    }
+    .chapter__who {
+      max-width: none;
+      margin-top: 8px;
+      text-align: left;
+      color: var(--text-2);
+    }
+    .chapter__line,
+    .chapter__link {
+      grid-column: 3 / -1;
+    }
+  }
+
+  /* Phones: everything across the six columns; the number is a mono "(01)" above the name, and
+     who gave it is mono too. */
+  @media (max-width: 767px) {
+    .chapter__no,
+    .chapter__head,
+    .chapter__line,
+    .chapter__link {
+      grid-column: 1 / -1;
+    }
+    .chapter__no {
+      font-family: var(--font-mono);
+      font-size: var(--fs-mono);
+      font-weight: var(--fw-regular);
+      letter-spacing: var(--ls-mono);
+      line-height: 1.3;
+      text-transform: uppercase;
+      color: var(--text-2);
+    }
+    .chapter__paren {
+      display: inline;
+    }
+    .chapter__who {
+      font-family: var(--font-mono);
+      font-size: var(--fs-mono);
+      font-weight: var(--fw-regular);
+      letter-spacing: var(--ls-mono);
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+  }
+</style>

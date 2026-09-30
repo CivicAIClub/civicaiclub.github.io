@@ -1,0 +1,154 @@
+---
+// EventTakeaways.astro: "Three takeaways", the event deck's closing points (event page, part 7).
+//
+// A heading row ("Three takeaways" on the left, "From the event deck" on the right), then one
+// ruled row per takeaway: its number "(1)", the takeaway at statement size ("Context beats
+// cleverness."), the deck's one-line explanation under it, and on the right which exhibit it
+// comes from ("From Exhibit 1"). Tablets put that source under the takeaway; phones stack
+// everything.
+// Where the words come from: the event file's "takeaways" (the deck's words, unchanged).
+// Motion: the rules draw (M2) and every text rises (M1).
+import Divider from '../Divider.astro';
+
+interface Props {
+  takeaways: { title: string; line?: string; from?: number }[];
+}
+const { takeaways } = Astro.props;
+
+// "Three takeaways", counted from the file (small counts are written as words).
+const words = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+const count = takeaways.length;
+const title = `${words[count] ?? count} takeaway${count === 1 ? '' : 's'}`;
+---
+
+<section id="takeaways" class="takeaways theme-paper" aria-labelledby="takeaways-title">
+  <div class="takeaways__head grid">
+    <Divider class="takeaways__rule" />
+    <h2 id="takeaways-title" class="takeaways__title t-label" data-reveal="lines">{title}</h2>
+    <p class="takeaways__source t-mono" data-reveal="lines">From the event deck</p>
+  </div>
+
+  <ol class="takeaways__list">
+    {
+      takeaways.map((takeaway, i) => (
+        <li class="takeaway grid">
+          <Divider class="takeaway__rule" />
+          <p class="takeaway__no t-mono" data-reveal="lines">
+            ({i + 1})
+          </p>
+          <p class="takeaway__title t-statement" data-reveal="lines" data-reveal-delay="0.04">
+            {takeaway.title}
+          </p>
+          {takeaway.from && (
+            <p class="takeaway__from t-mono" data-reveal="lines" data-reveal-delay="0.08">
+              From Exhibit {takeaway.from}
+            </p>
+          )}
+          {takeaway.line && (
+            <p class="takeaway__line t-label" data-reveal="lines" data-reveal-delay="0.12">
+              {takeaway.line}
+            </p>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .takeaways {
+    padding-block: var(--space-section);
+  }
+  .takeaways__head {
+    row-gap: 24px;
+    align-items: baseline;
+  }
+  .takeaways__head :global(.takeaways__rule) {
+    grid-column: 1 / -1;
+  }
+  .takeaways__title {
+    grid-column: 1 / span 6;
+    font-weight: var(--fw-light);
+  }
+  .takeaways__source {
+    grid-column: 7 / -1;
+    justify-self: end;
+    text-align: right;
+    color: var(--text-2);
+  }
+
+  .takeaways__list {
+    margin-top: 40px;
+  }
+  .takeaway {
+    row-gap: 16px;
+    align-items: baseline;
+    padding-bottom: clamp(40px, 4.4vw, 64px);
+  }
+  .takeaway :global(.takeaway__rule) {
+    grid-column: 1 / -1;
+    margin-bottom: 8px;
+  }
+  .takeaway__no {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+    color: var(--text-2);
+  }
+  .takeaway__title {
+    grid-column: 3 / span 8;
+    grid-row: 2;
+  }
+  .takeaway__from {
+    grid-column: 11 / -1;
+    grid-row: 2;
+    justify-self: end;
+    text-align: right;
+    color: var(--text-2);
+  }
+  .takeaway__line {
+    grid-column: 3 / span 8;
+    grid-row: 3;
+    max-width: 48ch;
+    color: var(--text-2);
+  }
+
+  /* Tablets: the takeaway on columns 3 to 8, with its source under it. */
+  @media (max-width: 1023px) {
+    .takeaways__source {
+      grid-column: 5 / -1;
+    }
+    .takeaway__title,
+    .takeaway__line,
+    .takeaway__from {
+      grid-column: 3 / -1;
+    }
+    .takeaway__from {
+      grid-row: 4;
+      justify-self: start;
+      text-align: left;
+    }
+  }
+
+  /* Phones: stacked. */
+  @media (max-width: 767px) {
+    .takeaways__title,
+    .takeaways__source,
+    .takeaway__no,
+    .takeaway__title,
+    .takeaway__line,
+    .takeaway__from {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+    .takeaways__source {
+      justify-self: start;
+      text-align: left;
+    }
+    .takeaways__head {
+      row-gap: 12px;
+    }
+    .takeaway {
+      row-gap: 12px;
+    }
+  }
+</style>

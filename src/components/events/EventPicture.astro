@@ -1,0 +1,120 @@
+---
+// EventPicture.astro: one event photo that can switch to a different crop on phones.
+//
+// How to use it:
+//   <EventPicture id="ai-literacy-week-hall-16x9" phone="ai-literacy-week-hall-4x5" fit />
+// The ids are looked up in src/data/media.json, where a photo is an entry with "kind": "image"
+// listing the same photo in several widths (800, 1600, 2400 px) and formats (AVIF, WebP, JPEG).
+//
+// Why it exists: the shared Photo component (src/components/Photo.astro) always shows one crop.
+// An event page often wants a wide crop on laptops and a tall or square crop of the same moment
+// on phones (the "art direction" of a photo). This component writes one <picture> that offers:
+//   1. the phone crop, in AVIF and then WebP, only while "phoneMedia" matches (phones by default),
+//   2. the main crop, in AVIF and then WebP,
+//   3. a plain <img> with the main crop's JPEG files, for browsers that know neither format.
+// The browser picks the first one it can use and downloads only that file, in the size that
+// suits the screen ("sizes" says how wide the photo is shown).
+// The alt text and the width and height come from the main photo. If an id is missing, nothing
+// is shown (src/lib/events.ts has already stopped the build with the id's name by then).
+import { getImage, type MediaImage } from '../../lib/media';
+
+interface Props {
+  id: string;                                  // default photo id
+  phone?: string;                              // other crop, used when `phoneMedia` matches
+  phoneMedia?: string;                         // default '(max-width: 767px)'
+  sizes?: string;                              // default '100vw'
+  phoneSizes?: string;                         // default '100vw'
+  tone?: 'color' | 'bw';
+  priority?: boolean;                          // loading eager + fetchpriority high (hero only)
+  fit?: boolean;                               // true: img fills its box, object-fit cover
+  focus?: string;                              // object-position when fit
+  class?: string;
+}
+
+const {
+  id,
+  phone,
+  phoneMedia = '(max-width: 767px)',
+  sizes = '100vw',
+  phoneSizes = '100vw',
+  tone = 'color',
+  priority = false,
+  fit = false,
+  focus,
+  class: className,
+} = Astro.props;
+
+const image = getImage(id);
+const phoneImage = getImage(phone);
+
+// The files for one photo in one tone, grouped by format:
+// { avif: { "800": "/media/...", ... }, webp: { ... }, jpg: { ... } }.
+type FileSet = Record<string, Record<string, string>>;
+function filesOf(entry: MediaImage | undefined): FileSet {
+  const all = (entry?.files ?? {}) as Record<string, unknown>;
+  return (tone === 'bw' && all.bw ? all.bw : all) as FileSet;
+}
+
+// Turn one format's files into a "srcset": "path-800 800w, path-1600 1600w, ...", smallest first.
+function srcset(byWidth: Record<string, string> | undefined): string | undefined {
+  if (!byWidth || typeof byWidth !== 'object') return undefined;
+  const list = Object.entries(byWidth)
+    .filter(([width, path]) => /^\d+$/.test(width) && typeof path === 'string')
+    .sort(([a], [b]) => Number(a) - Number(b))
+    .map(([width, path]) => `${path} ${width}w`);
+  return list.length ? list.join(', ') : undefined;
+}
+
+const files = filesOf(image);
+const phoneFiles = phoneImage ? filesOf(phoneImage) : undefined;
+
+// The JPEG set is the last resort; its largest file is also the plain "src" any browser can show.
+const jpgWidths = Object.keys(files.jpg ?? {}).filter((w) => /^\d+$/.test(w)).map(Number);
+const fallback = jpgWidths.length ? files.jpg[String(Math.max(...jpgWidths))] : undefined;
+
+// The crop point, used only when the photo fills its frame (fit).
+const imgStyle = fit && focus ? `object-position: ${focus}` : undefined;
+---
+
+{
+  image && fallback && (
+    <picture class:list={['event-picture', { 'event-picture--fit': fit }, className]}>
+      {phoneFiles?.avif && <source type="image/avif" media={phoneMedia} srcset={srcset(phoneFiles.avif)} sizes={phoneSizes} />}
+      {phoneFiles?.webp && <source type="image/webp" media={phoneMedia} srcset={srcset(phoneFiles.webp)} sizes={phoneSizes} />}
+      {files.avif && <source type="image/avif" srcset={srcset(files.avif)} sizes={sizes} />}
+      {files.webp && <source type="image/webp" srcset={srcset(files.webp)} sizes={sizes} />}
+      <img
+        src={fallback}
+        srcset={srcset(files.jpg)}
+        sizes={sizes}
+        width={image.width}
+        height={image.height}
+        alt={image.alt}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding={priority ? undefined : 'async'}
+        fetchpriority={priority ? 'high' : undefined}
+        style={imgStyle}
+      />
+    </picture>
+  )
+}
+
+<style>
+  .event-picture,
+  .event-picture img {
+    display: block;
+  }
+  .event-picture img {
+    width: 100%;
+    height: auto;
+  }
+  /* Fill the frame around it, cropping the photo like a print in a mat. */
+  .event-picture--fit,
+  .event-picture--fit img {
+    width: 100%;
+    height: 100%;
+  }
+  .event-picture--fit img {
+    object-fit: cover;
+  }
+</style>

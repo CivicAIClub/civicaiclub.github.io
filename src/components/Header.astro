@@ -2,7 +2,7 @@
 // Header.astro: the thin bar across the top of every page, and the phone menu.
 //
 // Left: the Pomfret griffin with "Civic AI Club / Pomfret School". Middle (columns 7 to 10):
-// the links Cases and About. Right: "Bring us a problem ↗", which opens the intake form.
+// the links Cases, Events and About. Right: "Bring us a problem ↗", which opens the intake form.
 // The bar is 62px tall and uses a "difference" blend, so it turns dark over paper sections and
 // light over ink ones without any code. Over edge-to-edge footage (marked data-header-solid) a
 // plain ink strip is shown behind it, so it stays readable there too
@@ -23,13 +23,15 @@ import ArrowLink from './ArrowLink.astro';
 
 interface Props {
   // Which main section this page belongs to, so its link can be marked as the current page.
-  current?: 'cases' | 'about' | null;
+  current?: 'cases' | 'events' | 'about' | null;
 }
 const { current = null } = Astro.props;
 
-// The main links. "Cases" jumps to the list of cases on the home page.
+// The main links. "Cases" jumps to the list of cases on the home page; "Events" opens the list
+// of club events (/events/).
 const links = [
   { key: 'cases', href: '/#cases', label: 'Cases' },
+  { key: 'events', href: '/events/', label: 'Events' },
   { key: 'about', href: '/about/', label: 'About' },
 ] as const;
 ---
@@ -297,15 +299,23 @@ const links = [
     :global(html.menu-open) .menu-button__label {
       transform: translateY(-100%);
     }
-    /* Without JavaScript the Menu button can't open anything, so show the two plain links in
-       its place ("js" is added to the page by the first script in Base.astro). */
+    /* Without JavaScript the Menu button can't open anything, so show the three plain links in
+       its place ("js" is added to the page by the first script in Base.astro). The name gets
+       columns 1 to 3 and the links 4 to 6, 10px apart, so all three fit on one row down to a
+       320px-wide phone (the links need about 136px, and so does the name). */
     :global(html:not(.js)) .menu-button-slot {
       display: none;
     }
+    :global(html:not(.js)) .brand {
+      grid-column: 1 / span 3;
+    }
     :global(html:not(.js)) .site-nav {
       display: block;
-      grid-column: 5 / -1;
+      grid-column: 4 / -1;
       justify-self: end;
+    }
+    :global(html:not(.js)) .site-nav ul {
+      gap: 10px;
     }
   }
 

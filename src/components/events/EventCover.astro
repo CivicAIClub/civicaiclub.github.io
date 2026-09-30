@@ -1,0 +1,367 @@
+---
+// EventCover.astro: the first screen of an event page, laid out like the cover of a program.
+//
+// Three rows on plain ink, the same structure and spacing as a case page's hero
+// (src/components/case/CaseHero.astro):
+//   1. The words: a small mono line ("Event · Civic AI Club · In partnership with AI Youth
+//      Alliance"; the date is already in the name's row and the facts), then the event's name in
+//      huge light type. The name's last word shares
+//      its row with a thin "leader" line that runs across to the date ("Week", a line, "May 17"),
+//      like a line in a printed program. Under it, one mono row with the full date, time and place
+//      (the place never breaks across two lines, and on phones it takes a line of its own, so no
+//      line ends on a "·"), and a link down to the program.
+//   2. The cover photo in a frame from margin to margin: 16:9 on laptops, 4:5 on phones and on
+//      tablets held upright (a different crop of the same moment, chosen in the event file).
+//      Nothing ever sits on the photo.
+//   3. A caption row: "Plate 1" and what the photo shows (plus "With …" once the event file names
+//      the people in it).
+//
+// Motion (all through data attributes, see MOTION.md):
+//   - the words rise out of their masks as the page arrives (M1), the date just after the name,
+//     and "The program" link rises last, just after the facts (data-events-jump, events-cover.js);
+//   - the leader line draws across from the left (data-events-leader, events-cover.js);
+//   - the photo opens along the page's columns: six ink bands, one per two columns, lift away
+//     one after another from the top down, timed to the part of the frame that is on screen
+//     (data-events-bands, events-cover.js). A photo that was handed over from the page before
+//     (see events-handoff.js) arrives already open;
+//   - the words drift at half speed (M4) and the frame grows to the full window width as it
+//     reaches the header (data-hero-grow, the same module as the case pages);
+//   - the frame is named "event-media-<slug>" for page changes, so the /events/ page's frame or
+//     the home page's teaser can grow into it (styles in src/styles/events.css).
+// data-header-solid (on the words and on the frame's outer box) keeps the header readable over
+// them (src/scripts/site/header-backdrop.js). data-header-swap on the frame's outer box: the
+// header's name rolls to the small CIVIC while the photo (with its ink strip) is under the
+// header, so the header may hide before the page's first statement reaches it
+// (src/scripts/motion/modules/header.js).
+import ArrowLink from '../ArrowLink.astro';
+import EventPicture from './EventPicture.astro';
+import { formatEventDate, withPeople } from '../../lib/events';
+import type { Person } from '../../lib/people';
+
+interface Props {
+  slug: string;
+  title: string;
+  date: string;
+  time: string;
+  place: string;
+  partner?: { name: string; line: string };
+  cover: { media: string; phone?: string; caption: string; focus?: string; people?: Person[] };
+}
+const { slug, title, date, time, place, partner, cover } = Astro.props;
+
+// The mono line above the name. The partner part only appears when the event file has one.
+const meta = [
+  'Event',
+  'Civic AI Club',
+  partner ? `In partnership with ${partner.name}` : '',
+]
+  .filter(Boolean)
+  .join(' · ');
+
+// The name is split into its last word (which shares its row with the leader and the date) and
+// everything before it (its own line). A one-word name keeps that word on the row.
+const words = title.trim().split(/\s+/);
+const lastWord = words.pop() ?? title;
+const firstWords = words.join(' ');
+
+// The place with no-break spaces, so "VISTA Hamilton Hub" moves to the next line whole instead of
+// breaking in the middle on a narrow screen (the line rise keeps no-break spaces as they are).
+const placeWhole = place.replace(/ /g, '\u00a0');
+
+// "With …" under the cover's caption (nothing while its "people" list is empty).
+const coverPeople = withPeople(cover.people);
+
+// The frame's page-change name, shared with the frames on /events/ and the home page.
+const frameStyle = `view-transition-name: event-media-${slug}; view-transition-class: event-media`;
+
+// Phones and tablets held upright get the tall crop.
+const tallMedia = '(max-width: 767px), (orientation: portrait) and (max-width: 1100px)';
+
+// One ink band per two columns: 6 on laptops. Tablets and phones hide the extra ones in CSS.
+const bands = Array.from({ length: 6 });
+---
+
+<section class="event-cover theme-ink" aria-labelledby="event-title">
+  <!-- Row 1: the words, on plain ink. They drift at half speed as the page scrolls (M4). -->
+  <div class="event-cover__words grid" data-parallax="0.5" data-header-solid data-events-cover-words>
+    <p class="event-cover__meta t-mono" data-reveal="lines" data-reveal-on="intro" data-reveal-delay="0.15">
+      {meta}
+    </p>
+    <h1 id="event-title" class="event-cover__title">
+      {
+        firstWords && (
+          <span class="event-cover__line" data-reveal="lines" data-reveal-on="intro">
+            {firstWords}
+          </span>
+        )
+      }
+      <span class="event-cover__row">
+        <span class="event-cover__line" data-reveal="lines" data-reveal-on="intro" data-reveal-delay="0.04">
+          {lastWord}
+        </span>
+        <!-- The leader and the date are decoration for sighted readers (the date is in the facts
+             row below), so screen readers hear the name only. -->
+        <span class="event-cover__tail" aria-hidden="true">
+          <span class="event-cover__leader rule" data-events-leader></span>
+          <time class="event-cover__date" datetime={date} data-reveal="lines" data-reveal-on="intro" data-reveal-delay="0.1">
+            {formatEventDate(date, 'short')}
+          </time>
+        </span>
+      </span>
+    </h1>
+    <div class="event-cover__facts">
+      <!-- On phones the separator before the place is hidden and the place starts its own line. -->
+      <p class="event-cover__when t-mono" data-reveal="lines" data-reveal-on="intro" data-reveal-delay="0.3">
+        {formatEventDate(date)} · {time}<span class="event-cover__sep"> · </span><span class="event-cover__place">{placeWhole}</span>
+      </p>
+      <!-- The link rises into its own window just after the facts (events-cover.js). -->
+      <p class="event-cover__jump-wrap" data-events-jump>
+        <ArrowLink href="#program" dir="down" class="event-cover__jump t-mono">The program</ArrowLink>
+      </p>
+    </div>
+  </div>
+
+  <!-- Row 2: the frame. The outer box grows to the window's width (data-hero-grow); the inner
+       box is the frame itself, named for page changes. -->
+  <div class="event-cover__grow" data-hero-grow data-header-solid data-header-swap>
+    <div class="event-cover__frame" data-events-cover-media style={frameStyle}>
+      <EventPicture
+        id={cover.media}
+        phone={cover.phone}
+        phoneMedia={tallMedia}
+        fit
+        focus={cover.focus}
+        priority
+        sizes="100vw"
+        class="event-cover__picture"
+      />
+      <div class="event-cover__bands" data-events-bands aria-hidden="true">
+        {bands.map(() => <span data-events-band></span>)}
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: the caption. -->
+  <div class="event-cover__caption grid">
+    <p class="event-cover__plate t-mono">Plate 1</p>
+    <p class="event-cover__text t-ui" data-reveal="lines">{cover.caption}</p>
+    {coverPeople && <p class="event-cover__text t-ui" data-reveal="lines">{coverPeople}</p>}
+  </div>
+</section>
+
+<style>
+  .event-cover {
+    padding-top: calc(var(--header-height) + clamp(48px, 8vh, 96px));
+    padding-bottom: clamp(48px, 6vw, 96px);
+  }
+
+  /* ---- Row 1: the words ---- */
+  .event-cover__words {
+    position: relative;
+    row-gap: clamp(12px, 1.4vw, 20px);
+    pointer-events: none;
+  }
+  /* The words drift under the frame as the page scrolls. While "The program" link has keyboard
+     focus, the words come back above the frame, so the focused link is never hidden. */
+  .event-cover__words:focus-within {
+    z-index: 2;
+  }
+  .event-cover__meta {
+    grid-column: 1 / span 9;
+    color: var(--text-2);
+  }
+  .event-cover__title {
+    grid-column: 1 / -1;
+    font-size: var(--fs-case-hero);
+    font-weight: var(--fw-light);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    /* Pull the name's left edge onto the margin line (big light letters have a little built-in
+       space on their left). */
+    margin-left: -0.05em;
+  }
+  .event-cover__line {
+    display: block;
+  }
+  /* "Week", the leader and the date share one row, sitting on the same baseline. */
+  .event-cover__row {
+    display: flex;
+    align-items: last baseline;
+    column-gap: 0.2em;
+  }
+  .event-cover__row > .event-cover__line {
+    flex: none;
+  }
+  .event-cover__tail {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: last baseline;
+    column-gap: 0.2em;
+  }
+  /* The leader: a 1px line that fills the space between the last word and the date, lying on
+     their baseline. (.rule gives it the text color at 25%.) */
+  .event-cover__leader {
+    flex: 1;
+    height: 1px;
+    align-self: last baseline;
+    transform-origin: 0 50%;
+  }
+  .event-cover__date {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  /* The facts row sits on the same columns as the words (a "subgrid"). */
+  .event-cover__facts {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: baseline;
+    margin-top: clamp(16px, 2vw, 28px);
+  }
+  .event-cover__when {
+    grid-column: 1 / span 8;
+  }
+  .event-cover__jump-wrap {
+    grid-column: 9 / -1;
+    justify-self: end;
+    /* The words band ignores the mouse (so the frame can slide over it); the link doesn't. */
+    pointer-events: auto;
+  }
+  /* 24px tall at least, an easy target (ArrowLink's own 4px above and below, plus 1px). Touch
+     screens already get a taller tap area from ArrowLink. */
+  @media not (pointer: coarse) {
+    .event-cover__facts :global(.event-cover__jump) {
+      padding-block: 5px;
+    }
+  }
+
+  /* ---- Row 2: the frame ---- */
+  .event-cover__grow {
+    position: relative;
+    z-index: 1;
+    margin: clamp(40px, 5.6vw, 96px) var(--margin) 0;
+  }
+  .event-cover__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #1b1b1a;
+  }
+  .event-cover__frame :global(.event-cover__picture) {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The six ink bands over the photo. Hidden unless motion is on (src/styles/events.css shows
+     them). Their widths come from the grid, so every edge between two bands lands in the middle
+     of a gap between columns: the outer bands are two columns and one and a half gaps wide, the
+     inner ones two columns and two gaps. Each is 1px wider and tucked 1px under the next one, so
+     no hairline seam shows between them. */
+  .event-cover__bands {
+    --c: calc((100% - (var(--cols) - 1) * var(--gutter)) / var(--cols));
+    position: absolute;
+    /* 1px past the frame's top and bottom, so no hairline of the photo shows at a fractional edge
+       (the frame's overflow: hidden trims it). */
+    inset: -1px 0;
+    z-index: 1;
+    display: none;
+    pointer-events: none;
+  }
+  .event-cover__bands > span {
+    flex: none;
+    height: 100%;
+    width: calc(2 * var(--c) + 2 * var(--gutter) + 1px);
+    margin-right: -1px;
+    background: var(--ink);
+  }
+  .event-cover__bands > span:first-child,
+  .event-cover__bands > span:nth-child(6) {
+    width: calc(2 * var(--c) + 1.5 * var(--gutter) + 1px);
+  }
+
+  /* ---- Row 3: the caption ---- */
+  .event-cover__caption {
+    margin-top: 16px;
+    align-items: baseline;
+  }
+  .event-cover__plate {
+    grid-column: 1 / span 2;
+    color: var(--text-2);
+  }
+  .event-cover__text {
+    grid-column: 3 / span 7;
+    color: var(--text-2);
+  }
+
+  /* Phones, and tablets held upright: a 4:5 frame. */
+  @media (max-width: 767px), (orientation: portrait) and (max-width: 1100px) {
+    .event-cover__frame {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  /* Tablets: 8 columns, so 4 bands. */
+  @media (max-width: 1023px) {
+    .event-cover__meta {
+      grid-column: 1 / -1;
+    }
+    .event-cover__when {
+      grid-column: 1 / span 5;
+    }
+    .event-cover__jump-wrap {
+      grid-column: 6 / -1;
+    }
+    .event-cover__bands > span:nth-child(n + 5) {
+      display: none;
+    }
+    .event-cover__bands > span:nth-child(4) {
+      width: calc(2 * var(--c) + 1.5 * var(--gutter) + 1px);
+    }
+    .event-cover__text {
+      grid-column: 3 / -1;
+    }
+  }
+
+  /* Phones: 6 columns, so 3 bands; the date moves to its own row under the name. */
+  @media (max-width: 767px) {
+    .event-cover__meta,
+    .event-cover__when,
+    .event-cover__jump-wrap,
+    .event-cover__plate,
+    .event-cover__text {
+      grid-column: 1 / -1;
+    }
+    .event-cover__facts {
+      row-gap: 12px;
+    }
+    .event-cover__sep {
+      display: none;
+    }
+    .event-cover__place {
+      display: block;
+    }
+    .event-cover__jump-wrap {
+      justify-self: start;
+    }
+    .event-cover__row {
+      flex-wrap: wrap;
+    }
+    .event-cover__tail {
+      flex: 1 0 100%;
+    }
+    .event-cover__grow {
+      margin-top: clamp(28px, 8vw, 40px);
+    }
+    .event-cover__bands > span:nth-child(n + 4) {
+      display: none;
+    }
+    .event-cover__bands > span:nth-child(3) {
+      width: calc(2 * var(--c) + 1.5 * var(--gutter) + 1px);
+    }
+    .event-cover__caption {
+      row-gap: 8px;
+    }
+  }
+</style>

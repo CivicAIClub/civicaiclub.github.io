@@ -1,0 +1,115 @@
+---
+// EventPair.astro: two photos side by side under one part of the program (chapter 03, Future of
+// AI: the speaker at the lectern, and the slides on screen).
+//
+// Laptops: the first photo is tall (4:5) on columns 1 to 5, the second wide (3:2) on columns 6 to
+// 12, their bottom edges level, like two prints pinned side by side. Tablets: columns 1 to 4 and
+// 5 to 8. Phones: one above the other.
+// Under each photo: its plate number ("Plate 4") and what it shows (the talk, never who), then
+// "With …" once the event file names the people in it.
+//
+// Motion: each window opens from the top (M3), and the photo inside drifts slightly against the
+// scroll (M4 data-parallax-y, enlarged 1.12 times so its edges never show). With motion off the
+// photos are simply there.
+import EventPicture from './EventPicture.astro';
+import { withPeople } from '../../lib/events';
+import type { Person } from '../../lib/people';
+
+interface Props {
+  plates: { media: string; phone?: string; caption: string; focus?: string; people?: Person[] }[];
+  // Their plate numbers, e.g. [4, 5].
+  numbers: number[];
+}
+const { plates, numbers } = Astro.props;
+
+// The first photo is the tall one and drifts a little more than the second.
+const drift = ['-8,8', '-4,4'];
+// How wide each photo is drawn, so the browser fetches a big enough file: its window's width
+// (39% and 55% of the window on laptops, 47% on tablets) times 1.12, because the drift enlarges
+// the photo inside its window by that much.
+const sizes = ['(min-width: 1024px) 44vw, (min-width: 768px) 53vw, 100vw', '(min-width: 1024px) 62vw, (min-width: 768px) 53vw, 100vw'];
+// Each photo's "With …" line (empty, so not printed, while its "people" list is empty).
+const withLines = plates.map((plate) => withPeople(plate.people));
+---
+
+<div class="pair">
+  {
+    plates.map((plate, i) => (
+      <figure class:list={['pair__plate', i === 0 ? 'pair__plate--a' : 'pair__plate--b']}>
+        <div class="pair__window" data-media-open>
+          <div class="pair__inner" data-media-inner>
+            <div class="pair__drift" data-parallax-y={drift[i] ?? '-4,4'} data-parallax-scale="1.12" data-parallax-trigger=".pair__plate">
+              <EventPicture id={plate.media} phone={plate.phone} fit focus={plate.focus} sizes={sizes[i] ?? sizes[1]} class="pair__picture" />
+            </div>
+          </div>
+        </div>
+        <figcaption class="pair__caption">
+          <span class="pair__no t-mono">Plate {numbers[i]}</span>
+          <span class="pair__text t-ui">{plate.caption}</span>
+          {withLines[i] && <span class="pair__text t-ui">{withLines[i]}</span>}
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>
+
+<style>
+  .pair {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: end;
+    row-gap: 24px;
+    margin-top: clamp(40px, 5vw, 72px);
+  }
+  .pair__plate {
+    margin: 0;
+  }
+  .pair__plate--a {
+    grid-column: 1 / span 5;
+  }
+  .pair__plate--b {
+    grid-column: 6 / -1;
+  }
+  .pair__window {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: #1b1b1a;
+  }
+  .pair__plate--a .pair__window {
+    aspect-ratio: 4 / 5;
+  }
+  .pair__inner,
+  .pair__drift {
+    position: absolute;
+    inset: 0;
+  }
+  .pair__caption {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .pair__no {
+    color: var(--text-2);
+  }
+  .pair__text {
+    max-width: 44ch;
+  }
+
+  @media (max-width: 1023px) {
+    .pair__plate--a {
+      grid-column: 1 / span 4;
+    }
+    .pair__plate--b {
+      grid-column: 5 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .pair__plate--a,
+    .pair__plate--b {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

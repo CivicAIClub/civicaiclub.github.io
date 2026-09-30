@@ -1,0 +1,86 @@
+---
+// EventPlate.astro: one last photo across the whole window, a pause between the findings and the
+// takeaways on an event page (part 6), with its plate number and caption underneath ("Plate 6 ·
+// Watching from the sofas, pizza boxes behind."), and "With …" once the event file names the
+// people in it.
+//
+// The frame is 16:9 on laptops and tablets and square on phones (the event file's "phone" crop).
+// Nothing sits on the photo.
+// Motion: the frame opens from the top (M3) and the photo drifts slightly against the scroll
+// (M4 data-parallax-y, enlarged 1.1 times so its edges never show). data-header-solid keeps the
+// header readable while the photo passes under it (src/scripts/site/header-backdrop.js).
+import EventPicture from './EventPicture.astro';
+import { withPeople } from '../../lib/events';
+import type { Person } from '../../lib/people';
+
+interface Props {
+  plate: { media: string; phone?: string; caption: string; focus?: string; people?: Person[] };
+  number: number;
+}
+const { plate, number } = Astro.props;
+// "With …" under the caption (nothing while the photo's "people" list is empty).
+const withLine = withPeople(plate.people);
+---
+
+<section class="event-plate theme-paper">
+  <figure class="event-plate__figure">
+    <div class="event-plate__window" data-media-open data-header-solid>
+      <div class="event-plate__inner" data-media-inner>
+        <div class="event-plate__drift" data-parallax-y="-6,6" data-parallax-scale="1.1">
+          <EventPicture id={plate.media} phone={plate.phone} fit focus={plate.focus ?? '50% 55%'} sizes="100vw" class="event-plate__picture" />
+        </div>
+      </div>
+    </div>
+    <figcaption class="event-plate__caption grid">
+      <span class="event-plate__no t-mono">Plate {number}</span>
+      <span class="event-plate__text t-ui">{plate.caption}</span>
+      {withLine && <span class="event-plate__text t-ui">{withLine}</span>}
+    </figcaption>
+  </figure>
+</section>
+
+<style>
+  .event-plate__figure {
+    margin: 0;
+  }
+  .event-plate__window {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #1b1b1a;
+  }
+  .event-plate__inner,
+  .event-plate__drift {
+    position: absolute;
+    inset: 0;
+  }
+  .event-plate__caption {
+    padding-top: 16px;
+    align-items: baseline;
+  }
+  .event-plate__no {
+    grid-column: 1 / span 2;
+    color: var(--text-2);
+  }
+  .event-plate__text {
+    grid-column: 3 / span 7;
+  }
+  @media (max-width: 1023px) {
+    .event-plate__text {
+      grid-column: 3 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .event-plate__window {
+      aspect-ratio: 1 / 1;
+    }
+    .event-plate__no,
+    .event-plate__text {
+      grid-column: 1 / -1;
+    }
+    .event-plate__caption {
+      row-gap: 6px;
+    }
+  }
+</style>

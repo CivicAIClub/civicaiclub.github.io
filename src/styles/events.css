@@ -1,0 +1,291 @@
+/*
+  events.css: page-change and motion styles for the events pages (/events/ and /events/<slug>/).
+
+  Loaded by src/pages/events/index.astro and src/pages/events/[slug].astro. The layout of each
+  part of the pages is in its own component (src/components/events/); this file holds what the
+  motion code switches between:
+    1. The photo hand-off between pages: the frame on /events/ (or the home page's "Latest event"
+       teaser) grows into the event page's cover (src/scripts/motion/modules/events-handoff.js).
+    2. Starting positions for the events pages' own motion, written only for html.js-motion (the
+       class the motion code adds when it is about to run), so with JavaScript off, with reduced
+       motion or with Motion: Off in the footer, everything simply shows.
+    3. The looks the proofread question (Exhibit 2) and the demo sheet take while they are pinned.
+    4. The proofread question's marks in Windows high-contrast themes (forced colors).
+  See the "Events pages" section of MOTION.md for every data- attribute used here.
+*/
+
+/* ---- 1. The photo hand-off (view transitions) --------------------------------------------------
+   The event page's cover frame is always named "event-media-<slug>" (class "event-media"). When
+   the page being left gave a photo the same name just before leaving, the browser moves and
+   resizes that photo into the cover frame over the same 0.8 s and curve as the new-sheet page
+   change. In a cross-page change the NEW page's styles decide how it looks, which is why these
+   rules are loaded on the events pages.
+   Only ONE picture shows as it flies: the new cover. It starts in the old frame's place and size,
+   cropped to that frame's shape like a print in a mat (object-fit: cover), and grows into the
+   cover frame. Neither picture fades, so the two never show through each other (no ghosting):
+   the new one simply sits on top. The old one only shows through while the new page's photo is
+   still loading (Safari prepares the next page later than Chrome), so the frame is never empty;
+   for that, the cover frame drops its dark placeholder color during a hand-off (below). The
+   frames on Home and /events/ show the same moment as the cover, cut to their own shapes. */
+::view-transition-group(*.event-media) {
+  animation-duration: var(--dur-sheet);
+  animation-timing-function: var(--ease-civic);
+}
+::view-transition-image-pair(*.event-media) {
+  overflow: clip;
+}
+::view-transition-old(*.event-media),
+::view-transition-new(*.event-media) {
+  height: 100%;
+  object-fit: cover;
+  animation: none;
+}
+/* Arriving with nothing to hand over: the cover rises with the rest of the new sheet. */
+::view-transition-new(*.event-media):only-child {
+  animation: var(--dur-sheet) var(--ease-civic) both vt-sheet-in;
+}
+/* Leaving an event page with nothing to hand over to (for /events/ or another event page, when
+   events-handoff.js hasn't taken the cover's name off first, as without JavaScript): the old
+   cover fades out as it drifts up, like the page it was on, instead of staying frozen on top of
+   the new page. */
+::view-transition-old(*.event-media):only-child {
+  animation: 0.25s var(--ease-civic) both events-vt-out;
+}
+/* See above: no placeholder color behind the cover photo during a hand-off. */
+html.vt-handoff [data-events-cover-media] {
+  background: transparent;
+}
+/* During a hand-off only (Base.astro adds "vt-handoff" for its length), there is no sheet: the
+   page being left fades out as it drifts up a little (0.25 s), and the event page fades in under
+   the flying photo later (0.35 s, from 0.45 s), once the photo has flown past the cover's title
+   and date, so the photo never crosses the words as they appear, and the two pages' words never
+   show on top of each other. Between the two, the ink behind every page shows. The header and
+   the cover's words are part of the pages, so they fade with them; the words then rise with
+   their own line rise (M1). */
+html.vt-handoff::view-transition-old(root) {
+  animation: 0.25s var(--ease-civic) both events-vt-out;
+}
+html.vt-handoff::view-transition-new(root) {
+  animation: 0.35s var(--ease-civic) 0.45s both events-vt-in;
+}
+@keyframes events-vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-4vh);
+  }
+}
+@keyframes events-vt-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---- 2. Starting positions (motion on only) ---------------------------------------------------- */
+
+/* The cover's ink bands (events-cover.js). Shown only while motion is on; never after a hand-off
+   (the photo arrives already open), and gone once they have lifted ("is-open"). The "is-open"
+   rule starts with html.js-motion too, so it outranks the rule that shows them. */
+html.js-motion [data-events-bands] {
+  display: flex;
+}
+html.vt-handoff [data-events-bands],
+html[data-arrived='handoff'] [data-events-bands],
+html.js-motion .is-open > [data-events-bands] {
+  display: none;
+}
+/* "The program" link in the cover's facts row waits hidden until events-cover.js has tucked it
+   below its window. */
+html.js-motion [data-events-jump]:not(.is-ready) {
+  visibility: hidden;
+}
+/* The leader line in the cover's title waits at zero width until it draws. */
+html.js-motion [data-events-leader]:not(.is-drawn) {
+  transform: scaleX(0);
+}
+/* The cover frame grows to the window's width as it scrolls up (data-hero-grow, about 45px
+   taller on a laptop). Its caption keeps that much more room below the frame at rest, so the
+   grown frame never covers it and ends up 16px above it. */
+html.js-motion .event-cover__caption {
+  margin-top: calc(16px + var(--margin) * 2 * 9 / 16);
+}
+@media (max-width: 767px), (orientation: portrait) and (max-width: 1100px) {
+  html.js-motion .event-cover__caption {
+    margin-top: calc(16px + var(--margin) * 2 * 5 / 4);
+  }
+}
+
+/* The giant "Events" on /events/: its letters and count wait hidden until events-index.js has
+   put them in their starting places. The photo band under it starts closed (it opens after the
+   letters, events-index.js). */
+html.js-motion [data-events-title]:not(.is-ready) :is([data-events-title-char], [data-events-title-count]) {
+  visibility: hidden;
+}
+html.js-motion [data-events-feature-window]:not(.is-open) {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* ---- 3. The proofread question (EventQuestion.astro, events-question.js) ---------------------- */
+
+/* Without motion (or before the motion code is ready): the finished marks. "walk" is struck
+   through with the browser's own line, and "drive" carries the full crimson marker. */
+[data-events-strike-word] {
+  text-decoration: line-through;
+  text-decoration-thickness: max(2px, 0.03em);
+}
+[data-events-question].is-ready [data-events-strike-word] {
+  text-decoration: none;
+}
+/* The strike the motion code draws instead: a paper-colored bar, placed over the word by the
+   script. Only shown while the script runs. */
+[data-events-strike] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  background: var(--paper);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+[data-events-question].is-ready [data-events-strike] {
+  display: block;
+}
+/* The verdict lines wait hidden until the script has tucked their words into their masks. */
+html.js-motion [data-events-question]:not(.is-ready) [data-events-q-verdict] {
+  visibility: hidden;
+}
+
+/* The marker on "drive". The same look as the site's marker (M5 in base.css: a crimson bar one
+   line tall, with the lightest paper color for the letters), under its own attribute so the
+   shared marker script (mark.js) leaves it to events-question.js. */
+[data-events-mark] {
+  --mark-fill: 100%;
+  background-image: linear-gradient(var(--crimson), var(--crimson));
+  background-repeat: no-repeat;
+  background-size: var(--mark-fill) 100%;
+  background-position: 0 50%;
+  color: var(--mark-text);
+  /* The bar reaches a little past the letters; the matching negative margin keeps the spaces on
+     either side of the word as wide as every other space in the question. */
+  padding-inline: 0.06em;
+  margin-inline: -0.06em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+mark[data-events-mark] {
+  background-color: transparent;
+}
+@supports (height: 1lh) {
+  [data-events-mark] {
+    background-size: var(--mark-fill) 1lh;
+  }
+}
+html.js-motion [data-events-mark] {
+  transition: color 0.3s linear;
+}
+html.js-motion [data-events-mark]:not(.is-marked) {
+  --mark-fill: 0%;
+  color: inherit;
+}
+
+/* Pinned (a laptop with motion on): the section is two and a half screens tall and its stage
+   stays still on screen, its contents centered, while the scroll plays the marks. */
+.question.is-pinned .question__track {
+  height: 250vh;
+}
+.question.is-pinned .question__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+/* The thin crimson progress line at the foot of the pinned stage, inside the margins. */
+[data-events-q-progress] {
+  position: absolute;
+  left: var(--margin);
+  right: var(--margin);
+  bottom: 24px;
+  display: none;
+  height: 1px;
+  background: var(--crimson-on-ink);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.question.is-pinned [data-events-q-progress] {
+  display: block;
+}
+
+/* ---- 4. The demo sheet (EventSheet.astro, events-demo.js) ------------------------------------- */
+
+/* Pinned (a laptop with motion on): the band is 220% of a screen tall and its stage stays still,
+   with the two photos stacked in the same place (columns 5 to 12) and their captions stacked
+   beside them (columns 1 to 4), so the deck can be laid over the prompt. */
+.sheet.is-pinned .sheet__track {
+  height: 220vh;
+}
+.sheet.is-pinned .sheet__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  padding-top: calc(var(--header-height) + 24px);
+  padding-bottom: 40px;
+  grid-template-rows: auto;
+  align-content: center;
+  row-gap: 0;
+}
+.sheet.is-pinned [data-events-demo-frame] {
+  grid-area: 1 / 5 / 2 / 13;
+  margin-top: 0;
+}
+/* On a very wide, short window (21:9 screens) the 3:2 photo across 8 columns would be taller than
+   the stage, pushing its top under the header and the deck's note below the window. So the photo
+   is never wider than one and a half times the stage's free height (the window, less the header,
+   the stage's 24px of room above and its 40px below), keeping its right edge on the margin. */
+.sheet.is-pinned [data-events-demo-frame] {
+  width: min(100%, calc((100svh - var(--header-height) - 64px) * 3 / 2));
+  justify-self: end;
+}
+.sheet.is-pinned [data-events-demo-caption] {
+  grid-area: 1 / 1 / 2 / 5;
+  align-self: end;
+}
+.sheet.is-pinned .sheet__count {
+  display: block;
+  grid-area: 1 / 1 / 2 / 5;
+  align-self: start;
+}
+/* The line riding the deck's top edge while it is laid over the prompt (events-demo.js). */
+.sheet.is-pinned [data-events-demo-edge] {
+  display: block;
+}
+/* The deck's photo and caption wait hidden until events-demo.js has set them up. */
+html.js-motion .sheet.is-pinned:not(.is-ready) :is([data-events-demo-frame='1'], [data-events-demo-caption='1']) {
+  visibility: hidden;
+}
+
+/* ---- 5. Windows high-contrast themes (forced colors) -------------------------------------------
+   These themes repaint every color and remove background images, which would take the crimson
+   marker off "drive" and turn the paper-colored strike bar into a gap cut through "walk". So in
+   those themes: the drawn bar is hidden and "walk" keeps the browser's own line through it, and
+   "drive" is marked with the theme's own highlight colors (Mark and MarkText), with motion on or
+   off. */
+@media (forced-colors: active) {
+  [data-events-strike] {
+    display: none !important;
+  }
+  /* The line rise cuts "walk" into word pieces that sit in their own boxes, which a line drawn
+     on the word's outer tag doesn't reach, so the pieces get it too. */
+  [data-events-question].is-ready :is([data-events-strike-word], [data-events-strike-word] *) {
+    text-decoration: line-through;
+    text-decoration-thickness: max(2px, 0.03em);
+  }
+  [data-events-mark] {
+    forced-color-adjust: none;
+    background: Mark !important;
+    color: MarkText !important;
+  }
+}

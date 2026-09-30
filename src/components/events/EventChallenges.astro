@@ -1,0 +1,248 @@
+---
+// EventChallenges.astro: "Three challenges", the week laid out as a ledger (event page, part 3).
+//
+// Three cells side by side on laptops, one per challenge, each with a big numeral (1, 2, 3), a
+// small mono label ("Challenge 1 · By email"), its name and one line about it. The two challenges
+// sent by email are paper cells with a thin rule along their tops (the three rules start drawing
+// at the same moment, so they read as one line). The challenge played live at the event is a
+// solid ink cell, with a link down to "How it worked" (the closing game in the program).
+// Under the ledger, one labeled row says how the first two worked.
+// Tablets: one row per challenge (numeral on the left). Phones: stacked.
+//
+// Where the words come from: the event file's "challenges" and "challengeNote".
+// Motion: the rules draw (M2), every text rises (M1), and the ink cell opens from the top like a
+// photo (M3: data-media-open on the cell, its contents inside data-media-inner).
+import Divider from '../Divider.astro';
+import KeyValue from '../KeyValue.astro';
+import ArrowLink from '../ArrowLink.astro';
+
+interface Props {
+  challenges: {
+    label: string;
+    title: string;
+    line: string;
+    live: boolean;
+    link?: { label: string; href: string };
+  }[];
+  note?: { label: string; text: string };
+}
+const { challenges, note } = Astro.props;
+
+// The mono line at the right of the heading, e.g. "Two by email · one live", counted from the
+// event file (numbers as words, the way the site writes small counts).
+const words = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+const inWords = (n: number) => words[n] ?? String(n);
+const liveCount = challenges.filter((c) => c.live).length;
+const emailCount = challenges.length - liveCount;
+const summary = [
+  emailCount ? `${inWords(emailCount)} by email` : '',
+  liveCount ? `${inWords(liveCount)} live` : '',
+]
+  .filter(Boolean)
+  .join(' · ');
+const summaryText = summary.charAt(0).toUpperCase() + summary.slice(1);
+const title = `${inWords(challenges.length).replace(/^./, (c) => c.toUpperCase())} challenges`;
+---
+
+<section id="week" class="week theme-paper" aria-labelledby="week-title">
+  <div class="week__head grid">
+    <Divider class="week__rule" />
+    <h2 id="week-title" class="week__title t-label" data-reveal="lines">{title}</h2>
+    <p class="week__summary t-mono" data-reveal="lines">{summaryText}</p>
+  </div>
+
+  <ol class="week__list grid">
+    {
+      challenges.map((challenge, i) => {
+        // Each cell's words start a little after the cell before (0, 0.06, 0.12 s).
+        const delay = i * 0.06;
+        const body = (
+          <>
+            {/* The big numeral is for the eye only: screen readers already hear "Challenge 1". */}
+            <p class="challenge__no" data-reveal="lines" data-reveal-delay={delay} aria-hidden="true">
+              {i + 1}
+            </p>
+            <p class="challenge__label t-mono" data-reveal="lines" data-reveal-delay={delay + 0.04}>
+              {challenge.label}
+            </p>
+            <h3 class="challenge__title" data-reveal="lines" data-reveal-delay={delay + 0.08}>
+              {challenge.title}
+            </h3>
+            <p class="challenge__line t-label" data-reveal="lines" data-reveal-delay={delay + 0.12}>
+              {challenge.line}
+            </p>
+            {challenge.link && (
+              <div class="challenge__link">
+                <ArrowLink href={challenge.link.href} dir="down">
+                  {challenge.link.label}
+                </ArrowLink>
+              </div>
+            )}
+          </>
+        );
+        return challenge.live ? (
+          <li class="challenge challenge--live theme-ink" data-media-open data-media-start="top 92%">
+            <div class="challenge__body" data-media-inner>
+              {body}
+            </div>
+          </li>
+        ) : (
+          <li class="challenge">
+            <span class="challenge__rule rule" data-draw aria-hidden="true" />
+            <div class="challenge__body">{body}</div>
+          </li>
+        );
+      })
+    }
+  </ol>
+
+  {
+    note && (
+      <div class="week__note">
+        <KeyValue label={note.label}>{note.text}</KeyValue>
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .week {
+    padding-block: var(--space-section);
+  }
+
+  /* The heading row: a rule, then the title on the left and the count on the right. */
+  .week__head {
+    row-gap: 24px;
+    align-items: baseline;
+  }
+  .week__head :global(.week__rule) {
+    grid-column: 1 / -1;
+  }
+  .week__title {
+    grid-column: 1 / span 6;
+    font-weight: var(--fw-light);
+  }
+  .week__summary {
+    grid-column: 7 / -1;
+    justify-self: end;
+    text-align: right;
+    color: var(--text-2);
+  }
+
+  /* The ledger: three cells side by side. */
+  .week__list {
+    margin-top: clamp(40px, 5vw, 72px);
+    row-gap: 32px;
+  }
+  /* A paper cell has room above its words only, so the numeral and the words hang on the
+     column line under the cell's rule, like every other left edge on the page. The ink cell
+     keeps room on every side: words inside a solid block sit inset from its edges. The same
+     space above in both, so the three numerals share one line. */
+  .challenge {
+    position: relative;
+    grid-column: span 4;
+    padding: clamp(20px, 2vw, 32px) 0 0;
+  }
+  .challenge--live {
+    padding: clamp(20px, 2vw, 32px);
+  }
+  /* The thin rule along the top of a paper cell. */
+  .challenge__rule {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+  .challenge__no {
+    font-size: max(var(--fs-figure), 64px);
+    font-weight: var(--fw-light);
+    line-height: 0.8;
+    letter-spacing: -0.05em;
+    /* Pull the numeral onto the cell's text edge (big light digits have space on their left). */
+    margin-left: -0.04em;
+  }
+  .challenge__label {
+    margin-top: clamp(28px, 3vw, 48px);
+    color: var(--text-2);
+  }
+  .challenge__title {
+    margin-top: 12px;
+    font-size: var(--fs-name);
+    font-weight: var(--fw-light);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .challenge__line {
+    margin-top: 16px;
+    max-width: 34ch;
+    color: var(--text-2);
+  }
+  .challenge__link {
+    margin-top: 20px;
+  }
+
+  .week__note {
+    margin-top: clamp(56px, 6vw, 96px);
+  }
+
+  /* Tablets: one row per challenge across all 8 columns, the numeral in columns 1 to 2 and the
+     words in 3 to 8 (the cell and its contents reuse the page's columns: "subgrid"). */
+  @media (max-width: 1023px) {
+    .week__title {
+      grid-column: 1 / span 4;
+    }
+    .week__summary {
+      grid-column: 5 / -1;
+    }
+    .challenge {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+    }
+    .challenge__body {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+      align-content: start;
+    }
+    .challenge__no {
+      grid-column: 1 / span 2;
+      grid-row: 1 / span 5;
+    }
+    .challenge__label,
+    .challenge__title,
+    .challenge__line,
+    .challenge__link {
+      grid-column: 3 / -1;
+    }
+    .challenge__label {
+      margin-top: 0;
+    }
+  }
+
+  /* Phones: stacked, 28px apart. */
+  @media (max-width: 767px) {
+    .week__title,
+    .week__summary {
+      grid-column: 1 / -1;
+      justify-self: start;
+      text-align: left;
+    }
+    .week__head {
+      row-gap: 12px;
+    }
+    .week__head :global(.week__rule) {
+      margin-bottom: 12px;
+    }
+    .week__list {
+      row-gap: 28px;
+    }
+    .challenge,
+    .challenge__body {
+      display: block;
+    }
+    .challenge__label {
+      margin-top: 24px;
+    }
+  }
+</style>

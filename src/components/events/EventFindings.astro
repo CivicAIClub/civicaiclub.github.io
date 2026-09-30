@@ -1,0 +1,360 @@
+---
+// EventFindings.astro: "What we learned from you.", the results of the week's challenges as
+// numbered exhibits (event page, part 5). The section's id is "findings", so links such as "What
+// we learned" land here.
+//
+// Three parts, in order:
+//   a. On paper: the heading, with who presented the results on its right, then every exhibit
+//      that comes before the "staged" one, each laid out in full: a mono heading ("Exhibit 1 ·
+//      Day 1 · Describe the Faculty"), the two things compared, the result as a big statement,
+//      the smaller notes, and the line the event deck quoted.
+//   b. On ink: the staged exhibit, the question every model got wrong, proofread on screen as
+//      you scroll (EventQuestion.astro).
+//   c. Still on ink: the exhibits after it, two side by side. Their parts share rows (a
+//      "subgrid"), so the headings, the questions, the results and the notes of the two start
+//      on the same lines even when one question wraps and the other doesn't.
+// Exhibit numbers are the findings' order in the event file (1, 2, 3 ...).
+//
+// Where the words come from: the event file's "findings"; the "Challenge 2 · Test the Reasoning"
+// line comes from its "challenges", and the presenter from the program part that links to
+// "#findings".
+// Motion: the rules draw (M2) and every text rises (M1).
+import Divider from '../Divider.astro';
+import EventQuestion from './EventQuestion.astro';
+import { formatSpeaker } from '../../lib/events';
+import { joinNames } from '../../lib/people';
+
+interface Finding {
+  day: string;
+  title: string;
+  question?: string;
+  setup?: string;
+  compare: { label: string; text: string }[];
+  result: string;
+  because?: string;
+  notes: string[];
+  quote?: string;
+  stage?: { strike: string; mark: string };
+}
+interface Props {
+  findings: Finding[];
+  challenges: { label: string; title: string }[];
+  program: any[];
+}
+const { findings, challenges, program } = Astro.props;
+
+// Number every finding, then split them around the staged one (if there is one).
+const numbered = findings.map((finding, i) => ({ finding, number: i + 1 }));
+const stagedIndex = numbered.findIndex((item) => item.finding.stage);
+const before = stagedIndex < 0 ? numbered : numbered.slice(0, stagedIndex);
+const staged = stagedIndex < 0 ? undefined : numbered[stagedIndex];
+const after = stagedIndex < 0 ? [] : numbered.slice(stagedIndex + 1);
+
+// "Days 1 and 2 · Presented by Cayden Auyang ’27": the days the findings cover, then the speaker
+// of the program part whose link points at this section.
+const dayNumbers = [...new Set(findings.map((finding) => finding.day.replace(/^Day\s+/i, '')))];
+const days = dayNumbers.length > 1 ? `Days ${joinNames(dayNumbers)}` : `Day ${dayNumbers[0] ?? ''}`;
+const presenter = program.find((chapter) => chapter.link?.href === '#findings');
+const presenters = (presenter?.speakers ?? []).map(formatSpeaker);
+const byline = [days, presenters.length ? `Presented by ${joinNames(presenters)}` : ''].filter(Boolean).join(' · ');
+
+// "Exhibit 1 · Day 1 · Describe the Faculty"
+const heading = (item: { finding: Finding; number: number }) =>
+  `Exhibit ${item.number} · ${item.finding.day} · ${item.finding.title}`;
+
+// The challenge a finding came from, e.g. "Challenge 2 · Test the Reasoning" for a "Day 2" finding.
+function challengeFor(finding: Finding): string | undefined {
+  const n = Number(finding.day.replace(/^\D+/, ''));
+  const challenge = Number.isFinite(n) ? challenges[n - 1] : undefined;
+  return challenge ? `Challenge ${n} · ${challenge.title}` : undefined;
+}
+---
+
+<section id="findings" class="findings" aria-labelledby="findings-title">
+  <!-- a. The heading and the exhibits before the staged one, on paper. -->
+  <div class="findings__lead theme-paper">
+    <div class="findings__head grid">
+      <h2 id="findings-title" class="findings__title t-statement" data-reveal="lines">What we learned from you.</h2>
+      <p class="findings__byline t-mono" data-reveal="lines" data-reveal-delay="0.1">{byline}</p>
+    </div>
+
+    {
+      before.map((item) => (
+        <article class="exhibit grid">
+          <Divider class="exhibit__rule" />
+          <h3 class="exhibit__heading t-mono" data-reveal="lines">
+            {heading(item)}
+          </h3>
+          {item.finding.compare.length > 0 && (
+            <dl class="exhibit__compare">
+              {item.finding.compare.map((row, i) => (
+                <div class="exhibit__pair">
+                  <dt class="t-mono" data-reveal="lines" data-reveal-delay={i * 0.06}>
+                    {row.label}
+                  </dt>
+                  <dd class="t-label" data-reveal="lines" data-reveal-delay={i * 0.06 + 0.04}>
+                    {row.text}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {item.finding.question && (
+            <p class="exhibit__question t-label" data-reveal="lines">
+              “{item.finding.question}”
+            </p>
+          )}
+          {item.finding.setup && (
+            <p class="exhibit__question t-label" data-reveal="lines">
+              {item.finding.setup}
+            </p>
+          )}
+          <p class="exhibit__result t-statement" data-reveal="lines">
+            {item.finding.result}
+          </p>
+          {item.finding.notes.length > 0 && (
+            <div class="exhibit__notes">
+              {item.finding.notes.map((note) => (
+                <p class="t-label" data-reveal="lines" data-reveal-delay="0.08">
+                  {note}
+                </p>
+              ))}
+            </div>
+          )}
+          {item.finding.quote && (
+            <blockquote class="exhibit__quote" data-reveal="lines" data-reveal-delay="0.16">
+              “{item.finding.quote}”
+            </blockquote>
+          )}
+        </article>
+      ))
+    }
+  </div>
+
+  <!-- b. The staged exhibit: the question, proofread on screen. -->
+  {
+    staged && (
+      <EventQuestion
+        finding={staged.finding}
+        label={heading(staged)}
+        challenge={challengeFor(staged.finding)}
+      />
+    )
+  }
+
+  <!-- c. The exhibits after it, two side by side, on ink. -->
+  {
+    after.length > 0 && (
+      <div class="findings__more grid theme-ink">
+        {after.map((item, i) => (
+          <article class:list={['more', i % 2 === 0 ? 'more--left' : 'more--right']}>
+            <Divider class="more__rule" />
+            <h3 class="more__heading t-mono" data-reveal="lines" data-reveal-delay={(i % 2) * 0.1}>
+              {heading(item)}
+            </h3>
+            {(item.finding.question || item.finding.setup) && (
+              <div class="more__prompt">
+                {item.finding.question && (
+                  <p class="more__question t-label" data-reveal="lines" data-reveal-delay={(i % 2) * 0.1 + 0.04}>
+                    “{item.finding.question}”
+                  </p>
+                )}
+                {item.finding.setup && (
+                  <p class="more__question t-label" data-reveal="lines" data-reveal-delay={(i % 2) * 0.1 + 0.04}>
+                    {item.finding.setup}
+                  </p>
+                )}
+              </div>
+            )}
+            <p class="more__result" data-reveal="lines" data-reveal-delay={(i % 2) * 0.1 + 0.08}>
+              {item.finding.result}
+            </p>
+            {item.finding.notes.length > 0 && (
+              <div class="more__notes">
+                {item.finding.notes.map((note) => (
+                  <p class="more__note t-label" data-reveal="lines" data-reveal-delay={(i % 2) * 0.1 + 0.12}>
+                    {note}
+                  </p>
+                ))}
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    )
+  }
+</section>
+
+<style>
+  /* ---- a. On paper ---- */
+  .findings__lead {
+    padding-block: var(--space-section);
+  }
+  .findings__head {
+    align-items: last baseline;
+    row-gap: 16px;
+  }
+  .findings__title {
+    grid-column: 1 / span 8;
+  }
+  .findings__byline {
+    grid-column: 9 / -1;
+    justify-self: end;
+    text-align: right;
+    color: var(--text-2);
+  }
+
+  .exhibit {
+    margin-top: clamp(48px, 6vw, 96px);
+    row-gap: 16px;
+  }
+  .exhibit :global(.exhibit__rule) {
+    grid-column: 1 / -1;
+    margin-bottom: 8px;
+  }
+  .exhibit__heading {
+    grid-column: 1 / span 4;
+  }
+  /* The two things compared, side by side on columns 5 to 12. */
+  .exhibit__compare {
+    grid-column: 5 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--gutter);
+    row-gap: 24px;
+  }
+  .exhibit__pair dt {
+    color: var(--text-2);
+  }
+  .exhibit__pair dd {
+    margin: 10px 0 0;
+    max-width: 22ch;
+  }
+  .exhibit__question {
+    grid-column: 5 / -1;
+  }
+  .exhibit__result {
+    grid-column: 1 / -1;
+    margin-top: clamp(32px, 4vw, 56px);
+  }
+  .exhibit__notes {
+    grid-column: 7 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 16px;
+    color: var(--text-2);
+  }
+  .exhibit__quote {
+    grid-column: 7 / -1;
+    margin-top: 32px;
+    font-size: var(--fs-name);
+    font-weight: var(--fw-light);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  /* ---- c. On ink ---- */
+  .findings__more {
+    padding-block: clamp(56px, 7vw, 112px) var(--space-section);
+    row-gap: 56px;
+  }
+  .more--left {
+    grid-column: 1 / span 6;
+  }
+  .more--right {
+    grid-column: 7 / -1;
+  }
+  .more :global(.more__rule) {
+    margin-bottom: 20px;
+  }
+  .more__question {
+    margin-top: 20px;
+    max-width: 36ch;
+  }
+  .more__result {
+    margin-top: 20px;
+    max-width: 22ch;
+    font-size: var(--fs-name);
+    font-weight: var(--fw-light);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .more__note {
+    margin-top: 12px;
+    max-width: 36ch;
+    color: var(--text-2);
+  }
+  /* Tablets and laptops (two side by side): each exhibit spans five shared rows (rule, heading,
+     question, result, notes), so each part lines up with its neighbor's. */
+  @media (min-width: 768px) {
+    .findings__more {
+      grid-template-rows: repeat(5, auto);
+    }
+    .more {
+      display: grid;
+      grid-row: span 5;
+      grid-template-rows: subgrid;
+      row-gap: 0;
+    }
+    .more :global(.more__rule) {
+      grid-row: 1;
+    }
+    .more__heading {
+      grid-row: 2;
+    }
+    .more__prompt {
+      grid-row: 3;
+    }
+    .more__result {
+      grid-row: 4;
+    }
+    .more__notes {
+      grid-row: 5;
+    }
+  }
+
+  /* Tablets: the exhibit's heading above what it compares; notes and quote on columns 4 to 8. */
+  @media (max-width: 1023px) {
+    .findings__title {
+      grid-column: 1 / span 5;
+    }
+    .findings__byline {
+      grid-column: 6 / -1;
+    }
+    .exhibit__heading,
+    .exhibit__compare,
+    .exhibit__question {
+      grid-column: 1 / -1;
+    }
+    .exhibit__notes,
+    .exhibit__quote {
+      grid-column: 4 / -1;
+    }
+    .more--left {
+      grid-column: 1 / span 4;
+    }
+    .more--right {
+      grid-column: 5 / -1;
+    }
+  }
+
+  /* Phones: everything across the six columns, stacked. */
+  @media (max-width: 767px) {
+    .findings__title,
+    .findings__byline,
+    .exhibit__notes,
+    .exhibit__quote,
+    .more--left,
+    .more--right {
+      grid-column: 1 / -1;
+    }
+    .findings__byline {
+      justify-self: start;
+      text-align: left;
+    }
+    .exhibit__compare {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

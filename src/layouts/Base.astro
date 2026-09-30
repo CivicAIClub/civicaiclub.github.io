@@ -39,7 +39,7 @@ interface Props {
   // "home" makes the header items drop in when the page first appears.
   intro?: 'home' | 'page';
   // Which header link to mark as the current page.
-  current?: 'cases' | 'about' | null;
+  current?: 'cases' | 'events' | 'about' | null;
   // The color of the page behind the content: most pages start on ink.
   theme?: 'ink' | 'paper';
   // Pictures the first screen needs, fetched early and first (for example the home reel's
@@ -201,9 +201,12 @@ const imageUrl = new URL(image, Astro.site);
         }
         window.addEventListener('pagereveal', markBack);
         // The footage hand-off: when the page before grew its footage into this page's hero (the
-        // home page's case letter, or a case's "Next case" band), it left this page's address in
+        // home page's case letter, a case's "Next case" band, or an event photo on Home or
+        // /events/ growing into its event page), it left this page's address in
         // "civic:handoff". Then, for the length of the page change only, the class "vt-handoff"
-        // lifts the hero's words and the header above the growing footage (src/styles/case.css).
+        // lifts a case hero's words and the header above the growing footage
+        // (src/styles/case.css), or, on an event page, swaps the sheet for a quick fade under the
+        // flying photo (src/styles/events.css).
         function handoff(event) {
           var to = null;
           try {
@@ -212,6 +215,9 @@ const imageUrl = new URL(image, Astro.site);
           } catch (e) {}
           if (!event.viewTransition || to !== location.pathname) return;
           html.classList.add('vt-handoff');
+          // A lasting note for the events page, so its hero doesn't replay its opening after a
+          // hand-off (the photo arrives already open). Unlike "vt-handoff", it is never removed.
+          html.setAttribute('data-arrived', 'handoff');
           var done = function () {
             html.classList.remove('vt-handoff');
           };
@@ -223,14 +229,15 @@ const imageUrl = new URL(image, Astro.site);
 
     <!--
       Speculation rules: when a visitor rests the pointer on a link that opens a case with the
-      footage hand-off (the home docket's letter and "Open case", a case page's "Next case" band),
-      Chrome quietly prepares that case page in the background ("prerender"). The zoom then hands
-      over to a page that is already there, so it can start revealing at once. Other browsers
-      ignore this. A prepared page waits to start its motion until it is shown
-      (src/scripts/motion/index.js).
+      footage hand-off (the home docket's letter and "Open case", a case page's "Next case" band)
+      or an event page with the photo hand-off (an event photo or "See the event" link marked
+      data-event-link, on Home and /events/), Chrome quietly prepares that page in the
+      background ("prerender"). The zoom or the growing photo then hands over to a page that is
+      already there, so it can start revealing at once. Other browsers ignore this. A prepared
+      page waits to start its motion until it is shown (src/scripts/motion/index.js).
     -->
     <script type="speculationrules" is:inline>
-      {"prerender":[{"where":{"selector_matches":"[data-next-link], [data-dk-hit], [data-dk-open]"},"eagerness":"moderate"}]}
+      {"prerender":[{"where":{"selector_matches":"[data-next-link], [data-dk-hit], [data-dk-open], [data-event-link]"},"eagerness":"moderate"}]}
     </script>
   </head>
   <body>

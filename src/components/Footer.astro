@@ -2,7 +2,7 @@
 // Footer.astro: the ink footer at the bottom of every page.
 //
 // What it shows: the line "Bring us the chore you repeat every week.", the links to the intake
-// form, the join form and the club's GitHub, the site links (Cases, About), the small print
+// form, the join form and the club's GitHub, the site links (Cases, Events, About), the small print
 // ("A student-run club at Pomfret School.", the Motion On/Off switch, the copyright), and a
 // full-width CIVIC at the very bottom.
 //
@@ -28,6 +28,7 @@ import ArrowLink from './ArrowLink.astro';
       <nav class="site-footer__nav" aria-label="Footer">
         <ul>
           <li><RollLink href="/#cases" label="Cases" /></li>
+          <li><RollLink href="/events/" label="Events" /></li>
           <li><RollLink href="/about/" label="About" /></li>
         </ul>
       </nav>

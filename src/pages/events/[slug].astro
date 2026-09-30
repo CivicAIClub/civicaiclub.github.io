@@ -1,0 +1,145 @@
+---
+// events/[slug].astro: one page per public event, e.g. /events/ai-literacy-week/.
+//
+// Astro builds one page for every event file in src/content/events/ that has "public: true".
+// The "[slug]" in this file's name is filled in from each event's slug field. Every fact on the
+// page comes from that one Markdown file, and every photo from src/data/media.json by its id;
+// nothing here is specific to one event.
+//
+// The page reads like a printed program that turned into a field report. Top to bottom (each
+// part is a component in src/components/events/):
+//   1. EventCover       "AI Literacy Week" in huge type with a leader line to the date, the facts,
+//                       then the cover photo ("Plate 1"), which opens along the page's columns.
+//   2. Opening          the event in one statement, with links down to the program and findings.
+//   3. EventChallenges  the week's three challenges as a ledger; the live one is a solid ink cell.
+//   4. EventProgram     the running order, numbered 01 to 05, with the photos of each part: the
+//                       live demo as a "sheet" (the prompt, then the deck it built), a pair of
+//                       photos from the Future of AI talk, and the closing game's rounds.
+//   5. EventFindings    what the club learned, as numbered exhibits; Exhibit 2, the car-wash
+//                       question, is proofread on screen as you scroll (EventQuestion).
+//   6. EventPlate       one last photo across the whole window, a pause between the findings
+//                       and the takeaways.
+//   7. EventTakeaways   the event deck's three takeaways.
+//   8. EventCredits     the partner organization first (EventPartner: by name, with the plain
+//                       facts), then who ran it and spoke, when and where, and the way to join.
+// The page's styles for motion and page changes are in src/styles/events.css; its motion is in
+// src/scripts/motion/modules/events-*.js (see the "Events pages" section of MOTION.md).
+import Base from '../../layouts/Base.astro';
+import Statement from '../../components/Statement.astro';
+import ArrowLink from '../../components/ArrowLink.astro';
+import EventCover from '../../components/events/EventCover.astro';
+import EventChallenges from '../../components/events/EventChallenges.astro';
+import EventProgram from '../../components/events/EventProgram.astro';
+import EventFindings from '../../components/events/EventFindings.astro';
+import EventTakeaways from '../../components/events/EventTakeaways.astro';
+import EventPlate from '../../components/events/EventPlate.astro';
+import EventCredits from '../../components/events/EventCredits.astro';
+import { getPublicEvents, formatEventDate, type EventEntry } from '../../lib/events';
+import '../../styles/events.css';
+
+// Tell Astro which pages to build: one per public event.
+export async function getStaticPaths() {
+  const events = await getPublicEvents();
+  return events.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+
+interface Props {
+  entry: EventEntry;
+}
+const { entry } = Astro.props;
+const data = entry.data;
+
+// The program's running order: the numbered parts first (01, 02 ...), in the file's order, then
+// the parts marked "numbered: false", which are listed last with "Also" instead of a number.
+let counter = 0;
+const numbered = data.program.map((chapter) => ({
+  chapter,
+  number: chapter.numbered ? String(++counter).padStart(2, '0') : undefined,
+}));
+const ordered = [...numbered.filter((row) => row.number), ...numbered.filter((row) => !row.number)];
+
+// Number the photos ("plates") in the order they appear on the page: the cover is Plate 1, then
+// each part's photos in the running order above (the demo sheet's two, then the pair), then the
+// closing photo. For AI Literacy Week that gives Plates 1 to 6.
+let plateCount = 1;
+const chapters = ordered.map((row) => {
+  const count = row.chapter.sheet ? 2 : row.chapter.plates.length;
+  const plates = Array.from({ length: count }, (_, i) => plateCount + 1 + i);
+  plateCount += count;
+  return { ...row, plates };
+});
+const closingPlate = data.closing ? plateCount + 1 : undefined;
+
+// The page's description for search results and link previews, e.g.
+// "AI Literacy Week at Pomfret School, May 2026: Two AI challenges by email, ..."
+const description = `${data.title} at Pomfret School, ${formatEventDate(data.date, 'month')}: ${data.summary}`;
+---
+
+<Base title={data.title} description={description} current="events" theme="ink">
+  <EventCover
+    slug={data.slug}
+    title={data.title}
+    date={data.date}
+    time={data.time}
+    place={data.place}
+    partner={data.partner}
+    cover={data.cover}
+  />
+
+  <!-- 2. Opening: the event in one statement, then two links further down the page. -->
+  <section class="event-opening theme-ink" aria-label="About the event">
+    <div class="grid">
+      <Statement class="span-all">{data.statement}</Statement>
+      <div class="event-opening__links">
+        <ArrowLink href="#program" dir="down">The program</ArrowLink>
+        {data.findings.length > 0 && <ArrowLink href="#findings" dir="down">What we learned</ArrowLink>}
+      </div>
+    </div>
+  </section>
+
+  {data.challenges.length > 0 && <EventChallenges challenges={data.challenges} note={data.challengeNote} />}
+
+  <EventProgram chapters={chapters} date={data.date} time={data.time} />
+
+  {
+    data.findings.length > 0 && (
+      <EventFindings findings={data.findings} challenges={data.challenges} program={data.program} />
+    )
+  }
+
+  {data.closing && closingPlate && <EventPlate plate={data.closing} number={closingPlate} />}
+
+  {data.takeaways.length > 0 && <EventTakeaways takeaways={data.takeaways} />}
+
+  <EventCredits
+    credits={data.credits}
+    audience={data.audience}
+    partner={data.partner}
+    date={data.date}
+    time={data.time}
+    place={data.place}
+  />
+</Base>
+
+<style>
+  .event-opening {
+    padding-block: var(--space-section-lg) var(--space-section);
+  }
+  .event-opening__links {
+    grid-column: 7 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    margin-top: clamp(32px, 4vw, 56px);
+  }
+  @media (max-width: 1023px) {
+    .event-opening__links {
+      grid-column: 5 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .event-opening__links {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
