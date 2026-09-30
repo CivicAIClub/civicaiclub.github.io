@@ -1,0 +1,75 @@
+---
+// EventProgram.astro: "The program.", the event's running order (event page, part 4).
+//
+// A heading with the day and time on its right, then one numbered row per part of the event
+// (01, 02, 03 ...), each drawn by EventChapter.astro: the part's name, a leader line to who gave
+// it, one line about it, and that part's photos or game. Parts marked "numbered: false" in the
+// event file are listed last, with "Also" instead of a number.
+//
+// Where the words come from: the event file's "program", "date" and "time". The running order,
+// the chapter numbers and the plate numbers (which photo is "Plate 2", "Plate 3" ...) are worked
+// out once for the whole page in src/pages/events/[slug].astro and passed in.
+// Motion: the heading rises (M1); each chapter animates itself (see EventChapter.astro).
+import EventChapter from './EventChapter.astro';
+import { formatEventDay } from '../../lib/events';
+
+interface Props {
+  // The chapters in running order, each with its number ("01", or none for "Also") and the plate
+  // numbers of its photos (worked out in src/pages/events/[slug].astro).
+  chapters: { chapter: any; number?: string; plates: number[] }[];
+  date: string;
+  time: string;
+}
+const { chapters, date, time } = Astro.props;
+---
+
+<section id="program" class="program theme-paper" aria-labelledby="program-title">
+  <div class="program__head grid">
+    <h2 id="program-title" class="program__title t-statement" data-reveal="lines">The program.</h2>
+    <p class="program__when t-mono" data-reveal="lines" data-reveal-delay="0.1">
+      {formatEventDay(date)} · {time}
+    </p>
+  </div>
+
+  <ol class="program__list">
+    {chapters.map((row) => <EventChapter chapter={row.chapter} number={row.number} plates={row.plates} />)}
+  </ol>
+</section>
+
+<style>
+  .program {
+    padding-block: var(--space-section);
+  }
+  .program__head {
+    align-items: last baseline;
+    row-gap: 16px;
+  }
+  .program__title {
+    grid-column: 1 / span 8;
+  }
+  .program__when {
+    grid-column: 9 / -1;
+    justify-self: end;
+    text-align: right;
+    color: var(--text-2);
+  }
+  .program__list {
+    margin-top: clamp(48px, 6vw, 96px);
+  }
+  @media (max-width: 1023px) {
+    .program__title {
+      grid-column: 1 / span 5;
+    }
+    .program__when {
+      grid-column: 6 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .program__title,
+    .program__when {
+      grid-column: 1 / -1;
+      justify-self: start;
+      text-align: left;
+    }
+  }
+</style>

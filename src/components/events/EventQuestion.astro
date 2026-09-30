@@ -1,0 +1,214 @@
+---
+// EventQuestion.astro: Exhibit 2, the question every model failed, proofread on screen.
+//
+// On ink, in very large light type: "The car wash is 50 meters away. Should I walk or drive
+// there?" Under it, the verdict in three lines: every model advised walking; a car wash is for
+// the car; and the line the event deck quoted.
+// The page's one crimson marker is on "drive" (the right answer), and "walk" (the answer every
+// model gave) is struck through, like a proofreader's marks. Which two words get the marks comes
+// from the event file ("stage: { strike: walk, mark: drive }").
+//
+// How it plays (src/scripts/motion/modules/events-question.js):
+//   - Laptops and larger (a mouse or trackpad, at least 1024 x 600) with motion on: the section
+//     stays still on screen for a while as you scroll ("pinned"). A quarter of the way through,
+//     a line strikes out "walk" and the first verdict rises; just past halfway, the crimson
+//     marker sweeps across "drive" and the other two verdict lines rise. Scrolling back undoes
+//     both, and a thin crimson line at the bottom shows how far through you are.
+//   - Phones, tablets and touch screens with motion on: the same marks play once, one after the
+//     other, when the question has come fully into view.
+//   - Motion off, reduced motion, or no JavaScript: the finished page. "walk" is struck through,
+//     "drive" is marked, and every line is there.
+// Screen readers hear the question, then the three verdict lines; the strike and the progress
+// line are decoration only.
+
+interface Props {
+  finding: {
+    question?: string;
+    result: string;
+    because?: string;
+    quote?: string;
+    stage?: { strike: string; mark: string };
+  };
+  // "Exhibit 2 · Day 2 · The question every model failed"
+  label: string;
+  // "Challenge 2 · Test the Reasoning"
+  challenge?: string;
+}
+const { finding, label, challenge } = Astro.props;
+const question = finding.question ?? '';
+const strike = finding.stage?.strike ?? '';
+const mark = finding.stage?.mark ?? '';
+
+// Find where a word starts in the question (as a whole word, so "walk" never matches "walkway").
+function wordAt(word: string): number {
+  if (!word) return -1;
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = new RegExp(`\\b${escaped}\\b`).exec(question);
+  return match ? match.index : -1;
+}
+const strikeAt = wordAt(strike);
+const markAt = wordAt(mark);
+
+// Cut the question into pieces: plain text before the first marked word, then the rest, where
+// the struck word and the marked word get their own tags. The rest is kept on one line on
+// laptops and tablets ("walk or drive there?" never breaks), so the two marks sit together.
+const start = [strikeAt, markAt].filter((i) => i >= 0).reduce((a, b) => Math.min(a, b), question.length);
+const head = question.slice(0, start);
+type Piece = { text: string; kind?: 'strike' | 'mark' };
+const tail: Piece[] = [];
+let cursor = start;
+const cuts = [
+  { at: strikeAt, word: strike, kind: 'strike' as const },
+  { at: markAt, word: mark, kind: 'mark' as const },
+]
+  .filter((cut) => cut.at >= 0)
+  .sort((a, b) => a.at - b.at);
+for (const cut of cuts) {
+  if (cut.at > cursor) tail.push({ text: question.slice(cursor, cut.at) });
+  tail.push({ text: cut.word, kind: cut.kind });
+  cursor = cut.at + cut.word.length;
+}
+tail.push({ text: question.slice(cursor) });
+---
+
+<section class="question theme-ink" aria-labelledby="q-label" data-events-question>
+  <div class="question__track">
+    <div class="question__stage">
+      <div class="question__bar grid">
+        <h3 id="q-label" class="question__label t-mono" data-reveal="lines" data-reveal-start="top 75%">{label}</h3>
+        {
+          challenge && (
+            <p class="question__challenge t-mono" data-reveal="lines" data-reveal-start="top 75%">
+              {challenge}
+            </p>
+          )
+        }
+      </div>
+
+      <div class="grid">
+        <blockquote class="question__text" data-reveal="lines" data-reveal-start="top 75%">
+          “{head}<span class="q-nowrap">{
+            tail.map((piece) =>
+              piece.kind === 'strike' ? (
+                <span data-events-strike-word>{piece.text}</span>
+              ) : piece.kind === 'mark' ? (
+                <mark data-events-mark>{piece.text}</mark>
+              ) : (
+                piece.text
+              )
+            )
+          }”</span>
+        </blockquote>
+      </div>
+
+      <div class="question__verdict grid">
+        <p class="question__v1" data-events-q-verdict="1">{finding.result}</p>
+        {finding.because && <p class="question__v2" data-events-q-verdict="2">{finding.because}</p>}
+        {finding.quote && <p class="question__v3 t-label" data-events-q-verdict="3">“{finding.quote}”</p>}
+      </div>
+
+      <span class="question__strike" data-events-strike aria-hidden="true"></span>
+      <span class="question__progress" data-events-q-progress aria-hidden="true"></span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .question__stage {
+    position: relative;
+    padding-top: calc(var(--header-height) + 24px);
+    padding-bottom: 40px;
+  }
+
+  .question__bar {
+    align-items: baseline;
+    row-gap: 8px;
+  }
+  .question__label {
+    grid-column: 1 / span 8;
+    font-weight: var(--fw-regular);
+  }
+  .question__challenge {
+    grid-column: 9 / -1;
+    justify-self: end;
+    text-align: right;
+    color: var(--text-2);
+  }
+
+  /* The question: as big as the window allows (8.4% of its width, but never taller than 14% of
+     its height, so the pinned stage always fits a laptop screen). */
+  .question__text {
+    grid-column: 1 / -1;
+    margin-top: clamp(20px, 3vh, 40px);
+    font-size: min(8.4vw, 14svh);
+    font-weight: var(--fw-light);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .question__verdict {
+    margin-top: clamp(24px, 4vh, 48px);
+    row-gap: 16px;
+  }
+  .question__v1,
+  .question__v2 {
+    font-size: var(--fs-name);
+    font-weight: var(--fw-light);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .question__v1 {
+    grid-column: 1 / span 6;
+    grid-row: 1 / span 2;
+  }
+  .question__v2 {
+    grid-column: 7 / -1;
+    grid-row: 1;
+  }
+  .question__v3 {
+    grid-column: 7 / -1;
+    grid-row: 2;
+    max-width: 40ch;
+    color: var(--text-2);
+  }
+
+  /* Tablets and up keep "walk or drive there?" on one line. */
+  @media (min-width: 768px) {
+    .q-nowrap {
+      white-space: nowrap;
+    }
+  }
+  @media (max-width: 1023px) {
+    .question__label {
+      grid-column: 1 / span 5;
+    }
+    .question__challenge {
+      grid-column: 6 / -1;
+    }
+    .question__v1 {
+      grid-column: 1 / span 4;
+    }
+    .question__v2,
+    .question__v3 {
+      grid-column: 5 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .question__label,
+    .question__challenge,
+    .question__v1,
+    .question__v2,
+    .question__v3 {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+    .question__challenge {
+      justify-self: start;
+      text-align: left;
+    }
+    .question__text {
+      font-size: 11.5vw;
+    }
+  }
+</style>

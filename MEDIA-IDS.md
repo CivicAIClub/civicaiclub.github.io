@@ -5,7 +5,8 @@ Every video (and photo) on the site is asked for by an **id**, never by a file p
 Where the ids are named:
 - Case pages: each case file's `clips:` block (`src/content/cases/*.md`), plus its `beats:` (the captions of the scroll-driven clip, in seconds).
 - Home page: `src/data/home.json` (the reel, the showreel, the three glances). The case dockets come from the case files.
-- About page: `src/data/about.json` (the club photo and the workshop clip).
+- About page: `src/data/about.json` (the club photo, the workshop clip and the two event photos under the timeline).
+- Events pages: each event file (`src/content/events/*.md`): `cover`, `card`, `feature`, the program's `sheet` and `plates`, and `closing`.
 
 ## Naming rule
 
@@ -93,6 +94,27 @@ No footage. The home page shows an outlined letter E with no link.
 |---|---|---|
 | `about-workshop` | 16:9 · 9.7 s loop | The club's public GitHub: the 50 merged pull requests, then one pull request's changes. Avatars hidden. |
 | `about-club-photo` | Photo, 4:3 | The club around a conference table (approved for About). Color and black-and-white sets. Show it with `<Photo id="about-club-photo" />`. |
+
+### Events · AI Literacy Week (`ai-literacy-week`): photos from the main event, May 2026
+Photos, not clips. The event pages show them with `EventPicture` (`src/components/events/EventPicture.astro`, which can switch to a phone crop); Home and About show them with `<Photo id="…" />`. On the event pages a phone crop keeps the main crop's alt text, so a main crop with a phone crop has alt text that is true of both. The last part of each id is its shape (`16x9`, `4x5`, `1x1`, …). Files are in `public/media/events/ai-literacy-week/`. All come from Cayden's camera originals (not in the repository) with a light grade: a little cooler and less saturated, since the camera ran warm. Cayden asked for these photos, faces included, to be published; captions and alt text never name anyone (who is in which photo isn't confirmed).
+
+| Id | Shape | Shows | Where it's used | Notes |
+|---|---|---|---|---|
+| `ai-literacy-week-hall-3x2` | Photo, 3:2 | The whole room during a faculty talk: presenter, the screen ("The internet."), students on sofas. | Home: the "Latest event" teaser (the event's `card`). | The establishing shot. |
+| `ai-literacy-week-hall-16x9` | Photo, 16:9 | The same, framed wide. | Event page: the cover, Plate 1 (the event's `cover`). | The Home and `/events/` frames grow into it (the photo hand-off). |
+| `ai-literacy-week-hall-21x9` | Photo, 21:9 | The same, as a thin band. | `/events/`: the latest event's band on laptops (the event's `feature`). | |
+| `ai-literacy-week-hall-4x5` | Photo, 4:5 | Presenter, screen and the "Hamilton Hub" sign. | Event page cover and `/events/` band on phones and upright tablets. | |
+| `ai-literacy-week-results-4x5` | Photo, 4:5 · 1600 px max | A student presenting at the lectern. | **Never placed.** | **Presenter only.** The original shows a slide with a real teacher's photo and AI images of that teacher; the slide must never appear, so this crop stops well short of the screen. Never re-crop it wider, and don't place it without the lead's say-so. |
+| `ai-literacy-week-demo-3x2`, `-demo-1x1` | Photo, 3:2 and 1:1 | The live demo: a student speaking beside the screen with the typed prompt (an oyster farm deck). | Event page: Plate 2, the demo sheet (the 1:1 on phones). | The browser's tab strip and address bar (a project URL) are blurred. |
+| `ai-literacy-week-deck-3x2`, `-deck-1x1` | Photo, 3:2 and 1:1 | The finished demo deck on screen, "James Lake Oyster Farm" (the 3:2 also shows a student at the laptop; the 1:1 leaves the student out, so the 3:2's alt text describes only the screen and the laptop). | Event page: Plate 3, the demo sheet (the 1:1 on phones). | The deck is AI-generated demo content; its caption must say the business and every detail in it are invented. Blurred: the tab strip and address bar, the deck's speaker notes (they were readable and were written in the first person next to a real club member's name) and slide thumbnails 2 to 8. The slide title stays sharp (approved by Cayden). |
+| `ai-literacy-week-audience-3x2`, `-1x1` | Photo, 3:2 and 1:1 | Two students on a sofa watching, pizza boxes behind. | Event page: Plate 6 (the 1:1 on phones). About: the small photo under the timeline (black and white). | The 3:2 has a black-and-white set. |
+| `ai-literacy-week-audience-4x5` | Photo, 4:5 | The same, without the pizza. | Not placed. | |
+| `ai-literacy-week-lectern-4x5` | Photo, 4:5 | A student at the lectern mid-sentence ("Future of AI" talk). | Event page: Plate 4. | |
+| `ai-literacy-week-lectern-2x3`, `-1x1` | Photo | The same moment, other shapes. | Not placed. | |
+| `ai-literacy-week-future-3x2` | Photo, 3:2 | The same talk: the screen shows a Mars rover and a cancer-drug illustration. | Event page: Plate 5. About: the large photo under the timeline (black and white). | Has a black-and-white set. |
+| `ai-literacy-week-future-4x5`, `-1x1` | Photo | The same talk, the Mars rover only. | Not placed. | |
+
+A photo marked "Not placed" is built and served but no page shows it; `usedOn` in `media.json` is `[]` for it. When you place one, fill in `usedOn` and this table.
 
 ### Style guide
 | Id | Shape | Shows |

@@ -1,0 +1,200 @@
+---
+// EventSheet.astro: the demo "sheet", one prompt and the finished deck it built (in the program's
+// chapter 02, AI Tools: Beyond Chatbots).
+//
+// A full-width ink band inside the program with two photos from the live demo:
+//   Plate 2, "The prompt": the screen with the one typed prompt, and the prompt in words;
+//   Plate 3, "The deck it built": the finished deck on screen, with a note that the farm and
+//   every detail in the deck are invented (AI-made demo content).
+// Each photo has its caption beside it (a mono label with the plate number, "Plate 2 · The
+// prompt", then the caption, a smaller note, and "With …" once the event file names the people
+// in the photo), so the plate numbers read the same in every layout.
+//
+// Two ways it shows (src/scripts/motion/modules/events-demo.js):
+//   - Laptops and larger (a mouse or trackpad, at least 1024 x 600) with motion on: the band
+//     stays still on screen while you scroll ("pinned"), and the deck is laid over the prompt from
+//     the bottom up, like the site's page-change sheet, tied to the scroll, with a thin light line
+//     riding its top edge, so it reads as a new sheet lying on top (data-events-demo-edge). The prompt's photo
+//     pushes in slightly around the typed words as it is covered, and the captions change
+//     halfway. A small "From chapter 02" sits at the top of the caption column while the band is
+//     pinned (the chapter's own row has scrolled away by then); the plate numbers are in the
+//     captions only, so each plate is named once on screen.
+//   - Everything else (phones, tablets, touch screens, motion off, no JavaScript): the two photos
+//     one after the other with their captions, each opening from the top as it scrolls in (M3).
+// Phones get square crops of both photos.
+import EventPicture from './EventPicture.astro';
+import { withPeople } from '../../lib/events';
+import type { Person } from '../../lib/people';
+
+interface Plate {
+  media: string;
+  phone?: string;
+  label?: string;
+  caption: string;
+  note?: string;
+  people?: Person[];
+  focus?: string;
+}
+interface Props {
+  sheet: { before: Plate; after: Plate };
+  // The plate numbers of the two photos, e.g. [2, 3].
+  plates: number[];
+  // The chapter's number, e.g. "02".
+  chapter?: string;
+}
+const { sheet, plates, chapter } = Astro.props;
+const frames = [sheet.before, sheet.after];
+const [first = 2, second = 3] = plates;
+const numbers = [first, second];
+// Each photo's "With …" line (empty, so not printed, while its "people" list is empty).
+const withLines = frames.map((plate) => withPeople(plate.people));
+---
+
+<div class="sheet theme-ink" data-events-demo>
+  <div class="sheet__track">
+    <div class="sheet__stage grid">
+      {
+        frames.map((plate, i) => (
+          <>
+            <figure class="sheet__frame" data-events-demo-frame={i}>
+              {/* Each photo opens from the top as it scrolls in (M3). */}
+              {/* data-header-solid: an ink strip behind the header while a photo is under it. */}
+              <div class="sheet__window" data-media-open data-header-solid>
+                <div class="sheet__inner" data-media-inner>
+                  <EventPicture
+                    id={plate.media}
+                    phone={plate.phone}
+                    fit
+                    focus={plate.focus}
+                    sizes="(min-width: 1024px) 63vw, 100vw"
+                    class="sheet__picture"
+                  />
+                </div>
+                {/* The deck's leading edge while it is laid over the prompt (pinned layout only). */}
+                {i === 1 && <span class="sheet__edge" data-events-demo-edge aria-hidden="true" />}
+              </div>
+            </figure>
+            <div class="sheet__caption" data-events-demo-caption={i}>
+              <p class="sheet__label t-mono">
+                Plate {numbers[i]}
+                {plate.label && ` · ${plate.label}`}
+              </p>
+              <p class="sheet__text t-label">{plate.caption}</p>
+              {plate.note && <p class="sheet__note t-ui">{plate.note}</p>}
+              {withLines[i] && <p class="sheet__note t-ui">{withLines[i]}</p>}
+            </div>
+          </>
+        ))
+      }
+      {
+        chapter && (
+          <p class="sheet__count t-mono" aria-hidden="true">
+            From chapter {chapter}
+          </p>
+        )
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .sheet {
+    padding-block: clamp(56px, 7vw, 112px);
+  }
+  .sheet__stage {
+    align-items: end;
+    row-gap: 56px;
+  }
+
+  /* Laptops (the plain layout): each photo on columns 5 to 12 with its caption beside it on
+     columns 1 to 4, level with the photo's bottom edge. */
+  .sheet__frame {
+    grid-column: 5 / -1;
+  }
+  .sheet__caption {
+    grid-column: 1 / span 4;
+    align-self: end;
+  }
+  [data-events-demo-frame='0'],
+  [data-events-demo-caption='0'] {
+    grid-row: 1;
+  }
+  [data-events-demo-frame='1'],
+  [data-events-demo-caption='1'] {
+    grid-row: 2;
+  }
+
+  .sheet__window {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: #1b1b1a;
+  }
+  .sheet__inner {
+    position: absolute;
+    inset: 0;
+  }
+  .sheet__inner :global(.sheet__picture) {
+    position: absolute;
+    inset: 0;
+  }
+  /* The deck's leading edge: a 1px paper line along the top of a box the size of the window.
+     events-demo.js moves the box down with the deck's clip edge. Shown only in the pinned
+     layout (src/styles/events.css). */
+  .sheet__edge {
+    position: absolute;
+    inset: 0;
+    display: none;
+    border-top: 1px solid color-mix(in srgb, var(--paper) 60%, transparent);
+    pointer-events: none;
+  }
+
+  .sheet__label {
+    color: var(--text-2);
+  }
+  .sheet__text {
+    margin-top: 12px;
+    max-width: 32ch;
+  }
+  .sheet__note {
+    margin-top: 12px;
+    max-width: 40ch;
+    color: var(--text-2);
+  }
+  /* "From chapter 02" only shows in the pinned layout (src/styles/events.css). */
+  .sheet__count {
+    display: none;
+    color: var(--text-2);
+  }
+
+  /* Tablets: each photo across all 8 columns with its caption under it. */
+  @media (max-width: 1023px) {
+    .sheet__stage {
+      row-gap: 16px;
+    }
+    .sheet__frame,
+    .sheet__caption {
+      grid-column: 1 / -1;
+    }
+    [data-events-demo-frame='0'] {
+      grid-row: 1;
+    }
+    [data-events-demo-caption='0'] {
+      grid-row: 2;
+    }
+    [data-events-demo-frame='1'] {
+      grid-row: 3;
+      margin-top: 40px;
+    }
+    [data-events-demo-caption='1'] {
+      grid-row: 4;
+    }
+  }
+
+  /* Phones: square crops. */
+  @media (max-width: 767px) {
+    .sheet__window {
+      aspect-ratio: 1 / 1;
+    }
+  }
+</style>

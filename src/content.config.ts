@@ -111,4 +111,160 @@ const cases = defineCollection({
     }),
 });
 
-export const collections = { cases };
+// ---- Events: one Markdown file per event in src/content/events/ ----
+// Each club event (AI Literacy Week, for example) is one Markdown file, with all of its facts in
+// the frontmatter and nothing in the body. The event pages (src/pages/events/) read them with
+// getCollection('events') through src/lib/events.ts. To add an event, copy an existing file, change
+// the facts, use photo ids that are already in src/data/media.json, and set public: true.
+
+// A photo's id in src/data/media.json (lowercase letters, numbers and dashes).
+const mediaId = z.string().regex(/^[a-z0-9-]+$/, 'a photo id from src/data/media.json');
+// A CSS position like "50% 55%": which part of a photo to keep when a frame crops it.
+const cssPos = z.string().regex(/^\d{1,3}% \d{1,3}%$/);
+// A date written "2026-05-17" that is a real day on the calendar (so "2026-02-30" is refused
+// instead of quietly turning into March 2).
+const isoDay = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/)
+  .refine((iso) => {
+    const [year, month, day] = iso.split('-').map(Number);
+    const check = new Date(Date.UTC(year, month - 1, day));
+    return check.getUTCFullYear() === year && check.getUTCMonth() === month - 1 && check.getUTCDate() === day;
+  }, 'a real calendar day, written like "2026-05-17"');
+
+// One photo on an event page (a "plate").
+const plate = z.object({
+  media: mediaId,                       // a "kind": "image" id
+  phone: mediaId.optional(),            // another crop for phones (and portrait tablets for the cover)
+  label: z.string().optional(),         // mono line above the caption, e.g. "The prompt"
+  caption: z.string().min(1),           // the moment and the talk; never who
+  note: z.string().optional(),          // a second, smaller line under the caption
+  // Who is in the photo: left empty until names are confirmed. When filled, "With …" is printed
+  // under the caption (withPeople in src/lib/events.ts).
+  people: z.array(person).default([]),
+  focus: cssPos.optional(),             // object-position when a frame crops the photo
+});
+
+// One part of the event's program (a talk, the game, the awards), in the order it is listed.
+const chapter = z.object({
+  // The part's name, e.g. "Future of AI".
+  title: z.string().min(1),
+  speakers: z.array(person).default([]),   // printed after the leader line
+  role: z.string().optional(),             // printed instead of a speaker, e.g. "Faculty"
+  numbered: z.boolean().default(true),     // false prints "Also" in the number column
+  // One or two sentences about what happened in it.
+  line: z.string().min(1),
+  anchor: z.string().regex(/^[a-z0-9-]+$/).optional(),     // id for deep links, e.g. final-round
+  link: z.object({ label: z.string(), href: z.string() }).optional(), // ArrowLink dir="down"
+  sheet: z.object({ before: plate, after: plate }).optional(),        // the demo sheet (S2)
+  // A pair of photos side by side (EventPair.astro), so none or exactly two.
+  plates: z
+    .array(plate)
+    .refine((list) => list.length === 0 || list.length === 2, 'a chapter’s "plates" is a pair: two photos, or none')
+    .default([]),
+  // A game played live: its categories, its rounds (a name and the rule for each) and the
+  // question it asked at the end.
+  game: z.object({
+    categories: z.array(z.string()).min(1),
+    rounds: z.array(z.object({ title: z.string(), rule: z.string() })).min(1),
+    question: z.string(),
+  }).optional(),
+}).refine((c) => !(c.sheet && c.plates.length), { message: 'A chapter has a sheet or plates, not both.' });
+
+// One thing the club learned from the challenges, shown as a numbered "Exhibit".
+const finding = z.object({
+  day: z.string().min(1),                 // "Day 1"
+  title: z.string().min(1),               // "Describe the Faculty"
+  question: z.string().optional(),        // the exact words put to the models
+  setup: z.string().optional(),           // a description when the question is not quoted
+  // Side-by-side rows to compare, e.g. "Part 1" / "Words only."
+  compare: z.array(z.object({ label: z.string(), text: z.string() })).default([]),
+  // What happened, in one sentence.
+  result: z.string().min(1),
+  because: z.string().optional(),         // the staged finding's second verdict line
+  // Smaller lines under the result.
+  notes: z.array(z.string()).default([]),
+  // A line from the event deck, shown in quotation marks.
+  quote: z.string().optional(),
+  stage: z.object({ strike: z.string(), mark: z.string() }).optional(), // S1: words in `question`
+});
+
+const events = defineCollection({
+  // Read every .md file in src/content/events/.
+  loader: glob({ pattern: '*.md', base: './src/content/events' }),
+  schema: z.object({
+    // The page address: /events/<slug>/. Lowercase letters, numbers and dashes only.
+    slug: z.string().regex(/^[a-z0-9-]+$/),
+    // The event's name, e.g. "AI Literacy Week".
+    title: z.string().min(1),
+    date: isoDay,   // QUOTE IT in YAML, or YAML turns it into a Date
+    // The time as printed, e.g. "3:30–5 PM" (with an en dash).
+    time: z.string().min(1),
+    // Where it happened, as printed, e.g. "VISTA Hamilton Hub".
+    place: z.string().min(1),
+    // Who it was for, in one sentence. Printed in the credits' "Run by" row, after "The Civic AI
+    // Club." (EventCredits.astro).
+    audience: z.string().min(1),
+    // A partner organization: its name and one or two plain sentences about what it did.
+    partner: z.object({ name: z.string(), line: z.string() }).optional(),
+    summary: z.string().min(1),    // index, meta description
+    teaser: z.string().min(1),     // home page line
+    statement: z.string().min(1),  // the opening statement
+    cover: plate,                  // the event page's hero ("Plate 1")
+    // The home page's 3:2 photo (falls back to the cover). No caption: the teaser shows the
+    // event's name and facts beside it instead.
+    card: z.object({ media: mediaId, focus: cssPos.optional() }).optional(),
+    // The /events/ list's frame (a 21:9 band on laptops, "phone" on phones and upright tablets).
+    // Falls back to the cover. No caption: the list shows the event's name under it instead.
+    feature: z.object({ media: mediaId, phone: mediaId.optional(), focus: cssPos.optional() }).optional(),
+    // The challenges of the week, in order. "live: true" marks one played at the event itself.
+    challenges: z.array(z.object({
+      label: z.string(), title: z.string(), line: z.string(),
+      live: z.boolean().default(false),
+      link: z.object({ label: z.string(), href: z.string() }).optional(),
+    })).default([]),
+    // One labeled row under the challenges (how they worked).
+    challengeNote: z.object({ label: z.string(), text: z.string() }).optional(),
+    // The parts of the event, in the order they are listed.
+    program: z.array(chapter).default([]),
+    // What the club learned, as numbered exhibits.
+    findings: z.array(finding).default([]),
+    // The event deck's takeaways. "from" is the number of the exhibit each one comes from.
+    takeaways: z.array(z.object({
+      title: z.string(), line: z.string().optional(), from: z.number().int().positive().optional(),
+    })).default([]),
+    // The full-width photo near the end of the page.
+    closing: plate.optional(),
+    // The credits rows at the end of the page.
+    credits: z.array(keyValue).default([]),
+    // True builds a page at /events/<slug>/ and lists the event. False keeps it off the site.
+    public: z.boolean(),
+    // Sorts events that share a date (1 first).
+    order: z.number().int(),
+  })
+  // Only one finding can play the "proofread" moment, and its two words must be in its question.
+  .refine((e) => e.findings.filter((f) => f.stage).length <= 1, { message: 'Only one finding can be staged.' })
+  .refine((e) => e.findings.every((f) => !f.stage || (f.question?.includes(f.stage.strike) && f.question?.includes(f.stage.mark))),
+    { message: '"stage.strike" and "stage.mark" must be words in that finding’s question.' })
+  // Every finding only uses the parts its place on the page can show (EventFindings.astro), so
+  // nothing typed into the file is quietly left off the page:
+  //   - "because" (a second verdict line) only shows on the staged finding;
+  //   - the staged finding shows its question, result, because and quote (no compare, setup or
+  //     notes);
+  //   - the findings after the staged one show their question or setup, result and notes (no
+  //     compare or quote).
+  .refine((e) => {
+    const staged = e.findings.findIndex((f) => f.stage);
+    return e.findings.every((f, i) => {
+      if (i === staged) return !f.compare.length && !f.setup && !f.notes.length;
+      if (f.because) return false;
+      if (staged >= 0 && i > staged) return !f.compare.length && !f.quote;
+      return true;
+    });
+  }, { path: ['findings'], message: 'A finding has a part its place on the page doesn’t show (see the note above this check in src/content.config.ts).' })
+  // A takeaway's "from" is an exhibit number, so it can't be higher than the number of findings.
+  .refine((e) => e.takeaways.every((t) => !t.from || t.from <= e.findings.length),
+    { path: ['takeaways'], message: 'A takeaway’s "from" points at an exhibit that doesn’t exist (it is higher than the number of findings).' }),
+});
+
+export const collections = { cases, events };

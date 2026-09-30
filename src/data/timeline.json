@@ -1,10 +1,11 @@
 {
   "_note": "How the club started, for the About page. Month-level dates only.",
   "items": [
-    { "date": "2025-11", "label": "Nov 2025", "text": "First full meeting." },
+    { "date": "2025-11", "label": "Nov 2025", "text": "First official club meeting." },
     { "date": "2025-12", "label": "Dec 2025", "text": "Faculty send in cases." },
     { "date": "2026-04", "label": "Apr 2026", "text": "First commit, GitHub org, first merged pull request." },
     { "date": "2026-05", "label": "May 2026", "text": "AutoPlanner demo for the CLC." },
+    { "date": "2026-05", "label": "May 2026", "text": "AI Literacy Week, for the whole school." },
     { "date": "2026-09", "label": "Sep 2026", "text": "Club fair. One repository per project." },
     { "date": "2026-09", "label": "Sep 2026", "text": "First meeting of the year. New members join the case teams." },
     { "date": "2026-09", "label": "Sep 2026", "text": "Two local-business projects open." }

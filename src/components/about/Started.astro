@@ -3,24 +3,33 @@
 //
 // What it shows:
 //   1. The club photo, in black and white, across the whole width of the window, captioned
-//      "The club, November 2025." (the photo is approved for this page; see src/data/about.json).
+//      "The first official club meeting, November 2025." (the photo is approved for this page;
+//      see src/data/about.json).
 //   2. The statement "From one meeting to eleven repositories."
 //   3. A strip of cards, one per moment in the club's short history (src/data/timeline.json):
 //      the month, the year and one line each.
+//   4. Two black-and-white photos from AI Literacy Week (May 2026), a large one (the Future of AI
+//      talk) and a small one (the audience) side by side, with one line about the event and a
+//      link to its page. Their ids and the event's slug are in src/data/about.json ("event").
+//      If that event isn't public (or its slug is mistyped), this part is left out, so the page
+//      never links to an event page that doesn't exist. The line "Six months after that first
+//      meeting" depends on the event's month (see the note at the top of the event's file).
 //
 // Motion (src/scripts/motion/modules/about-started.js):
-//   - The photo opens downward (its window grows from the top edge) over 1.8 seconds while the
+//   - Each photo opens downward (its window grows from the top edge) over 1.8 seconds while the
 //     picture inside slides down into place from half its height above (data-about-open).
 //   - The cards flip up into place one after another, turning from a tilt as they rise, then the
 //     strip drifts slowly to the left, round and round. It stops while the pointer is over it,
 //     can be dragged sideways, and has a Pause button (data-about-strip).
 // Without motion the strip is a plain row that scrolls sideways (with a trackpad, a swipe, or
-// the arrow keys once it has keyboard focus), and the photo is simply there.
+// the arrow keys once it has keyboard focus), and the photos are simply there.
 import Photo from '../Photo.astro';
 import Statement from '../Statement.astro';
 import Divider from '../Divider.astro';
+import ArrowLink from '../ArrowLink.astro';
 import about from '../../data/about.json';
 import timeline from '../../data/timeline.json';
+import { eventUrl, getPublicEvents } from '../../lib/events';
 
 // Cards 3 and 6 are ink-colored, to give the strip a rhythm. (Change the numbers to move them.)
 const inkCards = new Set([2, 5]);
@@ -30,6 +39,11 @@ const cards = timeline.items.map((item, i) => {
   const [month, year] = item.label.split(' ');
   return { ...item, month, year, index: String(i + 1).padStart(2, '0'), ink: inkCards.has(i) };
 });
+
+// The event photos under the strip: which event they link to, and the two photo ids.
+const event = about.event;
+// That event's entry, only if it is public (otherwise the photos and the link are left out).
+const eventEntry = (await getPublicEvents()).find((entry) => entry.data.slug === event.slug);
 ---
 
 <section class="started theme-paper" aria-labelledby="started-title">
@@ -47,8 +61,7 @@ const cards = timeline.items.map((item, i) => {
       </div>
     </div>
     <figcaption class="started__caption grid">
-      <span class="started__caption-text t-label" data-reveal="lines">The club, November 2025.</span>
-      <span class="started__caption-note t-mono">First full meeting</span>
+      <span class="started__caption-text t-label" data-reveal="lines">The first official club meeting, November 2025.</span>
     </figcaption>
   </figure>
 
@@ -92,6 +105,48 @@ const cards = timeline.items.map((item, i) => {
       </ol>
     </div>
   </div>
+
+  <!-- 4. Six months on: two photos from AI Literacy Week, in black and white like the club photo
+       above, a large one and a small one (both 3:2), bottoms level. Each opens downward like the club photo
+       (data-about-open). The link goes to the event's own page. -->
+  {
+    eventEntry && (
+      <div class="started__event grid">
+        <div class="started__event-frame started__event-frame--wide" data-about-open>
+          <div class="started__inner" data-about-open-inner>
+            <Photo
+              id={event.media.wide}
+              tone="bw"
+              bare
+              caption={false}
+              sizes="(min-width: 1024px) 55vw, 100vw"
+              class="started__img"
+            />
+          </div>
+        </div>
+        <div class="started__event-frame started__event-frame--small" data-about-open>
+          <div class="started__inner" data-about-open-inner>
+            <Photo
+              id={event.media.small}
+              tone="bw"
+              bare
+              caption={false}
+              sizes="(min-width: 1024px) 31vw, 60vw"
+              class="started__img"
+            />
+          </div>
+        </div>
+        <p class="started__event-caption t-label" data-reveal="lines">
+          Six months after that first meeting, the club ran AI Literacy Week for the whole school.
+        </p>
+        <p class="started__event-link t-label">
+          {/* Screen readers hear "See the event, AI Literacy Week": the words around the link */}
+          {/* don't name the event, and the visible words still come first. */}
+          <ArrowLink href={eventUrl(event.slug)}>See the event<span class="sr-only">, {eventEntry.data.title}</span></ArrowLink>
+        </p>
+      </div>
+    )
+  }
 </section>
 
 <style>
@@ -129,12 +184,7 @@ const cards = timeline.items.map((item, i) => {
     align-items: baseline;
   }
   .started__caption-text {
-    grid-column: 1 / span 6;
-  }
-  .started__caption-note {
-    grid-column: 7 / -1;
-    justify-self: end;
-    color: var(--text-2);
+    grid-column: 1 / span 8;
   }
 
   .started__head {
@@ -256,7 +306,46 @@ const cards = timeline.items.map((item, i) => {
     letter-spacing: -0.015em;
   }
 
-  /* With motion on, the photo and the cards wait hidden until the motion code has set them up. */
+  /* ---- The two event photos under the strip ----
+     Laptops: the large photo on columns 1 to 7 and the small one on 9 to 12 (both 3:2), their
+     bottom edges level; the line under the large one and the link under the small one, 16px
+     below. */
+  .started__event {
+    margin-top: var(--space-section);
+    row-gap: 16px;
+  }
+  .started__event-frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--ink);
+    grid-row: 1;
+    align-self: end;
+  }
+  .started__event-frame--wide {
+    grid-column: 1 / span 7;
+    aspect-ratio: 3 / 2;
+  }
+  .started__event-frame--small {
+    grid-column: 9 / -1;
+    aspect-ratio: 3 / 2;
+  }
+  /* Both photos already have their window's shape, so nothing is cropped away. */
+  .started__event-frame .started__inner :global(img) {
+    object-position: 50% 50%;
+  }
+  .started__event-caption {
+    grid-column: 1 / span 7;
+    grid-row: 2;
+    max-width: 46ch;
+    text-wrap: balance;
+  }
+  .started__event-link {
+    grid-column: 9 / -1;
+    grid-row: 2;
+    justify-self: end;
+  }
+
+  /* With motion on, the photos and the cards wait hidden until the motion code has set them up. */
   :global(html.js-motion) [data-about-open]:not(.is-open) {
     clip-path: inset(0 0 100% 0);
   }
@@ -264,18 +353,51 @@ const cards = timeline.items.map((item, i) => {
     visibility: hidden;
   }
 
+  /* Tablets: the wide photo on columns 1 to 5, the small one on 6 to 8. */
+  @media (max-width: 1023px) {
+    .started__event-frame--wide,
+    .started__event-caption {
+      grid-column: 1 / span 5;
+    }
+    .started__event-frame--small,
+    .started__event-link {
+      grid-column: 6 / -1;
+    }
+  }
+
   @media (max-width: 767px) {
     .started__window {
       aspect-ratio: 4 / 3;
     }
     .started__caption-text {
-      grid-column: 1 / span 4;
-    }
-    .started__caption-note {
-      grid-column: 5 / -1;
+      grid-column: 1 / -1;
     }
     .card {
       --card-w: 72vw;
+    }
+    /* Phones: the wide photo across the width, the small one under it on columns 3 to 6 (12px
+       below), then the line and the link, one under the other. */
+    .started__event-frame--wide,
+    .started__event-frame--small,
+    .started__event-caption,
+    .started__event-link {
+      grid-row: auto;
+    }
+    .started__event-frame--wide,
+    .started__event-caption {
+      grid-column: 1 / -1;
+    }
+    .started__event-frame--small {
+      grid-column: 3 / -1;
+      /* The rows are 16px apart; this brings the small photo to 12px under the wide one. */
+      margin-top: -4px;
+    }
+    .started__event-caption {
+      margin-top: 8px;
+    }
+    .started__event-link {
+      grid-column: 1 / -1;
+      justify-self: start;
     }
   }
 </style>

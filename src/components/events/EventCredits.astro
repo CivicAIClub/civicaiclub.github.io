@@ -1,0 +1,60 @@
+---
+// EventCredits.astro: the end of an event page (part 8): the partner organization, who ran it
+// and who spoke, when and where, a link back to every event, and the big "Want to help run one?"
+// link to join the club.
+//
+// The first row is the partner (EventPartner.astro, from the event file's "partner"; left out
+// when there is none). Its label is a heading of its own, so screen readers can jump to it.
+// Then "Run by", written from the file's "audience" ("The Civic AI Club. Open to all Pomfret
+// students and faculty."), the rows from the file's "credits" (for example "Speakers"), and
+// "When and where", written from the file's date, time and place. So those facts are only ever
+// typed once ("Sunday, May 17, 2026, 3:30–5 PM, in the VISTA Hamilton Hub.").
+// Motion: each row's rule draws (M2) and its words rise (M1); "All events" does the arrow swap
+// (M7); the big link rolls to its second phrase on hover (M6).
+import KeyValue from '../KeyValue.astro';
+import ArrowLink from '../ArrowLink.astro';
+import BigLink from '../BigLink.astro';
+import EventPartner from './EventPartner.astro';
+import site from '../../data/site.json';
+import { formatEventDate } from '../../lib/events';
+
+interface Props {
+  credits: { key: string; value: string }[];
+  audience: string;
+  partner?: { name: string; line: string };
+  date: string;
+  time: string;
+  place: string;
+}
+const { credits, audience, partner, date, time, place } = Astro.props;
+const runBy = `The Civic AI Club. ${audience}`;
+const whenWhere = `${formatEventDate(date)}, ${time}, in the ${place}.`;
+---
+
+<section class="event-credits theme-paper" aria-labelledby="event-credits-title">
+  {partner && <EventPartner partner={partner} />}
+  <h2 id="event-credits-title" class="sr-only">Credits</h2>
+  <KeyValue label="Run by">{runBy}</KeyValue>
+  {credits.map((row) => <KeyValue label={row.key}>{row.value}</KeyValue>)}
+  <KeyValue label="When and where">{whenWhere}</KeyValue>
+
+  <div class="event-credits__back wrap">
+    <ArrowLink href="/events/" dir="left">All events</ArrowLink>
+  </div>
+
+  <div class="event-credits__close">
+    <BigLink href={site.joinFormUrl} label="Want to help run one?" second="Join the club ↗" external />
+  </div>
+</section>
+
+<style>
+  .event-credits {
+    padding-block: var(--space-section);
+  }
+  .event-credits__back {
+    margin-top: 40px;
+  }
+  .event-credits__close {
+    margin-top: clamp(80px, 9vw, 140px);
+  }
+</style>

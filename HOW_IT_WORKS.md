@@ -19,6 +19,7 @@ We keep facts in one place each, so a change happens once.
 | Facts | File |
 |---|---|
 | The five cases: letter, office, team, chore, what the tool does, status, clips | `src/content/cases/*.md` (one per case) |
+| The club's events: date, time, place, the program and its speakers, what came back, photos | `src/content/events/*.md` (one per event) |
 | The rules those files must follow | `src/content.config.ts` |
 | Every member's name and class year | `src/data/members.json` |
 | The numbers ("50 pull requests merged") and the date they were checked | `src/data/numbers.json` |
@@ -33,7 +34,7 @@ If a case file is missing a field or has a typo in one, the build stops with a m
 
 Pages are built from **components**, small reusable pieces in `src/components/`:
 
-- `Header` — the thin bar at the top (griffin, name, links) and the phone menu.
+- `Header` — the thin bar at the top (griffin, name, the links Cases, Events and About) and the phone menu.
 - `Footer` — the ink footer with the big CIVIC and the Motion switch.
 - `Wordmark` — the CIVIC logo, drawn as five shapes (made by `npm run wordmark`).
 - `Statement` — a big paragraph with its first line indented.
@@ -68,6 +69,8 @@ The pieces:
 **Motion is optional, content is not.** If a visitor's device asks for less motion, or they press **Motion: Off** in the footer, nothing moves, videos wait for a Play press, and every word is still there. If JavaScript is off or a script fails, the page shows everything, just without animation (and the footer hides its Motion switch, which would do nothing). You can see both versions on `/styleguide/` by pressing **Motion: Off** in its footer.
 
 **Page changes.** Moving between pages plays a short "new sheet" animation, done by the browser itself (`transitions.css`). Its on switch is written inside every page by `Base.astro` rather than in the style file, because the browser decides at the very start of a page change, sometimes before the style file has arrived. Going back with the Back button plays the sheet the other way. With Motion off the switch is turned off. When a visitor points at a link that zooms into a case (the home page's case letters, a case's "Next case" band), Chrome quietly prepares that case page in the background, so it is ready the moment the zoom ends.
+
+**The event pages** (`/events/` and each event's page) have their own motion in `modules/events-*.js`. On a laptop, two parts of an event page stay pinned to the top while you scroll through them (in the program, the demo's finished deck wipes over the prompt that made it; in the findings, the car-wash question gets proofread, "walk" struck out and "drive" marked); on phones, touch screens, with Motion off and without JavaScript they are ordinary stacked photos and text. Clicking the event photo on the home page or on `/events/` grows it into the event page's hero, the same kind of hand-off as the case footage.
 
 **The header** hides when you scroll down (once the name has swapped for the small CIVIC) and comes back as soon as you scroll up, when you reach the top or the footer, or when you tab into it. It stays put while the home page's docket and About's Frame are stuck to the top of the window (and hides again as they scroll away), and with motion off. Without JavaScript it sits at the top of the page and scrolls away with it.
 

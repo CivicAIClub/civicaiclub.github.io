@@ -1,0 +1,266 @@
+---
+// LatestEvent.astro: "Latest event" (section 7 of the home page), on paper, between "Down the
+// road" and "The club at a glance".
+//
+// What it shows: the club's newest public event (today, AI Literacy Week) as one teaser: its
+// month, its name, one line about it, when and where it happened, a link to its page, and one
+// photo from it. A small "All events" link at the top leads to /events/.
+//
+// Where the facts come from: the event's Markdown file in src/content/events/ (read through
+// src/lib/events.ts), and the photo's files and alt text in src/data/media.json. The photo is
+// the event's "card" photo (a 3:2 crop), or its cover photo when it has no card. When there is
+// no public event at all, this section is simply left out.
+//
+// Motion: the divider draws itself (M2), the words rise line by line (M1, one block after
+// another), the photo's window opens from the top (M3), and the links get the arrow swap (M7).
+// With a mouse, pointing at the photo pushes it in a little (1 to 1.04) and the cursor label
+// reads "See the event ↗". Clicking the photo grows it into the event page's big photo, where
+// the browser supports it (src/scripts/motion/modules/events-handoff.js reads
+// data-event-handoff; Chrome prepares the page in the background because of data-event-link).
+// The photo link is a second, mouse-only way in: keyboards and screen readers skip it and use
+// the one "See the event" link, so the event is never announced twice. That link is marked
+// data-event-link too, so it gets the same background preparing and the same hand-off.
+import Divider from '../Divider.astro';
+import ArrowLink from '../ArrowLink.astro';
+import Photo from '../Photo.astro';
+import { getLatestEvent, eventUrl, formatEventDate } from '../../lib/events';
+
+// The newest public event, or nothing.
+const event = await getLatestEvent();
+
+// The facts the teaser prints, worked out once. The date is stored once, in the event's file,
+// and formatted here in two ways: "May 2026" above the name, and the full "Sunday, May 17, 2026"
+// in the facts.
+const facts = event
+  ? {
+      slug: event.data.slug,
+      href: eventUrl(event.data.slug),
+      title: event.data.title,
+      teaser: event.data.teaser,
+      month: formatEventDate(event.data.date, 'month'),
+      when: `${formatEventDate(event.data.date)} · ${event.data.time}`,
+      place: event.data.place,
+      // The 3:2 home photo, or the cover when the event has none.
+      photo: event.data.card ?? event.data.cover,
+    }
+  : undefined;
+---
+
+{
+  facts && (
+    <section class="latest-event theme-paper" aria-labelledby="latest-event-title">
+      {/* The label row: a line, "Latest event" on the left, "All events" on the right. */}
+      <div class="grid latest-event__head">
+        <Divider class="latest-event__rule" />
+        <p class="latest-event__label t-label" data-reveal="lines">
+          Latest event
+        </p>
+        <p class="latest-event__all t-label">
+          <ArrowLink href="/events/">All events</ArrowLink>
+        </p>
+      </div>
+
+      <div class="grid latest-event__body">
+        {/* The words. On laptops they sit on columns 1 to 4, level with the photo's bottom edge. */}
+        <div class="latest-event__text">
+          <p class="latest-event__month t-mono" data-reveal="lines">
+            {facts.month}
+          </p>
+          <h2 id="latest-event-title" class="latest-event__title t-statement" data-reveal="lines" data-reveal-delay="0.08">
+            {facts.title}
+          </h2>
+          <div class="latest-event__rest">
+            <p class="latest-event__teaser t-label" data-reveal="lines" data-reveal-delay="0.16">
+              {facts.teaser}
+            </p>
+            <p class="latest-event__facts t-mono" data-reveal="lines" data-reveal-delay="0.24">
+              {facts.when}
+              <br />
+              {facts.place}
+            </p>
+            <p class="latest-event__link t-label">
+              <ArrowLink href={facts.href} data-event-link="">See the event</ArrowLink>
+            </p>
+          </div>
+        </div>
+
+        {/* The photo: a mouse-only link (hidden from keyboards and screen readers, see above). */}
+        <a
+          class="latest-event__frame"
+          href={facts.href}
+          data-event-link
+          tabindex="-1"
+          aria-hidden="true"
+          data-cursor="See the event ↗"
+        >
+          <div
+            class="latest-event__window"
+            data-media-open
+            data-event-handoff={facts.slug}
+            style={facts.photo.focus ? `--photo-focus: ${facts.photo.focus}` : undefined}
+          >
+            <div class="latest-event__inner" data-media-inner>
+              <Photo
+                id={facts.photo.media}
+                bare
+                caption={false}
+                sizes="(min-width: 1024px) 62vw, 100vw"
+                class="latest-event__img"
+              />
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  /* No space above: "Down the road" above already ends with its own. */
+  .latest-event {
+    padding: 0 0 clamp(80px, 9vw, 140px);
+  }
+
+  /* ---- The label row ---- */
+  .latest-event__head {
+    row-gap: 0;
+    align-items: baseline;
+  }
+  .latest-event__head :global(.latest-event__rule) {
+    grid-column: 1 / -1;
+    margin-bottom: 24px;
+  }
+  .latest-event__label {
+    grid-column: 1 / span 6;
+    font-weight: var(--fw-light);
+  }
+  .latest-event__all {
+    grid-column: 7 / -1;
+    justify-self: end;
+  }
+
+  /* ---- The words and the photo ----
+     Laptops: the words on columns 1 to 4, their last line level with the photo's bottom edge;
+     the photo on columns 5 to 12 (900 x 600 at 1440px wide). */
+  .latest-event__body {
+    margin-top: clamp(28px, 3vw, 44px);
+  }
+  .latest-event__text {
+    grid-column: 1 / span 4;
+    grid-row: 1;
+    align-self: end;
+  }
+  .latest-event__title {
+    margin-top: 14px;
+  }
+  .latest-event__teaser {
+    margin-top: 20px;
+    max-width: 24ch;
+    color: var(--text-2);
+    /* No lone word on the last line. */
+    text-wrap: pretty;
+  }
+  .latest-event__facts {
+    margin-top: 28px;
+    line-height: 1.6;
+  }
+  .latest-event__link {
+    margin-top: 20px;
+  }
+  .latest-event__frame {
+    grid-column: 5 / -1;
+    grid-row: 1;
+    display: block;
+  }
+  .latest-event__window {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: color-mix(in srgb, currentColor 8%, transparent);
+  }
+  .latest-event__inner {
+    position: absolute;
+    inset: 0;
+  }
+  .latest-event__inner :global(.latest-event__img),
+  .latest-event__inner :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  /* The photo fills its 3:2 window. A photo of another shape is cropped around the point the
+     event file gives as "focus" (the middle when it gives none). */
+  .latest-event__inner :global(img) {
+    object-fit: cover;
+    object-position: var(--photo-focus, 50% 50%);
+  }
+
+  /* Pointing at the photo (mouse or trackpad, motion on): it pushes in a little. */
+  @media (hover: hover) and (pointer: fine) {
+    :global(html.js-motion) .latest-event__inner :global(img) {
+      transition: transform 0.6s var(--ease-expo-out);
+    }
+    :global(html.js-motion) .latest-event__frame:hover .latest-event__inner :global(img) {
+      transform: scale(1.04);
+    }
+  }
+
+  /* Tablets: the photo across the width, then the name on columns 1 to 4 and everything else
+     beside it on 5 to 8. ("display: contents" lets the name and the rest sit on the grid.) */
+  @media (max-width: 1023px) {
+    .latest-event__frame {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+    .latest-event__text {
+      display: contents;
+    }
+    .latest-event__month {
+      grid-column: 5 / -1;
+      grid-row: 2;
+      margin-top: 28px;
+    }
+    .latest-event__title {
+      grid-column: 1 / span 4;
+      grid-row: 2 / span 2;
+      margin-top: 24px;
+    }
+    .latest-event__rest {
+      grid-column: 5 / -1;
+      grid-row: 3;
+    }
+    .latest-event__teaser {
+      margin-top: 12px;
+    }
+  }
+
+  /* Phones: the photo, then the words stacked under it. The label row splits the 6 columns
+     in half ("All events" on 7 to 12 would ask for columns a phone doesn't have). */
+  @media (max-width: 767px) {
+    .latest-event__label {
+      grid-column: 1 / span 3;
+    }
+    .latest-event__all {
+      grid-column: 4 / -1;
+    }
+    .latest-event__text {
+      display: block;
+      grid-column: 1 / -1;
+      grid-row: 2;
+      margin-top: 24px;
+    }
+    .latest-event__month,
+    .latest-event__title,
+    .latest-event__rest {
+      grid-row: auto;
+    }
+    .latest-event__month {
+      margin-top: 0;
+    }
+    .latest-event__title {
+      margin-top: 12px;
+    }
+    .latest-event__teaser {
+      margin-top: 16px;
+    }
+  }
+</style>

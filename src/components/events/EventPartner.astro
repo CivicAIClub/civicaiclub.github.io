@@ -1,0 +1,18 @@
+---
+// EventPartner.astro: the event's partner organization, the first row of the credits at the end
+// of an event page (EventCredits.astro).
+//
+// One labeled row, like the site's other key/value rows: "In partnership with AI Youth Alliance"
+// on the left (a heading, so screen readers can jump to it), and on the right the plain facts
+// from the event file's "partner.line": what they provided, what the club did, and what comes
+// next. The partner appears by name only: no logo and no link.
+// Motion: the rule draws (M2) and both sides rise (M1), from KeyValue.astro.
+import KeyValue from '../KeyValue.astro';
+
+interface Props {
+  partner: { name: string; line: string };
+}
+const { partner } = Astro.props;
+---
+
+<KeyValue label={`In partnership with ${partner.name}`} labelAs="h2">{partner.line}</KeyValue>

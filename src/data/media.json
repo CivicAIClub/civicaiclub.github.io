@@ -456,5 +456,529 @@
         }
       }
     }
+  },
+  {
+    "id": "ai-literacy-week-hall-3x2",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "home"
+    ],
+    "width": 2400,
+    "height": 1600,
+    "alt": "A sunlit room with floor-to-ceiling windows and a tall wood-paneled wall under a “Hamilton Hub” sign. A presenter at a lectern speaks beside a large screen that reads “The internet.” while students listen from sofas and armchairs in the foreground.",
+    "caption": "A faculty talk in the VISTA Hamilton Hub, AI Literacy Week, May 2026.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-3x2-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-3x2-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-hall-3x2-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-3x2-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-3x2-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-hall-3x2-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-3x2-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-3x2-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-hall-16x9",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 1350,
+    "alt": "A sunlit room with floor-to-ceiling windows and a tall wood-paneled wall under a “Hamilton Hub” sign. A presenter at a lectern speaks beside a large screen that reads “The internet.” while students listen from sofas and armchairs in the foreground.",
+    "caption": "A faculty talk in the VISTA Hamilton Hub, AI Literacy Week, May 2026.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-16x9-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-16x9-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-hall-16x9-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-16x9-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-16x9-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-hall-16x9-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-16x9-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-16x9-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-hall-21x9",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 1029,
+    "alt": "A sunlit room: tall windows on the left, a wood-paneled wall with a large screen that reads “The internet.”, a presenter at a lectern, and students on sofas watching.",
+    "caption": "A faculty talk in the VISTA Hamilton Hub, AI Literacy Week, May 2026.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-21x9-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-21x9-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-hall-21x9-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-21x9-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-21x9-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-hall-21x9-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-21x9-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-21x9-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-hall-4x5",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 3000,
+    "alt": "A presenter at a lectern beside a large screen that reads “The internet.”, below a tall wood-paneled wall with pendant lights and a “Hamilton Hub” sign. Students watch from the foreground.",
+    "caption": "A faculty talk in the VISTA Hamilton Hub, AI Literacy Week, May 2026.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-4x5-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-4x5-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-hall-4x5-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-4x5-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-4x5-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-hall-4x5-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-hall-4x5-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-hall-4x5-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-results-4x5",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [],
+    "width": 1600,
+    "height": 2000,
+    "alt": "A student in a white long-sleeve shirt stands at a lectern with one hand on a laptop, glancing to the side. Tall windows behind, and the back of an audience member’s head in the foreground.",
+    "caption": "A student at the lectern.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-results-4x5-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-results-4x5-1600.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-results-4x5-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-results-4x5-1600.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-results-4x5-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-results-4x5-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-demo-3x2",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 1600,
+    "alt": "A student in a gray Pomfret T-shirt speaks and gestures below a “Hamilton Hub” sign. On the large screen beside them, a design tool shows a typed prompt asking for a slide deck for an oyster farm business on Block Island.",
+    "caption": "The live demo. One prompt: a slide deck for an oyster farm on Block Island.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-demo-3x2-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-demo-3x2-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-demo-3x2-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-demo-3x2-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-demo-3x2-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-demo-3x2-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-demo-3x2-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-demo-3x2-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-demo-1x1",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 2400,
+    "alt": "A student in a gray Pomfret T-shirt speaks and gestures below a “Hamilton Hub” sign. On the large screen beside them, a design tool shows a typed prompt asking for a slide deck for an oyster farm business on Block Island.",
+    "caption": "The live demo. One prompt: a slide deck for an oyster farm on Block Island.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-demo-1x1-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-demo-1x1-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-demo-1x1-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-demo-1x1-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-demo-1x1-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-demo-1x1-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-demo-1x1-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-demo-1x1-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-audience-3x2",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events",
+      "about"
+    ],
+    "width": 2400,
+    "height": 1600,
+    "alt": "Two students on a sofa watch a talk off to the left; one smiles. Behind them, pizza boxes sit by the windows, with trees outside.",
+    "caption": "Watching from the sofas, pizza boxes behind.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-1600.jpg"
+      },
+      "bw": {
+        "avif": {
+          "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-bw-800.avif",
+          "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-bw-1600.avif",
+          "2400": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-bw-2400.avif"
+        },
+        "webp": {
+          "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-bw-800.webp",
+          "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-bw-1600.webp",
+          "2400": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-bw-2400.webp"
+        },
+        "jpg": {
+          "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-bw-800.jpg",
+          "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-3x2-bw-1600.jpg"
+        }
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-audience-4x5",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [],
+    "width": 2400,
+    "height": 3000,
+    "alt": "Two students on a sofa watch a talk off to the left; one smiles. Tall windows and trees behind them.",
+    "caption": "Watching from the sofas.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-4x5-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-4x5-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-audience-4x5-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-4x5-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-4x5-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-audience-4x5-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-4x5-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-4x5-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-audience-1x1",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 2400,
+    "alt": "Two students on a sofa watch a talk off to the left; one smiles. Behind them, pizza boxes sit by the windows, with trees outside.",
+    "caption": "Watching from the sofas, pizza boxes behind.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-1x1-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-1x1-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-audience-1x1-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-1x1-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-1x1-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-audience-1x1-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-audience-1x1-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-audience-1x1-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-lectern-2x3",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [],
+    "width": 2400,
+    "height": 3600,
+    "alt": "A student in a black T-shirt with a cartoon Nike print stands at a lectern, both hands raised mid-sentence, looking down at an open laptop. Tall windows and a wood-paneled wall behind.",
+    "caption": "At the lectern for the “Future of AI” talk.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-lectern-2x3-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-lectern-2x3-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-lectern-2x3-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-lectern-2x3-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-lectern-2x3-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-lectern-2x3-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-lectern-2x3-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-lectern-2x3-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-lectern-4x5",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 3000,
+    "alt": "A student in a black T-shirt with a cartoon Nike print stands at a lectern, both hands raised mid-sentence, looking down at an open laptop. Tall windows and a wood-paneled wall behind.",
+    "caption": "At the lectern for the “Future of AI” talk.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-lectern-4x5-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-lectern-4x5-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-lectern-4x5-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-lectern-4x5-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-lectern-4x5-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-lectern-4x5-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-lectern-4x5-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-lectern-4x5-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-lectern-1x1",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [],
+    "width": 2400,
+    "height": 2400,
+    "alt": "A student in a black T-shirt with a cartoon Nike print stands at a lectern, both hands raised mid-sentence, looking down at an open laptop. Tall windows and a wood-paneled wall behind.",
+    "caption": "At the lectern for the “Future of AI” talk.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-lectern-1x1-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-lectern-1x1-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-lectern-1x1-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-lectern-1x1-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-lectern-1x1-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-lectern-1x1-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-lectern-1x1-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-lectern-1x1-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-future-3x2",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events",
+      "about"
+    ],
+    "width": 2400,
+    "height": 1600,
+    "alt": "A student speaks from a lectern in the lower left corner. Above, a large screen under the “Hamilton Hub” sign shows two pictures: a rover on the surface of Mars, and a pill capsule with a boxing glove punching a cluster of cells.",
+    "caption": "Future of AI, from Mars rovers to cancer treatment.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-1600.jpg"
+      },
+      "bw": {
+        "avif": {
+          "800": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-bw-800.avif",
+          "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-bw-1600.avif",
+          "2400": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-bw-2400.avif"
+        },
+        "webp": {
+          "800": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-bw-800.webp",
+          "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-bw-1600.webp",
+          "2400": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-bw-2400.webp"
+        },
+        "jpg": {
+          "800": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-bw-800.jpg",
+          "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-3x2-bw-1600.jpg"
+        }
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-future-4x5",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [],
+    "width": 2400,
+    "height": 3000,
+    "alt": "A student speaks from a lectern below a large screen showing a rover on the red surface of Mars, under the “Hamilton Hub” sign.",
+    "caption": "The “Future of AI” talk, with a Mars rover on screen.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-future-4x5-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-4x5-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-future-4x5-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-future-4x5-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-4x5-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-future-4x5-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-future-4x5-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-4x5-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-future-1x1",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [],
+    "width": 2400,
+    "height": 2400,
+    "alt": "A student speaks from a lectern below a large screen showing a rover on the red surface of Mars, under the “Hamilton Hub” sign.",
+    "caption": "The “Future of AI” talk, with a Mars rover on screen.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-future-1x1-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-1x1-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-future-1x1-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-future-1x1-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-1x1-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-future-1x1-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-future-1x1-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-future-1x1-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-deck-3x2",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 1600,
+    "alt": "A large screen on a wood-paneled wall shows a design tool with a finished slide deck titled “James Lake Oyster Farm”, a chat panel and slide thumbnails beside it. A laptop sits in front of the screen.",
+    "caption": "The finished demo deck, made by AI from one prompt. The oyster farm and every detail in the deck are invented placeholders.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-deck-3x2-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-deck-3x2-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-deck-3x2-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-deck-3x2-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-deck-3x2-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-deck-3x2-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-deck-3x2-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-deck-3x2-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-deck-1x1",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 2400,
+    "alt": "A large screen on a wood-paneled wall shows a design tool with a finished slide deck titled “James Lake Oyster Farm”, a chat panel and slide thumbnails beside it. The corner of a laptop shows at the lower left.",
+    "caption": "The finished demo deck, made by AI from one prompt. The oyster farm and every detail in the deck are invented placeholders.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-deck-1x1-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-deck-1x1-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-deck-1x1-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-deck-1x1-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-deck-1x1-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-deck-1x1-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-deck-1x1-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-deck-1x1-1600.jpg"
+      }
+    }
   }
 ]

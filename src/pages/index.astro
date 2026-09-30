@@ -11,15 +11,16 @@
 //   4. KeyValue      what the tools run on
 //   5. Docket        every case, A to E, as a giant letter with its footage inside
 //   6. DownTheRoad   the local businesses we're working with, all "In progress"
-//   7. Glance        the club's checked numbers, three clips and this week, in a strip
-//   8. BigLink       "Who builds this?", which rolls to "Meet the club" and leads to About
-//   9. The footer    added by the page frame (src/layouts/Base.astro), like on every page
+//   7. LatestEvent   the club's newest event (AI Literacy Week), with a photo and a link to it
+//   8. Glance        the club's checked numbers, three clips and this week, in a strip
+//   9. BigLink       "Who builds this?", which rolls to "Meet the club" and leads to About
+//  10. The footer    added by the page frame (src/layouts/Base.astro), like on every page
 //
 // Where the words come from: src/data/site.json (the main lines), src/content/cases/ (the
-// cases), src/data/clients.json (local businesses), src/data/numbers.json (the counts) and
-// src/data/home.json (which clips). The motion for this page lives in
-// src/scripts/motion/modules/home-*.js and is asked for with data attributes (see the "Home
-// page" section of MOTION.md).
+// cases), src/data/clients.json (local businesses), src/content/events/ (the latest event),
+// src/data/numbers.json (the counts) and src/data/home.json (which clips). The motion for this
+// page lives in src/scripts/motion/modules/home-*.js and is asked for with data attributes (see
+// the "Home page" section of MOTION.md).
 import Base from '../layouts/Base.astro';
 import Statement from '../components/Statement.astro';
 import KeyValue from '../components/KeyValue.astro';
@@ -29,6 +30,7 @@ import HomeHero from '../components/home/HomeHero.astro';
 import HomeReel from '../components/home/HomeReel.astro';
 import Docket from '../components/home/Docket.astro';
 import DownTheRoad from '../components/home/DownTheRoad.astro';
+import LatestEvent from '../components/home/LatestEvent.astro';
 import Glance from '../components/home/Glance.astro';
 import '../styles/home.css';
 ---
@@ -69,9 +71,11 @@ import '../styles/home.css';
 
   <DownTheRoad />
 
+  <LatestEvent />
+
   <Glance />
 
-  <!-- 8. The big link to the About page. -->
+  <!-- 9. The big link to the About page. -->
   <section class="home-close theme-paper" aria-label="Who builds this">
     <BigLink href="/about/" label="Who builds this?" second="Meet the club" />
   </section>

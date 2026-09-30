@@ -3,5 +3,13 @@
   "media": {
     "photo": "about-club-photo",
     "workshop": "about-workshop"
+  },
+  "event": {
+    "_note": "The two event photos under the timeline (black and white, both 3:2): a large one and a small one, from the event whose page they link to (src/content/events/<slug>.md). The large one is a moment the rest of the site doesn't show wide (the hall shot is already on Home, /events/ and the event's cover).",
+    "slug": "ai-literacy-week",
+    "media": {
+      "wide": "ai-literacy-week-future-3x2",
+      "small": "ai-literacy-week-audience-3x2"
+    }
   }
 }

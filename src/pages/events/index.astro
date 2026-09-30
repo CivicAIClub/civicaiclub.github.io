@@ -1,0 +1,323 @@
+---
+// events/index.astro: the list of the club's events (https://civicaiclub.github.io/events/).
+//
+// Top to bottom:
+//   1. The head, on ink: "Run by the Civic AI Club", then "Events" in giant light letters from
+//      margin to margin, with the number of events as a small "(01)" above its right end. Under
+//      it, the latest event's photo in a thin 21:9 band from margin to margin (the event file's
+//      "feature" photo; 4:5 on phones and on tablets held upright); the giant word drifts at
+//      half speed and slides under the band as the page scrolls. The band is a second,
+//      mouse-only way into the event (keyboard users get the "See the event" link just below
+//      it); clicking it grows the photo into the event page's taller 16:9 cover
+//      (events-handoff.js).
+//   2. The latest event's name, summary and facts: date, time and place. (A partner is credited
+//      on the event's own page only, never on this list.)
+//   3. Earlier events, one ruled row each (only once there are two or more public events).
+//   4. On paper: one statement with the page's crimson marker, and "Want to help run one?", which
+//      rolls to "Join the club ↗".
+// Where the words come from: the event files in src/content/events/ (through src/lib/events.ts).
+// Motion: the giant word's letters rise from both ends, and the band opens from the top once the
+// letters are halfway up (events-index.js); everything else uses the site's shared effects (M1
+// text rise, M2 rules, M4 the drift, M5 the marker, M6 the big link, M7 the arrow links). See
+// the "Events pages" section of MOTION.md.
+import Base from '../../layouts/Base.astro';
+import Statement from '../../components/Statement.astro';
+import ArrowLink from '../../components/ArrowLink.astro';
+import BigLink from '../../components/BigLink.astro';
+import EventPicture from '../../components/events/EventPicture.astro';
+import EventsArchive from '../../components/events/EventsArchive.astro';
+import site from '../../data/site.json';
+import { getPublicEvents, eventUrl, formatEventDate } from '../../lib/events';
+import '../../styles/events.css';
+
+const events = await getPublicEvents();
+const latest = events[0];
+const earlier = events.slice(1);
+
+// "Events", one letter per span, so events-index.js can raise each letter on its own.
+const word = 'Events';
+// The small count above the word's right end: the number of public events, as "(01)".
+const count = `(${String(events.length).padStart(2, '0')})`;
+
+// The band's photo: the event's "feature" photo, or its cover when it has none. Phones and
+// upright tablets get the feature's own tall crop, or else the cover's.
+const feature = latest ? (latest.data.feature ?? latest.data.cover) : undefined;
+const featurePhone = latest ? (latest.data.feature?.phone ?? latest.data.cover.phone) : undefined;
+
+// The latest event's facts, one per mono line.
+const facts = latest
+  ? [
+      formatEventDate(latest.data.date),
+      latest.data.time,
+      latest.data.place,
+    ].filter(Boolean)
+  : [];
+---
+
+<Base
+  title="Events"
+  description={latest?.data.summary ?? 'Events run by the Civic AI Club at Pomfret School.'}
+  current="events"
+  theme="ink"
+>
+  <!-- 1. The head: the giant word and the latest event's photo. -->
+  <section class="events-head theme-ink" aria-labelledby="events-title">
+    <div class="events-head__meta grid">
+      <p class="t-mono" data-reveal="lines" data-reveal-on="intro" data-reveal-delay="0.15">Run by the Civic AI Club</p>
+    </div>
+
+    <div class="events-head__word wrap" data-parallax="0.5">
+      <h1 id="events-title" class="events-title" data-events-title>
+        {
+          word.split('').map((letter) => (
+            <span class="events-title__mask" aria-hidden="true">
+              <span class="events-title__char" data-events-title-char>{letter}</span>
+            </span>
+          ))
+        }
+        <span class="events-title__count t-mono" data-events-title-count aria-hidden="true">{count}</span>
+        <span class="sr-only">{word}</span>
+      </h1>
+    </div>
+
+    {
+      latest && feature && (
+        <a
+          class="events-feature__frame"
+          href={eventUrl(latest.data.slug)}
+          data-event-link
+          tabindex="-1"
+          aria-hidden="true"
+          data-cursor="See the event ↗"
+          data-header-swap
+        >
+          {/* data-events-feature-window: opens from the top after the letters (events-index.js).
+              data-header-solid: an ink strip behind the header while the photo is under it.
+              data-header-swap (on the link): the header's name rolls to the small CIVIC while
+              the photo is under the header, before the event's name below reaches it. */}
+          <div class="events-feature__window" data-events-feature-window data-header-solid data-event-handoff={latest.data.slug}>
+            <div class="events-feature__inner" data-events-feature-inner>
+              {/* The first thing on screen, so it is fetched first, not lazily. */}
+              <EventPicture
+                id={feature.media}
+                phone={featurePhone}
+                phoneMedia="(max-width: 767px), (orientation: portrait) and (max-width: 1100px)"
+                fit
+                focus={feature.focus}
+                priority
+                sizes="100vw"
+                class="events-feature__picture"
+              />
+            </div>
+          </div>
+        </a>
+      )
+    }
+  </section>
+
+  <!-- 2. The latest event's name, summary and facts. -->
+  {
+    latest && (
+      <section class="events-feature theme-ink" aria-labelledby="feature-title">
+        <div class="events-feature__grid grid">
+          <p class="events-feature__tag t-mono" data-reveal="lines">
+            (01) Latest
+          </p>
+          <div class="events-feature__text">
+            <h2 id="feature-title" class="t-statement" data-reveal="lines" data-reveal-delay="0.08">
+              {latest.data.title}
+            </h2>
+            <p class="events-feature__summary t-label" data-reveal="lines" data-reveal-delay="0.08">
+              {latest.data.summary}
+            </p>
+          </div>
+          <div class="events-feature__facts">
+            <p class="t-mono" data-reveal="lines" data-reveal-delay="0.16">
+              {facts.map((fact, i) => (
+                <>
+                  {fact}
+                  {i < facts.length - 1 && <br />}
+                </>
+              ))}
+            </p>
+            <div class="events-feature__link">
+              <ArrowLink href={eventUrl(latest.data.slug)} data-event-link="">
+                See the event
+              </ArrowLink>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 3. Earlier events (nothing is shown until there are two or more). -->
+  {earlier.length > 0 && <EventsArchive events={earlier} />}
+
+  <!-- 4. The statement with the page's one crimson marker, and the way to join. -->
+  <section class="events-close theme-paper" aria-label="Help run an event">
+    <div class="events-close__statement grid">
+      <Statement class="span-all">
+        We build for one office at a time. Events are for <mark data-mark>the whole school</mark>.
+      </Statement>
+    </div>
+    <BigLink href={site.joinFormUrl} label="Want to help run one?" second="Join the club ↗" external />
+  </section>
+</Base>
+
+<style>
+  /* ---- 1. The head ---- */
+  .events-head {
+    padding-top: calc(var(--header-height) + clamp(48px, 8vh, 96px));
+    padding-bottom: clamp(40px, 5vw, 72px);
+  }
+  .events-head__meta p {
+    grid-column: 1 / span 6;
+    color: var(--text-2);
+  }
+
+  /* The word's row measures its own width (a "container"), so the word can be sized to fit it. */
+  .events-head__word {
+    position: relative;
+    container-type: inline-size;
+    margin-top: clamp(16px, 2vw, 32px);
+    pointer-events: none;
+  }
+  /* "Events" fits its row exactly, from the left margin to the right one, at any window width:
+     the word's letters, from the E's stem to the s's right edge, are 2.649 times as wide as their
+     font size in this font and spacing (measured on 2026-09-29 with each letter in its own
+     window, as below), so the font size is the row's width (100cqw) divided by that. The left
+     pull (margin-left, the E's built-in space) sets the E's stem on the margin line.
+     Change both numbers if the word, the font or the spacing ever changes. The word is allowed
+     to wrap, so a reader who widens letter spacing in their browser gets a second line instead
+     of letters cut off at the edge. */
+  .events-title {
+    position: relative;
+    display: block;
+    font-size: calc(100cqw / 2.649);
+    font-weight: var(--fw-light);
+    letter-spacing: var(--ls-display);
+    line-height: 0.8;
+    margin-left: -0.067em;
+  }
+  /* Each letter sits in its own window, open at the top and sides but cut at the bottom, so a
+     letter waiting below it (events-index.js) is hidden. */
+  .events-title__mask {
+    display: inline-block;
+    clip-path: inset(-0.1em -0.12em 0 -0.12em);
+  }
+  .events-title__char {
+    display: inline-block;
+  }
+  /* The count sits just above the word's right end, inside the right margin, like a footnote. */
+  .events-title__count {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    font-size: clamp(12px, 1.35vw, 22px);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: var(--text-2);
+  }
+
+  /* The latest event's band: margin to margin, above the drifting word. */
+  .events-feature__frame {
+    position: relative;
+    z-index: 1;
+    display: block;
+    margin: clamp(24px, 3vw, 48px) var(--margin) 0;
+  }
+  .events-feature__window {
+    position: relative;
+    aspect-ratio: 21 / 9;
+    overflow: hidden;
+    background: #1b1b1a;
+  }
+  .events-feature__inner {
+    position: absolute;
+    inset: 0;
+  }
+  .events-feature__inner :global(.events-feature__picture) {
+    position: absolute;
+    inset: 0;
+  }
+  /* Pointing at the frame pushes the photo in a little (mouse or trackpad, motion on only). */
+  @media (hover: hover) and (pointer: fine) {
+    :global(html.js-motion) .events-feature__frame :global(img) {
+      transition: transform 0.6s var(--ease-expo-out);
+    }
+    :global(html.js-motion) .events-feature__frame:hover :global(img) {
+      transform: scale(1.04);
+    }
+  }
+  @media (max-width: 767px), (orientation: portrait) and (max-width: 1100px) {
+    .events-feature__window {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  /* ---- 2. The latest event ---- */
+  .events-feature {
+    padding-top: clamp(20px, 2.4vw, 32px);
+    padding-bottom: var(--space-section);
+  }
+  /* The tag, the name and the facts share one line: the first line of each sits on the same
+     baseline. */
+  .events-feature__grid {
+    row-gap: 24px;
+    align-items: first baseline;
+  }
+  .events-feature__tag {
+    grid-column: 1 / span 2;
+    color: var(--text-2);
+  }
+  .events-feature__text {
+    grid-column: 3 / span 6;
+  }
+  .events-feature__summary {
+    margin-top: 16px;
+    max-width: 36ch;
+    color: var(--text-2);
+  }
+  .events-feature__facts {
+    grid-column: 9 / -1;
+  }
+  /* The same line spacing as the home page's teaser facts. */
+  .events-feature__facts p {
+    line-height: 1.6;
+  }
+  .events-feature__link {
+    margin-top: 20px;
+  }
+
+  /* Tablets: the facts and the link move to a row of their own under the summary. */
+  @media (max-width: 1023px) {
+    .events-feature__text,
+    .events-feature__facts {
+      grid-column: 3 / -1;
+    }
+    .events-feature__facts {
+      padding-top: 8px;
+    }
+  }
+  /* Phones: stacked, the mono line first. */
+  @media (max-width: 767px) {
+    .events-head__meta p,
+    .events-feature__tag,
+    .events-feature__text,
+    .events-feature__facts {
+      grid-column: 1 / -1;
+    }
+    .events-feature__facts {
+      padding-top: 0;
+    }
+  }
+
+  /* ---- 4. The statement and the way to join ---- */
+  .events-close {
+    padding-bottom: var(--space-section);
+  }
+  .events-close__statement {
+    padding-block: var(--space-section-lg);
+  }
+</style>

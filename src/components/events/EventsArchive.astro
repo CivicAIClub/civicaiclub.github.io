@@ -1,0 +1,92 @@
+---
+// EventsArchive.astro: "Earlier events" on /events/, one ruled row per event older than the latest.
+//
+// Each row: the month in mono ("May 2026", columns 1 to 2), the event's name as an underlined
+// link (columns 3 to 8) and where it happened (columns 9 to 12). Phones stack the three.
+// The /events/ page only shows this part once there are two or more public events; with one event
+// there is nothing here at all (no placeholder).
+// Motion: the rules draw (M2), the words rise (M1) and the link's underline hands over on hover (M8).
+import Divider from '../Divider.astro';
+import RollLink from '../RollLink.astro';
+import { eventUrl, formatEventDate, type EventEntry } from '../../lib/events';
+
+interface Props {
+  events: EventEntry[];
+}
+const { events } = Astro.props;
+---
+
+<section class="archive theme-ink" aria-labelledby="archive-title">
+  <div class="grid">
+    <h2 id="archive-title" class="archive__title t-label" data-reveal="lines">Earlier events</h2>
+  </div>
+  <ul class="archive__list">
+    {
+      events.map((entry) => (
+        <li class="archive__row grid">
+          <Divider class="archive__rule" />
+          <p class="archive__month t-mono" data-reveal="lines">
+            {formatEventDate(entry.data.date, 'month')}
+          </p>
+          <p class="archive__name">
+            <RollLink href={eventUrl(entry.data.slug)} label={entry.data.title} underline />
+          </p>
+          <p class="archive__place t-label" data-reveal="lines">
+            {entry.data.place}
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .archive {
+    padding-block: 0 var(--space-section);
+  }
+  .archive__title {
+    grid-column: 1 / -1;
+    font-weight: var(--fw-light);
+  }
+  .archive__list {
+    margin-top: 32px;
+  }
+  .archive__row {
+    row-gap: 16px;
+    align-items: baseline;
+    padding-bottom: 28px;
+  }
+  .archive__row :global(.archive__rule) {
+    grid-column: 1 / -1;
+  }
+  .archive__month {
+    grid-column: 1 / span 2;
+    color: var(--text-2);
+  }
+  .archive__name {
+    grid-column: 3 / span 6;
+    font-size: var(--fs-name);
+    font-weight: var(--fw-light);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .archive__place {
+    grid-column: 9 / -1;
+    color: var(--text-2);
+  }
+  @media (max-width: 1023px) {
+    .archive__name {
+      grid-column: 3 / span 4;
+    }
+    .archive__place {
+      grid-column: 7 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .archive__month,
+    .archive__name,
+    .archive__place {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

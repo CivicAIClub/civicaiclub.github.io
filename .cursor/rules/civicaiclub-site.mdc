@@ -14,7 +14,7 @@ The public site for the Civic AI Club at Pomfret School, served at https://civic
 - Fonts through Astro's Fonts API (Fontsource): Host Grotesk 300/400, Martian Mono 400.
 
 ## Where things live
-- Case facts: `src/content/cases/*.md` (schema in `src/content.config.ts`). Site data: `src/data/*.json`.
+- Case facts: `src/content/cases/*.md`; event facts: `src/content/events/*.md` (one file per event; schema for both in `src/content.config.ts`). Site data: `src/data/*.json`.
 - Video list: `src/data/media.json` (schema in `src/lib/media.ts`, ids in `MEDIA-IDS.md`). Files: `public/media/<slug>/`.
 - Components: `src/components/`. Layout: `src/layouts/Base.astro`. Pages: `src/pages/`.
 - **All GSAP and Lenis code lives in `src/scripts/motion/`.** Components ask for motion only with data attributes (`data-reveal="lines"`, `data-draw`, `data-media-open`, `data-parallax`, `data-parallax-y`, `data-mark`, `data-roll`, `data-letter-roll`, `data-cursor`, `data-header-swap`, `data-video`). See `MOTION.md`. Page-specific motion = a new file in `src/scripts/motion/modules/`; never edit another person's module. CI fails if `gsap`/`lenis` is imported anywhere else.
@@ -34,6 +34,12 @@ The public site for the Civic AI Club at Pomfret School, served at https://civic
 - Names as `Name ’YY` (curly apostrophe). They/them or pronoun-free copy. No invented numbers, testimonials or hours saved.
 - Banned words: empower, revolutionize, leverage, seamless, cutting-edge, unlock, harness, journey, "AI-powered". No em-dash chains.
 - Rejouice (the design reference) is inspiration only: never copy its code, text, fonts, images or video.
+
+## Event photos (AI Literacy Week and later events)
+- Captions and alt text name the moment or the talk, never who is in the photo. Keep `people` empty until names are confirmed.
+- Never place or re-crop `ai-literacy-week-results-4x5` wider: the original shows a slide with a real teacher's photo and AI images of that teacher. It stays unplaced unless the lead says otherwise.
+- Keep the demo and deck photos' browser tab strip and address bar blurred, and the deck's speaker notes and slide thumbnails too (see `MEDIA-IDS.md`). Any re-export must keep those blurs.
+- AI Youth Alliance appears by name only, with the plain facts in the event file: no logo, no link.
 
 ## Commands
 `npm ci` · `npm run dev` · `npm run build` · `npm run preview` · `npm run check:media` · `npm run check:gsap` · `npm run check:a11y` (axe, needs `npm run preview` running) · `npm run wordmark` (rebuild the CIVIC outlines) · `npm run brand` (rebuild favicon, share image, grain).

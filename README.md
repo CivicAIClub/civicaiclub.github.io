@@ -46,15 +46,18 @@ CI runs `check:gsap`, `check:media` and `build` on every pull request. Run `chec
 ```
 astro.config.mjs          site address, fonts, prefetch
 src/
-  content.config.ts       the rules every case file follows
+  content.config.ts       the rules every case and event file follows
   content/cases/          one Markdown file per case (A–E)
+  content/events/         one Markdown file per event
   data/                   members, numbers, clients, timeline, site links, media (videos + photos), home/about footage ids
   layouts/Base.astro      the frame of every page: head, header, footer, scripts
   components/             Header, Footer, Wordmark, Video, Photo, Statement, KeyValue, links, …
   pages/                  /, /about/, /cases/[slug]/, /404, /styleguide/, /sitemap.xml
+  pages/events/           /events/ (every public event, newest first) and /events/[slug]/ (one event)
   scripts/motion/         ALL animation code (GSAP + Lenis): index.js, core.js, modules/
   scripts/site/           the phone menu and the Motion On/Off switch (no animation library)
-  styles/                 tokens.css (design values), base.css, transitions.css
+  styles/                 tokens.css (design values), base.css, transitions.css, and one file per
+                          page family (home.css, about.css, case.css, events.css)
   assets/brand/           the Pomfret griffin and the CIVIC outlines
 public/
   media/<slug>/           encoded videos, posters and web-sized photos only (no raw recordings)
@@ -67,6 +70,8 @@ scripts/                  wordmark, brand images, media check, import check
 **Change a number.** Edit `src/data/numbers.json`, and update `checked` and `checkedLabel` to today. Never add a number you haven't checked.
 
 **Add or edit a case.** Copy a file in `src/content/cases/`, change the facts, and set `public: true` when it should get its own page. Put the one marked phrase of the chore in `[square brackets]`. Name the client by office only. The build checks every field (`src/content.config.ts`).
+
+**Add an event.** Copy the Markdown file in `src/content/events/`, rename it after the new event's slug, and change the facts (title, date, time, place, the program, what came back). Name every photo by an id from `src/data/media.json` (add new photos there first; see `MEDIA-IDS.md`). Captions say what the moment or talk was, never who is in the photo. Set `public: true` when it should appear on `/events/` (the newest public event is also the home page's "Latest event"). The build checks every field (`src/content.config.ts`) and every photo id (`checkEventMedia` in `src/lib/events.ts`).
 
 **Add footage.** Encode it (commands in `MEDIA-IDS.md`), put the files in `public/media/<slug>/`, and add an entry to `src/data/media.json` using the id the page already asks for. Run `npm run check:media`.
 
