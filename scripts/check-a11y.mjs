@@ -34,7 +34,7 @@ const BASE = process.env.BASE || 'http://localhost:4321';
 // The pages to check. The case pages, the events list and every event page are read from the
 // site's own sitemap, so a new case or event is checked automatically.
 async function pageList() {
-  const pages = ['/', '/about/', '/404', '/styleguide/'];
+  const pages = ['/', '/about/', '/spec/', '/404', '/styleguide/'];
   try {
     const xml = await (await fetch(new URL('/sitemap.xml', BASE))).text();
     for (const match of xml.matchAll(/<loc>([^<]+)<\/loc>/g)) {

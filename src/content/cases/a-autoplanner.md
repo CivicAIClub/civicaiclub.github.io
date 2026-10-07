@@ -1,8 +1,14 @@
 ---
-# Case A. Facts checked 2026-09-27 against the case-a-clc-workflow repository and the build brief.
-# How it works (below): each student creates a Canvas access token; staff paste the tokens into
-# AutoPlanner, which keeps them in that browser’s local storage. There is no Canvas sign-in or
-# account connection (checked in the repo’s README and frontend/index.html, main branch).
+# Case A. Facts checked 2026-10-07 against the case-a-clc-workflow repository (main, PR #15) and
+# the CLC handoff on 2026-10-05.
+# How it works (below): AutoPlanner now runs entirely on Pomfret's Google account as an Apps
+# Script web app that only CLC staff signed in to Pomfret can open. Each student creates a Canvas
+# access token once; staff paste it in, and AutoPlanner keeps it inside the script (never in a
+# browser) and only ever shows its last four characters. Updates run by themselves every day at
+# about 7 pm and midnight.
+# The footage (clips below) was recorded from the May 2026 prototype, so the beats describe that
+# version. The stills show the version delivered on 2026-10-05 (demo data, cropped to leave out the
+# signed-in email and the page footer).
 # The clip ids below must match src/data/media.json (see MEDIA-IDS.md). Beat times are seconds
 # into the scrub clip, timed against the final footage (re-time them if it is ever re-cut).
 # currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
@@ -25,19 +31,21 @@ currentTeam:
     classYear: 2030
   - name: Justus Schroeder
     classYear: 2029
-status: Demoed to the CLC, May 2026
-chore: "Study-hall staff in the CLC (Center for Learning and Collaboration) spent [hours each week] logging into student Canvas accounts and copying assignments by hand. AutoPlanner was built to do the copying."
+status: Delivered to the CLC, Oct 2026
+chore: "Study-hall staff in the CLC (Center for Learning and Collaboration) spent [hours each week] logging into student Canvas accounts and copying assignments by hand. AutoPlanner does the copying now."
 fix: "Each student’s Canvas assignments, rebuilt as a weekly Google Doc."
 keyValues:
   - key: Makes
-    value: "A Google Doc for each student, a tab for each week, sorted by class and by day."
+    value: "A Google Doc for each student: this week at a glance, a tab for each week sorted by class and by day, and every past week kept."
+  - key: Updates
+    value: "By itself, every day at about 7 pm and midnight, on Google’s servers. No computer needs to be on."
   - key: Leaves alone
-    value: "The Status and Notes columns. Staff own them, and every refresh keeps them."
-  - key: Runs on
-    value: "Canvas and Google Docs."
+    value: "Status, Notes and an “Added by staff” table. Staff own them, and every update keeps them."
+  - key: Who can open it
+    value: "Only CLC staff, signed in with their Pomfret accounts."
   - key: Status
-    value: "Demoed to the CLC, May 2026."
-runsOn: [Canvas, Google Docs]
+    value: "Delivered to the CLC, Oct 2026."
+runsOn: [Canvas, Google Apps Script, Google Docs]
 # Where to crop the wide hero clip in the tall 4:5 frame on phones and upright tablets.
 heroFocus: "22% 50%"
 clips:
@@ -57,11 +65,18 @@ beats:
     text: "A color per class, a tab per student."
   - t: 8.5
     text: "One more click writes the Google Doc, sorted by class and by day."
+# Screenshots of the version delivered on 2026-10-05, shown under the footage (CaseStills.astro).
+stills:
+  title: "As delivered, October 2026."
+  note: "The footage above is the May prototype. This is the version the CLC uses now."
+  items:
+    - media: autoplanner-staff-page
+    - media: autoplanner-week-tab
 repo: https://github.com/CivicAIClub/case-a-clc-workflow
 public: true
 order: 1
 ---
 
-1. Each student makes a Canvas access token. Staff paste it into AutoPlanner once, and that browser remembers it.
-2. One click fetches the next four weeks of assignments for every student.
-3. It creates or updates each student’s Google Doc: a tab per week, sorted by class and by day, with the Status and Notes columns left alone.
+1. Each student makes a Canvas access token. Staff paste it in once; AutoPlanner keeps it on Pomfret’s Google and only ever shows its last four characters.
+2. Every day at about 7 pm and midnight, it fetches the next four weeks of assignments for every student. A button updates everyone on the spot.
+3. It updates each student’s Google Doc: a home tab for the week, a tab per week sorted by class and by day, and past weeks kept below. Status, Notes and “Added by staff” are never touched.

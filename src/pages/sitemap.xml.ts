@@ -1,7 +1,7 @@
 // sitemap.xml.ts: builds /sitemap.xml, the list of pages search engines should know about.
 //
-// It lists the home page, the events list and every public event page, About, and every public
-// case page. The style guide and the 404 page are left out on purpose (the style guide is a tool
+// It lists the home page, the events list and every public event page, About, the one-page
+// project spec, and every public case page. The style guide and the 404 page are left out on purpose (the style guide is a tool
 // for the club, not a page for visitors).
 import type { APIRoute } from 'astro';
 import { getPublicCases, caseUrl } from '../lib/cases';
@@ -16,6 +16,7 @@ export const GET: APIRoute = async ({ site }) => {
     '/events/',
     ...events.map((entry) => eventUrl(entry.data.slug)),
     '/about/',
+    '/spec/',
     ...cases.map((entry) => caseUrl(entry.data.slug)),
   ];
   const urls = paths.map((path) => `  <url><loc>${new URL(path, base).href}</loc></url>`).join('\n');

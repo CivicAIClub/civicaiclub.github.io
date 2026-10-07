@@ -18,6 +18,14 @@ import Griffin from './Griffin.astro';
 import Wordmark from './Wordmark.astro';
 import RollLink from './RollLink.astro';
 import ArrowLink from './ArrowLink.astro';
+
+interface Props {
+  // "spec" is the one-page project spec (/spec/): no site links (Cases, Events, About), and a link
+  // to the full site among the others instead.
+  variant?: 'site' | 'spec';
+}
+const { variant = 'site' } = Astro.props;
+const spec = variant === 'spec';
 ---
 
 <footer class="site-footer theme-ink" data-footer data-menu-inert>
@@ -25,15 +33,20 @@ import ArrowLink from './ArrowLink.astro';
     <div class="site-footer__top grid">
       <p class="site-footer__tagline">{site.lines.footer}</p>
 
-      <nav class="site-footer__nav" aria-label="Footer">
-        <ul>
-          <li><RollLink href="/#cases" label="Cases" /></li>
-          <li><RollLink href="/events/" label="Events" /></li>
-          <li><RollLink href="/about/" label="About" /></li>
-        </ul>
-      </nav>
+      {
+        !spec && (
+          <nav class="site-footer__nav" aria-label="Footer">
+            <ul>
+              <li><RollLink href="/#cases" label="Cases" /></li>
+              <li><RollLink href="/events/" label="Events" /></li>
+              <li><RollLink href="/about/" label="About" /></li>
+            </ul>
+          </nav>
+        )
+      }
 
       <ul class="site-footer__ctas t-label">
+        {spec && <li><ArrowLink href="/">The full site</ArrowLink></li>}
         <li><ArrowLink href={site.intakeFormUrl} external>Bring us a problem</ArrowLink></li>
         <li><ArrowLink href={site.joinFormUrl} external>Join the club</ArrowLink></li>
         <li><ArrowLink href={site.githubUrl} external>GitHub</ArrowLink></li>

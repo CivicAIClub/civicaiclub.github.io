@@ -45,6 +45,9 @@ interface Props {
   // Pictures the first screen needs, fetched early and first (for example the home reel's
   // poster on phones), e.g. [{ href: '/media/home/x.webp', media: '(max-width: 767px)' }].
   preloadImages?: { href: string; media?: string }[];
+  // "spec" gives the one-page project spec (/spec/) its own header and footer: no section links,
+  // no phone menu, and a link to the full site instead.
+  chrome?: 'site' | 'spec';
 }
 
 const {
@@ -58,6 +61,7 @@ const {
   current = null,
   theme = 'paper',
   preloadImages = [],
+  chrome = 'site',
 } = Astro.props;
 
 // The full page title, e.g. "About · Civic AI Club".
@@ -243,11 +247,11 @@ const imageUrl = new URL(image, Astro.site);
   <body>
     {preloader && <Preloader />}
     <a class="skip-link" href="#main" data-menu-inert>Skip to content</a>
-    <Header current={current} />
+    <Header current={current} variant={chrome} />
     <main id="main" class:list={['site-main', `theme-${theme}`]} tabindex="-1" data-menu-inert>
       <slot />
     </main>
-    <Footer />
+    <Footer variant={chrome} />
     <Cursor />
 
     <script>

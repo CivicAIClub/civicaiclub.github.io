@@ -83,6 +83,60 @@
     "demoData": true
   },
   {
+    "id": "autoplanner-staff-page",
+    "kind": "image",
+    "case": "autoplanner",
+    "usedOn": [
+      "autoplanner",
+      "spec"
+    ],
+    "width": 980,
+    "height": 1090,
+    "alt": "AutoPlanner’s staff page: a crimson “Update all students now” button, the last automatic update (8 of 8 students), and a list of students with invented names, each with a CLC teacher, a hidden token showing only its last four characters, its expiry date, the last update and an Open Doc link.",
+    "caption": "The staff page, as delivered. Only CLC staff can open it. Demo data.",
+    "files": {
+      "avif": {
+        "800": "/media/autoplanner/autoplanner-staff-page-800.avif",
+        "980": "/media/autoplanner/autoplanner-staff-page-980.avif"
+      },
+      "webp": {
+        "800": "/media/autoplanner/autoplanner-staff-page-800.webp",
+        "980": "/media/autoplanner/autoplanner-staff-page-980.webp"
+      },
+      "jpg": {
+        "800": "/media/autoplanner/autoplanner-staff-page-800.jpg",
+        "980": "/media/autoplanner/autoplanner-staff-page-980.jpg"
+      }
+    }
+  },
+  {
+    "id": "autoplanner-week-tab",
+    "kind": "image",
+    "case": "autoplanner",
+    "usedOn": [
+      "autoplanner",
+      "spec"
+    ],
+    "width": 1150,
+    "height": 1475,
+    "alt": "A week tab in a student’s Google Doc, “Week of Oct 5 – Oct 11”: a color-coded table for each class, the same assignments by day, and an “Added by staff” table for work that isn’t on Canvas. Status and Notes columns are filled in by hand.",
+    "caption": "A week tab in a student’s Doc: by class, by day, and “Added by staff”. Demo data.",
+    "files": {
+      "avif": {
+        "800": "/media/autoplanner/autoplanner-week-tab-800.avif",
+        "1150": "/media/autoplanner/autoplanner-week-tab-1150.avif"
+      },
+      "webp": {
+        "800": "/media/autoplanner/autoplanner-week-tab-800.webp",
+        "1150": "/media/autoplanner/autoplanner-week-tab-1150.webp"
+      },
+      "jpg": {
+        "800": "/media/autoplanner/autoplanner-week-tab-800.jpg",
+        "1150": "/media/autoplanner/autoplanner-week-tab-1150.jpg"
+      }
+    }
+  },
+  {
     "id": "music-studio-hero",
     "case": "music-studio",
     "usedOn": [

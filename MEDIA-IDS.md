@@ -40,6 +40,8 @@ Recorded from the fake Canvas + fake Apps Script flow (`capture/case-a.js` in th
 | `autoplanner-docket` | 1:1 · 3.7 s | Three students’ color-coded tables, one after another, cropped on the color bands. The app's own white fade between students is cut out (it blinked inside the dark letter); each switch is a short crossfade. |
 | `autoplanner-detail-1` | 1:1 · 4.5 s | The student tabs, then the priority labels as the tables switch. |
 | `autoplanner-detail-2` | 16:9 · 5.6 s | Create Google Doc, then "Doc created" with its link. |
+| `autoplanner-staff-page` | Photo, 980 × 1090 | The staff page as delivered on 2026-10-05: Update all students now, the last automatic update, and the student list with invented names. Cropped so the signed-in email at the top and the page footer never show. Case A page and `/spec/` (the case file's `stills`). |
+| `autoplanner-week-tab` | Photo, 1150 × 1475 | A week tab of a student's Doc as delivered: By Class, By Day, and "Added by staff". Invented assignments. Case A page and `/spec/`. |
 
 ### Case B · Music Studio (`music-studio`) — Playwright-mocked portal only
 Recorded from the mocked portal (`capture/case-b*.js`). **Never** the live portal.

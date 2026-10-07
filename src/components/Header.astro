@@ -24,8 +24,13 @@ import ArrowLink from './ArrowLink.astro';
 interface Props {
   // Which main section this page belongs to, so its link can be marked as the current page.
   current?: 'cases' | 'events' | 'about' | null;
+  // "spec" is the one-page project spec (/spec/): one page with no sections to switch between,
+  // so the middle shows a small label instead of the links, the right side links to the full
+  // site, and there is no phone menu.
+  variant?: 'site' | 'spec';
 }
-const { current = null } = Astro.props;
+const { current = null, variant = 'site' } = Astro.props;
+const spec = variant === 'spec';
 
 // The main links. "Cases" jumps to the list of cases on the home page; "Events" opens the list
 // of club events (/events/).
@@ -56,30 +61,42 @@ const links = [
       </span>
     </a>
 
-    <nav class="site-nav t-ui" aria-label="Main" data-menu-inert>
-      <ul>
-        {
-          links.map((link) => (
-            <li class="h-mask">
-              <span data-header-item>
-                <RollLink href={link.href} label={link.label} current={current === link.key} />
-              </span>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
+    {
+      spec ? (
+        <p class="site-nav site-nav--spec t-mono">
+          <span class="h-mask">
+            <span data-header-item>One-page project spec</span>
+          </span>
+        </p>
+      ) : (
+        <nav class="site-nav t-ui" aria-label="Main" data-menu-inert>
+          <ul>
+            {links.map((link) => (
+              <li class="h-mask">
+                <span data-header-item>
+                  <RollLink href={link.href} label={link.label} current={current === link.key} />
+                </span>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
 
-    <div class="site-header__cta t-ui" data-menu-inert>
+    <div class:list={['site-header__cta', 't-ui', { 'site-header__cta--spec': spec }]} data-menu-inert>
       <span class="h-mask">
         <span data-header-item>
-          <ArrowLink href={site.intakeFormUrl} external>Bring us a problem</ArrowLink>
+          {spec ? (
+            <ArrowLink href="/">The full site</ArrowLink>
+          ) : (
+            <ArrowLink href={site.intakeFormUrl} external>Bring us a problem</ArrowLink>
+          )}
         </span>
       </span>
     </div>
 
     <!-- The phone menu button sits in its own window too, so it drops in with the other items. -->
-    <span class="h-mask menu-button-slot">
+    {!spec && <span class="h-mask menu-button-slot">
       <button
         class="menu-button t-mono"
         type="button"
@@ -93,10 +110,10 @@ const links = [
           <span class="menu-button__label" aria-hidden="true">Close</span>
         </span>
       </button>
-    </span>
+    </span>}
   </div>
 
-  <div class="menu-panel theme-ink" id="site-menu" data-menu hidden>
+  {!spec && <div class="menu-panel theme-ink" id="site-menu" data-menu hidden>
     <nav class="menu-panel__nav" aria-label="Menu">
       <ul>
         {
@@ -128,7 +145,7 @@ const links = [
       </li>
     </ul>
     <p class="menu-panel__small t-mono">{site.lines.footerSmallPrint}</p>
-  </div>
+  </div>}
 </header>
 
 <style>
@@ -232,6 +249,11 @@ const links = [
     }
   }
 
+  /* The spec page's label sits where the links would be. */
+  .site-nav--spec {
+    align-self: center;
+  }
+
   /* Right: the call to action. */
   .site-header__cta {
     grid-column: 11 / -1;
@@ -316,6 +338,19 @@ const links = [
     }
     :global(html:not(.js)) .site-nav ul {
       gap: 10px;
+    }
+  }
+
+  /* The spec page has no phone menu: phones keep its "The full site" link instead, and drop the
+     label (with or without JavaScript). */
+  @media (max-width: 767px) {
+    .site-header__cta--spec {
+      display: block;
+      grid-column: 5 / -1;
+      justify-self: end;
+    }
+    :global(html) .site-nav--spec {
+      display: none;
     }
   }
 
