@@ -1,0 +1,183 @@
+---
+// spec.astro: the club's one-page project spec (https://civicaiclub.github.io/spec/).
+//
+// Written for a class assignment ("a one-page, well-designed project spec, essentially a fancy
+// README", shown on screen while the club president talks about it), and kept as a page anyone
+// can be sent. It is the whole site on one page: the same sections, built from the same
+// components and the same facts, with no section links in the header or footer (Base's
+// chrome="spec") and a link to the full site instead.
+//
+// Top to bottom:
+//   1. HomeHero     the huge CIVIC and the mission line (from the home page)
+//   2. HomeReel     the reel of every tool (from the home page)
+//   3. Statement    what the club does, with the page's one crimson marker
+//   4. The spec     the project in five labeled rows: what, who, runs on, how we build, delivered
+//   5. Docket       every case, A to E (from the home page; "Open case" leads to its full page)
+//   6. CaseStills   AutoPlanner as delivered to the CLC on 2026-10-05 (from its case page)
+//   7. Frame        how a case goes from a problem to a tool someone owns (from About)
+//   8. DownTheRoad  the local businesses (from the home page)
+//   9. LatestEvent  AI Literacy Week (from the home page)
+//  10. Glance       the checked numbers (from the home page)
+//  11. This term    what comes next, by date
+//  12. Lead         the president, the vice president and the faculty advisor (from About)
+//  13. The footer   the spec version (Base's chrome="spec")
+//
+// Every fact comes from the same files as the rest of the site (src/content/, src/data/), so
+// the spec stays true when they change. The dated rows in "This term" are the only facts that
+// live here; update them when the dates pass.
+import Base from '../layouts/Base.astro';
+import Statement from '../components/Statement.astro';
+import KeyValue from '../components/KeyValue.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import HomeReel from '../components/home/HomeReel.astro';
+import Docket from '../components/home/Docket.astro';
+import DownTheRoad from '../components/home/DownTheRoad.astro';
+import LatestEvent from '../components/home/LatestEvent.astro';
+import Glance from '../components/home/Glance.astro';
+import Frame from '../components/about/Frame.astro';
+import Lead from '../components/about/Lead.astro';
+import CaseStills from '../components/case/CaseStills.astro';
+import { getAllCases } from '../lib/cases';
+import { formatPerson } from '../lib/people';
+import members from '../data/members.json';
+import numbers from '../data/numbers.json';
+import '../styles/home.css';
+import '../styles/about.css';
+
+const autoplanner = (await getAllCases()).find((entry) => entry.data.slug === 'autoplanner');
+const count = (id: string) => numbers.items.find((item) => item.id === id)?.value ?? '';
+// "Name ’YY" for someone in members.json, like every name on the site.
+const named = (name: string) => {
+  const person = members.members.find((entry) => entry.name === name);
+  return person ? formatPerson(person) : name;
+};
+const president = named(members.lead);
+const vicePresident = named(members.vicePresident);
+
+// "This term": what comes next, by date. Offices only, never a faculty member's name.
+const nextUp = [
+  { when: 'Oct 7', what: 'Music Studio: the lesson time sheet, shown to the Music Department.' },
+  { when: 'Oct 8', what: 'Pomfret Voices: next steps with the Office of DEI.' },
+  { when: 'Oct 9', what: 'College counseling tools: the first meeting with the College Counseling Office.' },
+  { when: 'Oct 19', what: 'AutoPlanner: a check-in with the CLC, two weeks after handover.' },
+  { when: 'End of term', what: 'The full tech demo.' },
+];
+---
+
+<Base
+  title="Project spec"
+  description="The Civic AI Club on one page: what it is, the five faculty cases, how a case runs, the numbers, and what comes next."
+  chrome="spec"
+  intro="home"
+  theme="ink"
+  preloadImages={[{ href: '/media/home/home-reel-mobile-poster.webp', media: '(max-width: 767px)' }]}
+>
+  <HomeHero />
+
+  <HomeReel />
+
+  <!-- 3. Statement: what the club does, with the page's one crimson marker. -->
+  <section class="spec-block theme-ink" aria-label="What we do">
+    <div class="grid">
+      <Statement class="span-all">
+        Teachers and staff bring us a chore that <mark data-mark>eats their week</mark>. A team of
+        students scopes it with them, builds the tool and hands it over.
+        See <a href="#frame">how we work</a>.
+      </Statement>
+    </div>
+  </section>
+
+  <!-- 4. The spec: the project in five labeled rows. -->
+  <section class="spec-rows theme-ink" aria-labelledby="spec-title">
+    <div class="grid spec-rows__head">
+      <p class="spec-rows__kicker t-mono">One-page project spec · {president}, President · Oct 2026</p>
+      <h2 id="spec-title" class="spec-rows__title" data-reveal="lines">The project, in five lines.</h2>
+    </div>
+    <KeyValue label="What it is" labelAs="h3">
+      A student-run software lab at Pomfret School, started in November 2025. Teachers, staff and
+      local businesses bring us a chore; a team of students scopes it, builds the tool and hands it
+      over.
+    </KeyValue>
+    <KeyValue label="Who" labelAs="h3">
+      {count('members')} student members, {count('developers')} of them on case teams, plus an
+      alumni advisor. Led by {president}, President, and {vicePresident}, Vice President, with {members.facultyAdvisor.name} as faculty advisor.
+    </KeyValue>
+    <KeyValue label="Runs on" labelAs="h3">
+      What the school already uses: Canvas, Google Docs, Sheets, Drive, Calendar and Apps Script.
+      Client data and student records never go into our repositories.
+    </KeyValue>
+    <KeyValue label="How we build" labelAs="h3">
+      One public GitHub repository per project. Every change is a branch and a reviewed pull
+      request; nobody pushes to main. We build with AI coding assistants, and none of the four
+      tools we’ve built calls an AI model.
+    </KeyValue>
+    <KeyValue label="Delivered" labelAs="h3">
+      AutoPlanner, to the CLC Supported Study Hall, on October 5, 2026. Staff add a student once,
+      and that student’s planner Doc updates itself at about 7 pm and midnight, every day.
+    </KeyValue>
+  </section>
+
+  <Docket />
+
+  {
+    autoplanner && (
+      <CaseStills letter="A" stills={autoplanner.data.stills} label="Case A · AutoPlanner · CLC Supported Study Hall" />
+    )
+  }
+
+  <Frame />
+
+  <DownTheRoad />
+
+  <LatestEvent />
+
+  <Glance />
+
+  <!-- 11. This term: what comes next, by date. -->
+  <section class="spec-next theme-paper" aria-labelledby="next-title">
+    <div class="grid spec-next__head">
+      <h2 id="next-title" class="spec-next__title t-statement" data-reveal="lines">This term.</h2>
+    </div>
+    {nextUp.map((row) => <KeyValue label={row.when}>{row.what}</KeyValue>)}
+  </section>
+
+  <Lead />
+</Base>
+
+<style>
+  .spec-block {
+    padding-block: var(--space-section-lg) var(--space-section);
+  }
+  .spec-rows {
+    padding-bottom: var(--space-section);
+  }
+  .spec-rows__head {
+    row-gap: 14px;
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+  .spec-rows__kicker {
+    grid-column: 1 / -1;
+    color: var(--text-2);
+  }
+  .spec-rows__title {
+    grid-column: 1 / -1;
+    font-size: var(--fs-footer-tagline);
+    font-weight: var(--fw-light);
+    line-height: 1.14;
+    letter-spacing: -0.015em;
+  }
+  .spec-next {
+    padding-block: var(--space-section);
+  }
+  .spec-next__head {
+    margin-bottom: clamp(40px, 5vw, 72px);
+  }
+  .spec-next__title {
+    grid-column: 4 / -1;
+  }
+  @media (max-width: 767px) {
+    .spec-next__title {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -14,6 +14,8 @@
 //   4. Playhead     "How it works": the steps, then the recording you play by scrolling
 //                   ("scroll is the playhead"), with captions at the right moments.
 //   5. CaseFootage  two close-ups in an uneven layout, with written captions.
+//   5b. CaseStills  screenshots of the tool as it is used today, when the case file lists
+//                   "stills" (AutoPlanner: its footage shows the May prototype).
 //   6. CaseCredits  one sentence saying who built it and for whom, then what it runs on, its
 //                   status, and its links.
 //   7. NextCase     the next case's letter as a window onto its footage (D leads back to A).
@@ -24,6 +26,7 @@ import CaseChore from '../../components/case/CaseChore.astro';
 import CaseFix from '../../components/case/CaseFix.astro';
 import Playhead from '../../components/case/Playhead.astro';
 import CaseFootage from '../../components/case/CaseFootage.astro';
+import CaseStills from '../../components/case/CaseStills.astro';
 import CaseCredits from '../../components/case/CaseCredits.astro';
 import NextCase from '../../components/case/NextCase.astro';
 import { getPublicCases, getNextCase, caseUrl, type Case } from '../../lib/cases';
@@ -84,6 +87,8 @@ const steps = (entry.body ?? '')
   <Playhead letter={data.letter} clipId={data.clips.scrub} beats={data.beats} steps={steps} />
 
   <CaseFootage ids={[data.clips.detail1, data.clips.detail2]} letter={data.letter} />
+
+  <CaseStills letter={data.letter} stills={data.stills} />
 
   <CaseCredits
     team={data.team}

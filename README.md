@@ -52,7 +52,7 @@ src/
   data/                   members, numbers, clients, timeline, site links, media (videos + photos), home/about footage ids
   layouts/Base.astro      the frame of every page: head, header, footer, scripts
   components/             Header, Footer, Wordmark, Video, Photo, Statement, KeyValue, links, …
-  pages/                  /, /about/, /cases/[slug]/, /404, /styleguide/, /sitemap.xml
+  pages/                  /, /about/, /cases/[slug]/, /spec/ (the one-page project spec), /404, /styleguide/, /sitemap.xml
   pages/events/           /events/ (every public event, newest first) and /events/[slug]/ (one event)
   scripts/motion/         ALL animation code (GSAP + Lenis): index.js, core.js, modules/
   scripts/site/           the phone menu and the Motion On/Off switch (no animation library)

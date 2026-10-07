@@ -1,5 +1,7 @@
 ---
 # Case B. Never link the live portal (it shows real data) and never claim Google Sign-In.
+# Phase 6 (checked 2026-10-07): the lesson time sheet the Music Department asked for in May is being
+# built, for a demo on 2026-10-07. Say "in progress" until it is delivered.
 # The repository link stays hidden (repo: null) while that repo is under a security review.
 # currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
 # "team" stays the "Built by" credit, because new members haven't built the tool.
@@ -21,7 +23,7 @@ currentTeam:
     classYear: 2030
   - name: Kyle Kim
     classYear: 2027
-status: All 5 phases shipped
+status: 5 phases shipped, the time sheet in progress
 chore: "Lesson materials were scattered, every booking took back-and-forth, and [nothing tracked progress]. Music Studio puts all three in one portal."
 fix: "Lesson invites after a quick preview, a Drive folder per student, a recap after every lesson."
 keyValues:
@@ -31,8 +33,10 @@ keyValues:
     value: "A shared Drive folder for the studio and one for each student."
   - key: Recaps
     value: "Today we, Homework, Next class, saved on the student’s profile."
+  - key: Time sheet
+    value: "Each lesson onto the instructor’s time sheet in one click, numbered by term. In progress."
   - key: Status
-    value: "All 5 phases shipped."
+    value: "5 phases shipped. Phase 6, the lesson time sheet, is in progress."
 # Printed as “Google Sheets, Forms, Calendar and Drive.” in the credits.
 runsOn: [Google Sheets, Forms, Calendar, Drive]
 heroFocus: "38% 50%"

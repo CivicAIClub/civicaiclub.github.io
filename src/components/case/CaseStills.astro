@@ -1,0 +1,133 @@
+---
+// CaseStills.astro: screenshots of the tool as it is used today, under the case footage.
+//
+// For a case whose footage shows an earlier version. AutoPlanner's clips were recorded from the
+// May 2026 prototype; the CLC got a rebuilt version on 2026-10-05, so its case file lists two
+// screenshots of that version under "stills". This section prints the heading and its note,
+// then the screenshots side by side (stacked on phones), each with its caption from
+// src/data/media.json. A case without "stills" in its file gets no section.
+//
+// Motion: the heading rises (M1) and each screenshot's window opens from the top (M3), both
+// asked for with data attributes (see MOTION.md). With motion off everything is simply there.
+import Photo from '../Photo.astro';
+import { getImage } from '../../lib/media';
+
+interface Props {
+  letter: string;
+  stills?: { title: string; note?: string; items: { media: string }[] };
+  // A small mono line over the heading, for pages where the case isn't obvious from around it
+  // (the one-page spec: "Case A · AutoPlanner").
+  label?: string;
+}
+const { letter, stills, label } = Astro.props;
+// Only screenshots that are really in media.json ("npm run check:media" lists missing ones).
+const items = (stills?.items ?? []).filter((item) => getImage(item.media));
+---
+
+{
+  stills && items.length > 0 && (
+    <section class="stills theme-ink" aria-labelledby={`stills-${letter}`}>
+      <div class="stills__head grid">
+        {label && <p class="stills__label t-mono">{label}</p>}
+        <h2 id={`stills-${letter}`} class="stills__title" data-reveal="lines">
+          {stills.title}
+        </h2>
+        {stills.note && (
+          <p class="stills__note t-label" data-reveal="lines">
+            {stills.note}
+          </p>
+        )}
+      </div>
+      <div class:list={['stills__row', 'grid', { 'stills__row--pair': items.length === 2 }]}>
+        {items.map((item) => (
+          <div class="stills__item">
+            <div class="stills__window" data-media-open>
+              <div data-media-inner>
+                <Photo id={item.media} sizes="(min-width: 768px) 50vw, 100vw" caption={false} bare />
+              </div>
+            </div>
+            <p class="stills__caption">{getImage(item.media)?.caption}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .stills {
+    padding-block: 0 var(--space-section);
+  }
+  .stills__head {
+    row-gap: 16px;
+    align-items: end;
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+  .stills__label {
+    grid-column: 1 / -1;
+    color: var(--text-2);
+  }
+  .stills__title {
+    grid-column: 1 / span 6;
+    font-size: var(--fs-footer-tagline);
+    font-weight: var(--fw-light);
+    line-height: 1.14;
+    letter-spacing: -0.015em;
+  }
+  .stills__note {
+    grid-column: 7 / span 5;
+    color: var(--text-2);
+    max-width: 34ch;
+  }
+  .stills__row {
+    row-gap: 48px;
+    align-items: start;
+  }
+  .stills__item {
+    grid-column: 1 / -1;
+  }
+  .stills__row--pair .stills__item:first-child {
+    grid-column: 1 / span 6;
+  }
+  .stills__row--pair .stills__item:last-child {
+    grid-column: 7 / -1;
+  }
+  .stills__window {
+    overflow: hidden;
+  }
+  /* The screenshots are light pages; a hairline keeps their edge crisp on ink. */
+  .stills__window :global(img) {
+    outline: 1px solid var(--rule);
+    outline-offset: -1px;
+  }
+  .stills__caption {
+    margin-top: 16px;
+    max-width: 40ch;
+    font-size: var(--fs-label);
+    line-height: var(--lh-label);
+    letter-spacing: -0.01em;
+  }
+  @media (max-width: 1023px) {
+    .stills__title {
+      grid-column: 1 / span 5;
+    }
+    .stills__note {
+      grid-column: 6 / -1;
+    }
+    .stills__row--pair .stills__item:first-child {
+      grid-column: 1 / span 4;
+    }
+    .stills__row--pair .stills__item:last-child {
+      grid-column: 5 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .stills__label,
+    .stills__title,
+    .stills__note,
+    .stills__row--pair .stills__item:first-child,
+    .stills__row--pair .stills__item:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

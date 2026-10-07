@@ -94,6 +94,23 @@ const cases = defineCollection({
         .regex(/^\d{1,3}% \d{1,3}%$/)
         .optional(),
       beats: z.array(beat).default([]),
+      // Screenshots of the tool as it is used today, shown under the footage on the case page
+      // (CaseStills.astro). For a case whose footage shows an earlier version (AutoPlanner's was
+      // recorded from the May 2026 prototype). Each item is a "kind": "image" id in
+      // src/data/media.json; its caption there is printed under it, so it must end "Demo data."
+      // when it shows a tool. Leave it out to show nothing.
+      stills: z
+        .object({
+          // The heading over the screenshots, e.g. "As delivered, October 2026."
+          title: z.string().min(1),
+          // One short line beside the heading.
+          note: z.string().optional(),
+          items: z
+            .array(z.object({ media: z.string().regex(/^[a-z0-9-]+$/, 'a photo id from src/data/media.json') }))
+            .min(1)
+            .max(2),
+        })
+        .optional(),
       // The GitHub repository link, or null to hide it (Case B's stays hidden for now).
       repo: z.url().nullable(),
       // A public link to the working tool, only where it is safe to share (Case C only).
