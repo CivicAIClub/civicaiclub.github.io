@@ -2,7 +2,7 @@
 
 The showcase site for the **Civic AI Club**, a student-run club at Pomfret School. Teachers and staff bring the club a chore that eats their week; student developers build the tool and hand it over. This site shows those cases.
 
-Live at **https://civicaiclub.github.io** (once this repository is published). Built with [Astro](https://astro.build) as a static site and deployed to GitHub Pages.
+Live at **https://civicaiclub.github.io**. Built with [Astro](https://astro.build) as a static site and deployed to GitHub Pages.
 
 - How the site works, in plain English: [HOW_IT_WORKS.md](HOW_IT_WORKS.md)
 - Every animation and how to ask for one: [MOTION.md](MOTION.md)
@@ -96,6 +96,10 @@ Merging into `main` runs `.github/workflows/deploy.yml`, which builds with `with
 ## Known issues
 
 - None right now. (The form behind "Bring us a problem" and "Join the club", `intakeFormUrl` and `joinFormUrl` in `src/data/site.json`, opens without a Google sign-in, so outside businesses can use it. If it's ever replaced, check the new link in a signed-out browser window.)
+
+## Contributors
+
+- **Cayden Auyang:** wrote the site
 
 ## Credits
 
