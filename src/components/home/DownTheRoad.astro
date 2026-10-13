@@ -1,29 +1,43 @@
 ---
 // DownTheRoad.astro: "Down the road" (section 6 of the home page), the first paper section.
 //
-// It lists the local businesses the club is working with (two, for now). Each row shows who it
-// is for, one plain line about the chore, and where it stands, with the crimson "in progress"
-// dot. The page turns from ink to paper at this section's top edge, with no fade.
+// It lists the local organizations the club is talking to (seven, for now). Each row shows who
+// it is and where, one plain line about them, and where things stand: "In progress" (a project
+// is under way: the crimson "in progress" dot and a short stage line, like "Discovery complete.")
+// or "Discovery pending" (no dot and no stage line). The page turns from ink to paper at this
+// section's top edge, with no fade.
 // Open school cases without a page yet (Case E) are not repeated here: they already stand in
 // the docket above, as an outlined letter marked "In progress".
 //
-// Rules for this section (from the club's client playbook): business names and one plain line
-// only. No logos, no AI words, no contact names, no details of how their business runs, and
-// never a prospect that has not agreed to be listed.
+// Rules for this section: each organization gets a name, a place, one plain line, and a status
+// of "In progress" or "Discovery pending". No logos, no AI words, no contact names, and no
+// details of how they run.
 //
-// Where the facts come from: src/data/clients.json (the businesses).
+// Where the facts come from: src/data/clients.json (the organizations).
 // Motion: the heading and each row's text rise line by line (data-reveal, M1) and each row's
 // divider draws itself (Divider, M2).
 import Divider from '../Divider.astro';
 import clients from '../../data/clients.json';
 
-// One row per business, in the order clients.json lists them.
-const rows = clients.items.map((client) => ({
+// A place never breaks in the middle of a name: the spaces inside each name ("The Vanilla Bean
+// Café", "Pomfret Center") become no-break spaces, so a long list of places wraps only between
+// names, after a comma or around "and".
+const keepNamesTogether = (place: string) =>
+  place
+    .split(/(, | and )/)
+    .map((piece) => (piece === ', ' || piece === ' and ' ? piece : piece.replace(/ /g, '\u00a0')))
+    .join('');
+
+// One row per organization, in the order clients.json lists them. "stage" is only there for
+// an organization with a project under way.
+const rows = clients.items.map((client: { name: string; place: string; line: string; status: string; stage?: string }) => ({
   name: client.name,
-  place: client.place,
+  place: keepNamesTogether(client.place),
   line: client.line,
   status: client.status,
   stage: client.stage,
+  // Only "In progress" gets the crimson dot (it means a project is under way).
+  inProgress: client.status === 'In progress',
 }));
 ---
 
@@ -39,19 +53,22 @@ const rows = clients.items.map((client) => ({
           <Divider class="road__rule" />
           <p class="road__name t-label" data-reveal="lines">
             {row.name}
-            {row.place && <span class="t-secondary">, {row.place}</span>}
+            {/* The place sits on its own line under the name; screen readers hear "Name, place". */}
+            {row.place && <span class="road__place t-secondary"><span class="sr-only">, </span>{row.place}</span>}
           </p>
           <p class="road__line t-label" data-reveal="lines">
             {row.line}
           </p>
           <div class="road__status">
             <p class="t-mono">
-              <span class="status-dot" aria-hidden="true" />
+              {row.inProgress && <span class="status-dot" aria-hidden="true" />}
               {row.status}
             </p>
-            <p class="road__stage t-ui" data-reveal="lines">
-              {row.stage}
-            </p>
+            {row.stage && (
+              <p class="road__stage t-ui" data-reveal="lines">
+                {row.stage}
+              </p>
+            )}
           </div>
         </li>
       ))
@@ -79,6 +96,9 @@ const rows = clients.items.map((client) => ({
   }
   .road__name {
     grid-column: 1 / span 4;
+  }
+  .road__place {
+    display: block;
   }
   .road__line {
     grid-column: 5 / span 5;

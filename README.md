@@ -95,7 +95,11 @@ Merging into `main` runs `.github/workflows/deploy.yml`, which builds with `with
 
 ## Known issues
 
-- None right now. (The form behind "Bring us a problem" and "Join the club", `intakeFormUrl` and `joinFormUrl` in `src/data/site.json`, opens without a Google sign-in, so outside businesses can use it. If it's ever replaced, check the new link in a signed-out browser window.)
+- **The two forms ask for a Google sign-in (checked Oct 13, 2026).** The site links two forms, both in `src/data/site.json`:
+  - `intakeFormUrl`, behind "Bring us a problem": the faculty interest form. Teachers, staff and outside organizations use it.
+  - `joinFormUrl`, behind "Join the club" and "Want to help run one?": the student interest form.
+
+  In a signed-out browser window, both open Google's sign-in page instead of the form. That's fine for Pomfret students and staff, but outside organizations can't reach "Bring us a problem" until that form accepts responses from anyone. Whenever a link changes, check it in a signed-out browser window.
 
 ## Contributors
 

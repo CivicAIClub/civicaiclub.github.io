@@ -15,7 +15,7 @@
 //   5. Docket       every case, A to E (from the home page; "Open case" leads to its full page)
 //   6. CaseStills   AutoPlanner as delivered to the CLC on 2026-10-05 (from its case page)
 //   7. Frame        how a case goes from a problem to a tool someone owns (from About)
-//   8. DownTheRoad  the local businesses (from the home page)
+//   8. DownTheRoad  the local organizations (from the home page)
 //   9. LatestEvent  AI Literacy Week (from the home page)
 //  10. Glance       the checked numbers (from the home page)
 //  11. This term    what comes next, by date
@@ -23,8 +23,10 @@
 //  13. The footer   the spec version (Base's chrome="spec")
 //
 // Every fact comes from the same files as the rest of the site (src/content/, src/data/), so
-// the spec stays true when they change. The dated rows in "This term" are the only facts that
-// live here; update them when the dates pass.
+// the spec stays true when they change. Two things live only here: the "Delivered" row, and the
+// rows in "This term" (nextUp, below). In "This term", "Oct 19" and "Late Oct" are dated; the
+// others ("This fall", "Before winter term", "End of term", "Later this year") are seasons.
+// Update a row when its date or season passes.
 import Base from '../layouts/Base.astro';
 import Statement from '../components/Statement.astro';
 import KeyValue from '../components/KeyValue.astro';
@@ -56,11 +58,12 @@ const vicePresident = named(members.vicePresident);
 
 // "This term": what comes next, by date. Offices only, never a faculty member's name.
 const nextUp = [
-  { when: 'Oct 7', what: 'Music Studio: the lesson time sheet, shown to the Music Department.' },
-  { when: 'Oct 8', what: 'Pomfret Voices: next steps with the Office of DEI.' },
-  { when: 'Oct 9', what: 'College counseling tools: the first meeting with the College Counseling Office.' },
   { when: 'Oct 19', what: 'AutoPlanner: a check-in with the CLC, two weeks after handover.' },
+  { when: 'Late Oct', what: 'Pomfret Voices: the plan for the next version, for the Office of Community and Belonging.' },
+  { when: 'This fall', what: 'College counseling tools: a first prototype for the College Counseling Office.' },
+  { when: 'Before winter term', what: 'Music Studio: a check-in with the Music Department.' },
   { when: 'End of term', what: 'The full tech demo.' },
+  { when: 'Later this year', what: 'AI Literacy Week returns for the whole school.' },
 ];
 ---
 
@@ -95,7 +98,7 @@ const nextUp = [
     </div>
     <KeyValue label="What it is" labelAs="h3">
       A student-run software lab at Pomfret School, started in November 2025. Teachers, staff and
-      local businesses bring us a chore; a team of students scopes it, builds the tool and hands it
+      local organizations bring us a chore; a team of students scopes it, builds the tool and hands it
       over.
     </KeyValue>
     <KeyValue label="Who" labelAs="h3">
@@ -112,8 +115,10 @@ const nextUp = [
       tools we’ve built calls an AI model.
     </KeyValue>
     <KeyValue label="Delivered" labelAs="h3">
-      AutoPlanner, to the CLC Supported Study Hall, on October 5, 2026. Staff add a student once,
-      and that student’s planner Doc updates itself at about 7 pm and midnight, every day.
+      AutoPlanner, to the CLC Supported Study Hall, on October 5, 2026: staff add a student once,
+      and that student’s planner Doc updates itself every evening and at midnight. Music Studio, to
+      the Music Department, on October 7: lesson invites, files, recaps and the time sheet in one
+      place.
     </KeyValue>
   </section>
 

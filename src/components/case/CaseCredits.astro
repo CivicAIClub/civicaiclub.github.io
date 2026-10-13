@@ -11,8 +11,8 @@
 // 2. One small mono row: "Team this year ..." (this year's case team, from "currentTeam"; kept
 //    apart from the "Built by" sentence because new members haven't built the tool), "Runs on
 //    ...", "Status ..." (for Roster Export, where the next phase is explained) and the links:
-//    "Repository ↗", and for Pomfret Voices "Current DEI site ↗" too, with its short note
-//    ("liveNote") beside it.
+//    "Repository ↗", and for Pomfret Voices "Preview the next version ↗" too (a Vercel preview
+//    of the next version, not a final site), with its short note ("liveNote") beside it.
 //    A case whose "repo" is null in its case file (Music Studio, under a security review) has no
 //    repository link, and the Music Studio portal itself is never linked.
 // Motion: the sentence rises line by line (M1, from Statement.astro); once it has risen, the
@@ -35,7 +35,7 @@ interface Props {
   rows: { key: string; value: string }[];
   repo: string | null;
   liveUrl?: string;
-  // A short line shown beside the live link, e.g. "Now live as “Pomfret DEI”."
+  // A short line shown beside the link, e.g. "A preview of the next version, still in progress."
   liveNote?: string;
 }
 const { team, currentTeam = [], office, officeIn, runsOn, status, rows, repo, liveUrl, liveNote } = Astro.props;
@@ -116,7 +116,7 @@ const statusText = statusRow ? statusRow.value : `${status}.`;
           <li class="credits__fact credits__links">
             {liveUrl && (
               <ArrowLink href={liveUrl} external>
-                Current DEI site
+                Preview the next version
               </ArrowLink>
             )}
             {liveUrl && liveNote && <span class="credits__note">{liveNote}</span>}
@@ -225,7 +225,7 @@ const statusText = statusRow ? statusRow.value : `${status}.`;
     justify-content: flex-end;
     align-items: baseline;
   }
-  /* The short note beside the live link ("Now live as ..."): plain grey text, not a link. */
+  /* The short note beside the preview link ("A preview of ..."): plain grey text, not a link. */
   .credits__note {
     color: var(--text-2);
   }

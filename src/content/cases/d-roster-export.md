@@ -3,7 +3,7 @@
 # being rescoped around the school’s own Canvas grade process (2026-09-29). Don’t claim it’s in use.
 # Keke Li built the first version; Jay Youm ’26 advises as an alumnus (never “graduated”).
 # The credits read “teaching faculty” (officeIn), not “the Teaching faculty”.
-# currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
+# currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-13). It shows as its own "Team this year" line;
 # "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: D
 slug: roster-export
@@ -27,6 +27,8 @@ currentTeam:
   - name: Magnus Songhurst
     classYear: 2028
   - name: Richard Luo
+    classYear: 2030
+  - name: Sasha Khan
     classYear: 2030
 status: Phase 1 built
 chore: "Every grading period brought [the same copy-and-paste routine] before comments could start. Roster Export builds the documents straight from Canvas."

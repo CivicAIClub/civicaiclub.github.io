@@ -31,14 +31,21 @@ import about from '../../data/about.json';
 import timeline from '../../data/timeline.json';
 import { eventUrl, getPublicEvents } from '../../lib/events';
 
-// Cards 3 and 6 are ink-colored, to give the strip a rhythm. (Change the numbers to move them.)
-const inkCards = new Set([2, 5]);
+// Every third card (3, 6, 9, ...) is ink-colored, to give the strip a rhythm, however many cards
+// the timeline has.
+const isInk = (i: number) => i % 3 === 2;
 
 // Split "Nov 2025" into the month ("Nov") and the year ("2025") for the card's two sizes.
 const cards = timeline.items.map((item, i) => {
   const [month, year] = item.label.split(' ');
-  return { ...item, month, year, index: String(i + 1).padStart(2, '0'), ink: inkCards.has(i) };
+  return { ...item, month, year, index: String(i + 1).padStart(2, '0'), ink: isInk(i) };
 });
+
+// The strip's name for screen readers, from its first and last month, e.g. "The club’s timeline,
+// November 2025 to October 2026". Worked out from timeline.json, so it stays right as cards are added.
+const monthName = (date: string) =>
+  new Date(`${date}-01T12:00:00Z`).toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const stripLabel = `The club’s timeline, ${monthName(timeline.items[0].date)} to ${monthName(timeline.items[timeline.items.length - 1].date)}`;
 
 // The event photos under the strip: which event they link to, and the two photo ids.
 const event = about.event;
@@ -83,7 +90,7 @@ const eventEntry = (await getPublicEvents()).find((entry) => entry.data.slug ===
       class="strip__viewport"
       tabindex="0"
       role="region"
-      aria-label="The club’s timeline, November 2025 to September 2026"
+      aria-label={stripLabel}
       data-about-strip-viewport
       data-cursor="Drag"
     >

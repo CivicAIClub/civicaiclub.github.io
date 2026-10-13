@@ -142,6 +142,8 @@ closing:
 # More rows for the credits, after "Run by" (which is written from "audience" above).
 credits:
   - { key: "Speakers", value: "Cayden Auyang ’27, Luke Ryan ’27, Jay Youm ’26 (alumni advisor) and a member of the faculty." }
+# The last credits row ("Next"). No date until one is set.
+next: "AI Literacy Week comes back this school year."
 public: true
 order: 1
 ---

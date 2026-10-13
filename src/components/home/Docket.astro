@@ -78,12 +78,15 @@ const rows = cases.map((entry) => {
     clip,
     placed: placeLetter(glyph.d, glyph.width),
     builtBy: builtBy(data.team),
-    builtByLabel: data.inProgress ? 'Team' : 'Built by',
+    // A case with no page yet (Case E) has built nothing, so its team is labeled "Team". A case
+    // that is in progress but has already built a tool (Case C) keeps "Built by".
+    builtByLabel: data.public ? 'Built by' : 'Team',
     // "Team this year": this school year's case team, kept apart from "Built by" (new members
     // haven't built the tool). Empty when the case file lists no currentTeam, and then the row
     // is left out.
     thisYear: data.currentTeam.map(formatPerson).join(', '),
-    // "Status": the case file's own words. An open case (Case E) reads "In progress. Discovery next."
+    // "Status": the case file's own words. A case marked inProgress reads "In progress. ...", e.g.
+    // Case E: "In progress. Discovery done, building a first prototype."
     status: data.inProgress ? `In progress. ${data.status.replace(/\.$/, '')}.` : data.status,
   };
 });
