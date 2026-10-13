@@ -54,7 +54,7 @@ Recorded from the mocked portal (`capture/case-b*.js`). **Never** the live porta
 | `music-studio-detail-1` | 1:1 · 5.1 s | A student's profile panel opening beside the roster. |
 | `music-studio-detail-2` | 16:9 · 5.7 s | The Recaps page filtered to one student, then that student's recap. |
 
-### Case C · Pomfret Voices (`pomfret-voices`) — approved by the Office of DEI
+### Case C · Pomfret Voices (`pomfret-voices`) — approved by the Office of DEI (now the Office of Community and Belonging)
 Not tool demos with invented data, so these captions don't end "Demo data." (`"demoData": false`).
 All of it was recorded from the site as built in September 2026. The live site has since been redesigned, so it can't be recorded again, and the captions say so in the past tense ("…lit up one at a time on the Pomfret Voices home page, September 2026.").
 

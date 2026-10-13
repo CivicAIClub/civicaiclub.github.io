@@ -23,7 +23,7 @@ We keep facts in one place each, so a change happens once.
 | The rules those files must follow | `src/content.config.ts` |
 | Every member's name and class year | `src/data/members.json` |
 | The numbers ("50 pull requests merged") and the date they were checked | `src/data/numbers.json` |
-| The two local businesses | `src/data/clients.json` |
+| The local organizations the club is talking to | `src/data/clients.json` |
 | The club's timeline | `src/data/timeline.json` |
 | Site-wide links (the intake form, GitHub) and the main lines of copy | `src/data/site.json` |
 | Which video files belong to which clip id | `src/data/media.json` |
@@ -102,4 +102,4 @@ When a pull request is merged into `main`, GitHub runs `.github/workflows/deploy
 
 ## 9. Privacy
 
-This repository is public. Footage uses invented demo data only; no real student names, rosters, emails, IDs or account screens ever go in. Faculty clients are named by office. Local businesses appear by name, one plain line and "In progress", nothing more. See `.cursor/rules/civicaiclub-site.mdc`.
+This repository is public. Footage uses invented demo data only; no real student names, rosters, emails, IDs or account screens ever go in. Faculty clients are named by office. Local organizations appear by name, place, one plain line and a status ("In progress" or "Discovery pending"), nothing more: no logos, no AI words, no contact names, no details of how they run. See `.cursor/rules/civicaiclub-site.mdc`.

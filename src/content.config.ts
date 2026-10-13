@@ -65,7 +65,8 @@ const cases = defineCollection({
       // e.g. "teaching faculty".
       officeIn: z.string().optional(),
       // The students (and advisors) who built it, in credit order. This is the "Built by" credit.
-      // For an open case with nothing built yet (Case E), the home page labels it "Team" instead.
+      // For a case with no page and nothing built yet (Case E), the home page labels it "Team"
+      // instead, and it lists that case's team.
       team: z.array(person).default([]),
       // This school year's case team, shown as its own labeled line ("Team this year: ...") on the
       // case page and on the home page. It is kept apart from "team" on purpose: "team" says who
@@ -73,7 +74,8 @@ const cases = defineCollection({
       currentTeam: z.array(person).default([]),
       // Where the case stands today, in a few words, e.g. "Phase 1 built".
       status: z.string().min(1),
-      // True shows the crimson "in progress" dot next to the status.
+      // True marks the case as in progress: the home page's docket reads "In progress. <status>."
+      // (Case C's next version, Case E).
       inProgress: z.boolean().default(false),
       // The chore in one or two sentences. Put [square brackets] around the one phrase that
       // gets the crimson marker.
@@ -113,9 +115,10 @@ const cases = defineCollection({
         .optional(),
       // The GitHub repository link, or null to hide it (Case B's stays hidden for now).
       repo: z.url().nullable(),
-      // A public link to the working tool, only where it is safe to share (Case C only).
+      // A public link to see the tool, only where it is safe to share. Case C only: a preview of
+      // its next version (the case page labels it "Preview the next version").
       liveUrl: z.url().optional(),
-      // One short line shown next to that live link, e.g. that the site now goes by a new name.
+      // One short line shown next to that link, e.g. "A preview of the next version, still in progress."
       liveNote: z.string().optional(),
       // True builds a case page at /cases/<slug>/. False lists the case on the home page only.
       public: z.boolean(),
@@ -254,6 +257,9 @@ const events = defineCollection({
     closing: plate.optional(),
     // The credits rows at the end of the page.
     credits: z.array(keyValue).default([]),
+    // One plain line about the event's next edition, printed as the last credits row ("Next"),
+    // just above "Want to help run one?". Leave it out to show no row. No date unless it is set.
+    next: z.string().min(1).optional(),
     // True builds a page at /events/<slug>/ and lists the event. False keeps it off the site.
     public: z.boolean(),
     // Sorts events that share a date (1 first).

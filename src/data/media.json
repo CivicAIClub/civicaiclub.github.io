@@ -252,7 +252,7 @@
     "width": 1600,
     "height": 900,
     "duration": 9,
-    "caption": "The Pomfret Voices timeline as built in September 2026 slid sideways through 53 moments from 1894 to 2026, its cards turning from sepia to white as the decades passed.",
+    "caption": "The Pomfret Voices timeline as built in September 2026 slid sideways from 1894 to 2026, its cards turning from sepia to white as the decades passed.",
     "demoData": false,
     "scrub": true
   },
@@ -464,7 +464,7 @@
     "width": 1920,
     "height": 1080,
     "duration": 9.7,
-    "caption": "The club’s public GitHub: a search showing its 50 merged pull requests, then one of them, which adds plain-English comments to the roster-export code.",
+    "caption": "The club’s public GitHub, recorded when it had 50 merged pull requests: a search, then one of them, which adds plain-English comments to the roster-export code.",
     "demoData": false
   },
   {

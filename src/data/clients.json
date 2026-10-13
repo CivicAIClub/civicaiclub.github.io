@@ -1,10 +1,10 @@
 {
-  "_note": "Local businesses we are working with. Public level only: name, one plain line, status. No logos, no AI words, no contact names, no details of how their business runs. Never add a prospect that has not agreed to be listed.",
+  "_note": "Local organizations the club is talking to, for the home page's \"Down the road\". Each one gets a name, a place, one plain line and a status: \"In progress\" (a project is under way; it also gets a short \"stage\" line and the crimson dot) or \"Discovery pending\" (no stage, no dot). No logos, no AI words, no contact names, no details of how they run.",
   "items": [
     {
       "id": "green-valley-hospitality",
       "name": "Green Valley Hospitality",
-      "place": "",
+      "place": "The Vanilla Bean Café, 85 Main, Dog Lane Café and Fenton River Grill",
       "line": "Daily sales recaps that reach the reporting spreadsheets without retyping.",
       "status": "In progress",
       "stage": "Discovery complete."
@@ -16,6 +16,41 @@
       "line": "Marketing and email tools.",
       "status": "In progress",
       "stage": "Discovery complete."
+    },
+    {
+      "id": "covenant-soup-kitchen",
+      "name": "Covenant Soup Kitchen",
+      "place": "Willimantic, CT",
+      "line": "A community soup kitchen.",
+      "status": "Discovery pending"
+    },
+    {
+      "id": "the-complex",
+      "name": "The Complex Performing and Creative Arts Centre",
+      "place": "Putnam, CT",
+      "line": "A performing and creative arts space.",
+      "status": "Discovery pending"
+    },
+    {
+      "id": "bradley-playhouse",
+      "name": "The Bradley Playhouse",
+      "place": "Putnam, CT",
+      "line": "A historic theatre.",
+      "status": "Discovery pending"
+    },
+    {
+      "id": "taylor-brooke",
+      "name": "Taylor Brooke Winery & Brewery",
+      "place": "Woodstock, CT",
+      "line": "A winery and brewery.",
+      "status": "Discovery pending"
+    },
+    {
+      "id": "unbound-glory-farm",
+      "name": "Unbound Glory Farm",
+      "place": "Pomfret Center, CT",
+      "line": "A small farm.",
+      "status": "Discovery pending"
     }
   ]
 }

@@ -8,7 +8,8 @@
 // Then "Run by", written from the file's "audience" ("The Civic AI Club. Open to all Pomfret
 // students and faculty."), the rows from the file's "credits" (for example "Speakers"), and
 // "When and where", written from the file's date, time and place. So those facts are only ever
-// typed once ("Sunday, May 17, 2026, 3:30–5 PM, in the VISTA Hamilton Hub.").
+// typed once ("Sunday, May 17, 2026, 3:30–5 PM, in the VISTA Hamilton Hub."). Last, "Next": the
+// file's one line about the event's next edition (left out when the file has none).
 // Motion: each row's rule draws (M2) and its words rise (M1); "All events" does the arrow swap
 // (M7); the big link rolls to its second phrase on hover (M6).
 import KeyValue from '../KeyValue.astro';
@@ -25,8 +26,10 @@ interface Props {
   date: string;
   time: string;
   place: string;
+  // One line about the next edition, e.g. "AI Literacy Week comes back this school year."
+  next?: string;
 }
-const { credits, audience, partner, date, time, place } = Astro.props;
+const { credits, audience, partner, date, time, place, next } = Astro.props;
 const runBy = `The Civic AI Club. ${audience}`;
 const whenWhere = `${formatEventDate(date)}, ${time}, in the ${place}.`;
 ---
@@ -37,6 +40,7 @@ const whenWhere = `${formatEventDate(date)}, ${time}, in the ${place}.`;
   <KeyValue label="Run by">{runBy}</KeyValue>
   {credits.map((row) => <KeyValue label={row.key}>{row.value}</KeyValue>)}
   <KeyValue label="When and where">{whenWhere}</KeyValue>
+  {next && <KeyValue label="Next">{next}</KeyValue>}
 
   <div class="event-credits__back wrap">
     <ArrowLink href="/events/" dir="left">All events</ArrowLink>

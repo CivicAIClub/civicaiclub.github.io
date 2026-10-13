@@ -1,17 +1,24 @@
 ---
-# Case C. Approved by the Office of DEI. Footage: the live site’s “Six voices” quotes (hero) and
-# the repository build’s horizontal timeline. Never the slide of a teacher with students, and no
-# magazine covers with faces.
-# The live site was redesigned after the footage was recorded and now goes by “Pomfret DEI”
-# (checked 2026-09-29). Its timeline has 60 Pomfret moments from 1894, plus 16 national-context
-# entries that are not counted here. The case keeps the name “Pomfret Voices” (what the team built
-# and what the footage shows), and the footage keeps its “as built in September 2026” label.
-# currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
-# "team" stays the "Built by" credit, because new members haven't built the tool.
+# Case C. The office was the Office of DEI when it approved this case and its footage; it is now
+# the Office of Community and Belonging, and its new head is reshaping the site. Footage: the
+# live site’s “Six voices” quotes (hero) and the repository build’s horizontal timeline. Never the
+# slide of a teacher with students, and no magazine covers with faces.
+# The live site (https://pomfret-dei.vercel.app, “Pomfret DEI”) was redesigned after the footage
+# was recorded. Its timeline has 60 Pomfret moments from 1894 (checked 2026-09-29), plus 16
+# national-context entries that are not counted here. The case keeps the name “Pomfret Voices”
+# (what the team built and what the footage shows), and the footage keeps its “as built in
+# September 2026” label.
+# The link (liveUrl) points at a Vercel preview of Keke Li’s branch: a preview of the next
+# version, not a final site. The office hasn’t approved it yet, and the plan for the next version
+# is due in late October 2026. Keep the note beside the link saying it is a preview still in
+# progress, and point the link at the final site once the office approves one.
+# currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-13). It shows as its
+# own "Team this year" line; "team" stays the "Built by" credit, because new members haven't
+# built the tool.
 letter: C
 slug: pomfret-voices
 title: Pomfret Voices
-office: Office of DEI
+office: Office of Community and Belonging
 team:
   - name: Zahir Williams
     classYear: 2028
@@ -26,7 +33,14 @@ currentTeam:
     classYear: 2029
   - name: Isabella Gachuhi
     classYear: 2030
-status: Live
+  - name: Ava Chen
+    classYear: 2028
+  - name: Sein Heo
+    classYear: 2028
+  - name: Kevin Wang
+    classYear: 2028
+status: Next version under way
+inProgress: true
 chore: "Pomfret’s history of diversity, equity and inclusion, [checked line by line]. Every claim traces to a source document."
 fix: "A checked history of inclusion at Pomfret: 60 moments since 1894."
 keyValues:
@@ -66,8 +80,8 @@ beats:
   - t: 8.8
     text: "2026. The line reaches today."
 repo: https://github.com/CivicAIClub/case-c-dei-timeline
-liveUrl: https://pomfret-dei.vercel.app
-liveNote: "Now live as “Pomfret DEI”."
+liveUrl: https://pomfret-dei-git-claude-cinemat-caf8e1-kekeli0924-ctrls-projects.vercel.app/
+liveNote: "A preview of the next version, still in progress."
 public: true
 order: 3
 ---

@@ -1,8 +1,11 @@
 ---
-# Case B. Never link the live portal (it shows real data) and never claim Google Sign-In.
-# Phase 6 (checked 2026-10-07): the lesson time sheet the Music Department asked for in May is being
-# built, for a demo on 2026-10-07. Say "in progress" until it is delivered.
-# The repository link stays hidden (repo: null) while that repo is under a security review.
+# Case B. Delivered to the Music Department on 2026-10-07, with all six phases (the sixth is the
+# lesson time sheet the department asked for in May).
+# Who can open it: it now runs as a Pomfret-only Google Apps Script web app under the Music
+# Department's own account, so only people the department adds, signed in with their Pomfret
+# accounts, can open it. Say that, and nothing more about how it is set up.
+# Never link the live portal (it shows real data). The repository link stays hidden for now
+# (repo: null).
 # currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
 # "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: B
@@ -23,7 +26,7 @@ currentTeam:
     classYear: 2030
   - name: Kyle Kim
     classYear: 2027
-status: 5 phases shipped, the time sheet in progress
+status: Delivered to the Music Department, Oct 2026
 chore: "Lesson materials were scattered, every booking took back-and-forth, and [nothing tracked progress]. Music Studio puts all three in one portal."
 fix: "Lesson invites after a quick preview, a Drive folder per student, a recap after every lesson."
 keyValues:
@@ -34,11 +37,13 @@ keyValues:
   - key: Recaps
     value: "Today we, Homework, Next class, saved on the student’s profile."
   - key: Time sheet
-    value: "Each lesson onto the instructor’s time sheet in one click, numbered by term. In progress."
+    value: "Each lesson onto the instructor’s time sheet in one click, numbered by term."
+  - key: Who can open it
+    value: "Only people the Music Department adds, signed in with their Pomfret accounts."
   - key: Status
-    value: "5 phases shipped. Phase 6, the lesson time sheet, is in progress."
-# Printed as “Google Sheets, Forms, Calendar and Drive.” in the credits.
-runsOn: [Google Sheets, Forms, Calendar, Drive]
+    value: "All 6 phases shipped. Delivered Oct 7, 2026."
+# Printed as “Google Sheets, Forms, Calendar, Drive and Apps Script.” in the credits.
+runsOn: [Google Sheets, Forms, Calendar, Drive, Apps Script]
 heroFocus: "38% 50%"
 clips:
   hero: music-studio-hero
