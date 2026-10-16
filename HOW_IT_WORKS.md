@@ -18,7 +18,7 @@ We keep facts in one place each, so a change happens once.
 
 | Facts | File |
 |---|---|
-| The five cases: letter, office, team, chore, what the tool does, status, clips | `src/content/cases/*.md` (one per case) |
+| The cases (A to H): letter, office, team, chore, what the tool does, status, clips | `src/content/cases/*.md` (one per case) |
 | The club's events: date, time, place, the program and its speakers, what came back, photos | `src/content/events/*.md` (one per event) |
 | The rules those files must follow | `src/content.config.ts` |
 | Every member's name and class year | `src/data/members.json` |

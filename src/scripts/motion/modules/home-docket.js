@@ -1,4 +1,4 @@
-// home-docket.js: the home page's docket of cases A to E (src/components/home/Docket.astro).
+// home-docket.js: the home page's docket of cases A to H (src/components/home/Docket.astro).
 //
 // Asked for with:  <section data-docket>  (plus the data-dk-* parts inside it)
 //
@@ -7,13 +7,14 @@
 // while motion is on, and does one of two things depending on the screen:
 //
 // A. Laptops and desktops (1024px and wider, with a mouse or trackpad): "the stage".
-//    - The section becomes five screens tall and the stage stays stuck to the window while you
-//      scroll through it. Each fifth of that scroll shows one case (not tied smoothly to the
-//      scroll: a case changes as you cross into its fifth).
+//    - The section becomes tall (one screen plus 80% of a screen per case, set in Docket.astro's
+//      CSS from the number of cases) and the stage stays stuck to the window while you scroll
+//      through it. Each case gets an equal share of that scroll (not tied smoothly to the scroll:
+//      a case changes as you cross into its share).
 //    - Changing case: the old letter rolls up out of its window while the new one rolls up
 //      into it (motion M9, 0.9s on expo.out), the footage fades across in 0.4s, and the words
 //      on the right swap the same way, word by word (M1's rise, at 0.9s), together with the
-//      "Built by" and "Status" rows. The A to E rail underlines the current letter (M8).
+//      "Built by" and "Status" rows. The rail of case letters underlines the current one (M8).
 //    - Pointing at the letter pushes the footage in a little (it grows from 100% to 104% of
 //      its size over 0.6s), and the cursor label reads "Open Case A ↗".
 //    - Clicking the letter (or "Open case") zooms through it: the hole grows around a point

@@ -13,6 +13,9 @@
 // Motion (src/scripts/motion/modules/about-roll.js, asked for with data-about-roll): as the roll
 // scrolls into view, the names rise out of their line masks row by row, a beat apart. Without
 // motion they are simply there.
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import opentype from 'opentype.js';
 import Divider from '../Divider.astro';
 import members from '../../data/members.json';
 import { formatPerson, sortByLastName } from '../../lib/people';
@@ -26,13 +29,25 @@ const advisors = [
   ...members.alumni.map((person) => ({ name: formatPerson(person), role: person.role })),
 ];
 
+// How wide the longest name is, in "em" (one em = the text size), in the roll's own type: Host
+// Grotesk Light with the letters pulled 0.025em closer. It is measured from the font file when
+// the site is built (opentype.js, the same tool scripts/build-docket-letters.mjs uses), and the
+// CSS below uses it to cap the name size so the longest name still fits one column on one line,
+// whoever joins. ("Abdul Hakim Al Khamisi ’27" is about 12.1em.) The extra 0.3em keeps a little air before the next column.
+const fontBytes = readFileSync(resolve('node_modules/@fontsource/host-grotesk/files/host-grotesk-latin-300-normal.woff'));
+const light = opentype.parse(fontBytes.buffer.slice(fontBytes.byteOffset, fontBytes.byteOffset + fontBytes.byteLength));
+const emWidth = (text: string) => light.getAdvanceWidth(text, 1, { kerning: true }) - 0.025 * [...text].length;
+// (The two advisors sit in wider columns with shorter names, so only the students are measured.)
+const longestEm = Math.max(...students.map(emWidth)) + 0.3;
+
 // How many rows each column layout needs, so the names fill the columns top to bottom
 // (3 columns on laptops, 2 on tablets, 1 on phones).
 const rows3 = Math.ceil(students.length / 3);
 const rows2 = Math.ceil(students.length / 2);
 ---
 
-<section class="everyone theme-paper" aria-labelledby="roll-title">
+<!-- --roll-em: the longest name's width in ems, so the CSS can keep it on one line (see below). -->
+<section class="everyone theme-paper" aria-labelledby="roll-title" style={`--roll-em: ${longestEm.toFixed(2)}`}>
   <div class="everyone__head grid">
     <Divider class="everyone__rule" />
     <h2 id="roll-title" class="everyone__title t-statement" data-reveal="lines">
@@ -74,9 +89,18 @@ const rows2 = Math.ceil(students.length / 2);
 
 <style>
   /* Names are set at the site's name size (--fs-name, 40px on a 1440px-wide laptop), which
-     shrinks on tablets and phones so the longest name still fits its column. */
+     shrinks on tablets and phones, but never so big that the longest name (--roll-em, its width
+     in ems, measured above) is wider than one column. One column is the section's width
+     (100cqi: the section is a "container"), minus the two margins and the gaps between columns,
+     divided by the number of columns (--roll-cols: 3 on laptops, 2 on tablets, 1 on phones).
+     With today's names that only matters between 1024px and about 1600px wide. */
   .everyone {
-    --everyone-size: var(--fs-name);
+    container-type: inline-size;
+    --roll-cols: 3;
+    --everyone-size: min(
+      var(--fs-name),
+      calc((100cqi - 2 * var(--margin) - (var(--roll-cols) - 1) * var(--gutter)) / var(--roll-cols) / var(--roll-em, 12))
+    );
     padding-block: 0 var(--space-section-lg);
   }
   .everyone__head {
@@ -100,7 +124,7 @@ const rows2 = Math.ceil(students.length / 2);
 
   /* The roll: names flow down the first column, then the next, like a phone book. Each name is
      its own grid cell, so a name can never be split between two columns, and "nowrap" keeps it
-     on one line. */
+     on one line (the size above makes sure even the longest one fits). */
   .everyone__list {
     display: grid;
     grid-auto-flow: column;
@@ -139,6 +163,9 @@ const rows2 = Math.ceil(students.length / 2);
   }
 
   @media (max-width: 1023px) {
+    .everyone {
+      --roll-cols: 2;
+    }
     .everyone__title {
       grid-column: 1 / -1;
     }
@@ -156,6 +183,9 @@ const rows2 = Math.ceil(students.length / 2);
     }
   }
   @media (max-width: 767px) {
+    .everyone {
+      --roll-cols: 1;
+    }
     .everyone__list {
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: repeat(var(--rows-1), auto);

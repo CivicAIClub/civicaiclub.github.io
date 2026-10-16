@@ -48,11 +48,13 @@ const DEVELOPERS = '/about/#developers';
 
 // Sort the team into the people who built it and the people who advised on it. A role other
 // than an advisor's is shortened for the brackets: "Built the first version" becomes
-// "first version".
+// "first version". The note sits mid-sentence, so it starts with a small letter ("Alumni advisor"
+// becomes "alumni advisor").
+const lowerFirst = (text: string) => text.charAt(0).toLowerCase() + text.slice(1);
 const isAdvisor = (person: { role?: string }) => Boolean(person.role && /advis/i.test(person.role));
 const credit = (person: { name: string; classYear?: number; role?: string }) => ({
   name: formatPerson(person),
-  note: person.role ? person.role.replace(/^built the\s+/i, '') : '',
+  note: person.role ? lowerFirst(person.role.replace(/^built the\s+/i, '')) : '',
 });
 const builders = team.filter((person) => !isAdvisor(person)).map(credit);
 const advisors = team.filter(isAdvisor).map(credit);
@@ -60,7 +62,7 @@ const forWhom = officeIn ?? `the ${office}`;
 
 // The sentence, as a list of pieces: plain text, or a name with its link. Names are joined like
 // "A, B and C". For Roster Export it reads: "Built by James Lake ’27, Magnus Songhurst ’28 and
-// Keke Li ’27 (first version), with Jay Youm ’26 (Alumni advisor), for teaching faculty."
+// Keke Li ’27 (first version), with Jay Youm ’26 (alumni advisor), for teaching faculty."
 type Piece = { text: string; href?: string };
 const listOf = (people: { name: string; note: string }[]): Piece[] =>
   people.flatMap((person, i) => [
