@@ -1,6 +1,6 @@
 // content.config.ts: the rules every case file must follow.
 //
-// Each club case (A to E) is one Markdown file in src/content/cases/. The part between the
+// Each club case (A to H) is one Markdown file in src/content/cases/. The part between the
 // two "---" lines at the top of the file (the "frontmatter") holds the facts: the case letter,
 // the client office, who built it, what the chore was, which video clips to show, and so on.
 // This file describes those fields. When the site builds, Astro checks every case file against
@@ -52,8 +52,9 @@ const cases = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/cases' }),
   schema: z
     .object({
-      // The case letter shown in huge type (A to E).
-      letter: z.enum(['A', 'B', 'C', 'D', 'E']),
+      // The case letter shown in huge type (A to H). A new letter also needs its outline in
+      // src/components/home/docket-letters.json (add it to scripts/build-docket-letters.mjs and run it).
+      letter: z.enum(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']),
       // The page address: /cases/<slug>/. Lowercase letters, numbers and dashes only.
       slug: z.string().regex(/^[a-z0-9-]+$/),
       // The tool's name, e.g. "AutoPlanner".
@@ -65,8 +66,9 @@ const cases = defineCollection({
       // e.g. "teaching faculty".
       officeIn: z.string().optional(),
       // The students (and advisors) who built it, in credit order. This is the "Built by" credit.
-      // For a case with no page and nothing built yet (Case E), the home page labels it "Team"
-      // instead, and it lists that case's team.
+      // For a case with no page and nothing built yet (Cases E to H), the home page labels it
+      // "Team" instead, and it lists that case's team. Leave it empty while the team is still being
+      // put together: the home page then reads "Team: Forming".
       team: z.array(person).default([]),
       // This school year's case team, shown as its own labeled line ("Team this year: ...") on the
       // case page and on the home page. It is kept apart from "team" on purpose: "team" says who

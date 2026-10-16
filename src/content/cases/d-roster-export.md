@@ -1,6 +1,13 @@
 ---
-# Case D. Phase 1 is built. The school’s reporting-system API isn’t available, so the next phase is
-# being rescoped around the school’s own Canvas grade process (2026-09-29). Don’t claim it’s in use.
+# Case D. Phase 1 (one comment Doc per class, built from Canvas) is built but hasn’t been tried
+# with a teacher’s own account yet. The Oct 12, 2026 meeting set the next phase: a browser helper
+# that fills each student’s grade and comment into the school’s grading system, so the teacher
+# only checks each one and clicks Save. It is being built on a practice page with made-up students
+# and won’t touch the real system until the school approves it. Its one rule: it never clicks Save
+# or submits anything. The old plan (pushing comments in through the grading system’s API) is
+# retired, because nobody at Pomfret has access to that API.
+# Don’t claim it’s in use. On the page, say “the school’s grading system”, not the product’s name:
+# strangers wouldn’t know it.
 # Keke Li built the first version; Jay Youm ’26 advises as an alumnus (never “graduated”).
 # The credits read “teaching faculty” (officeIn), not “the Teaching faculty”.
 # currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-13). It shows as its own "Team this year" line;
@@ -30,7 +37,7 @@ currentTeam:
     classYear: 2030
   - name: Sasha Khan
     classYear: 2030
-status: Phase 1 built
+status: Phase 1 built, grading helper in progress
 chore: "Every grading period brought [the same copy-and-paste routine] before comments could start. Roster Export builds the documents straight from Canvas."
 fix: "Canvas class lists in; one comment Doc per class out, with a tab for every student."
 keyValues:
@@ -39,7 +46,9 @@ keyValues:
   - key: Makes
     value: "A Drive folder with one comment Doc per class and a tab per student."
   - key: Status
-    value: "Phase 1 built. The next phase is being rescoped around the school’s own Canvas grade process."
+    value: "Phase 1 built. Next: a browser helper that fills each student’s grade and comment into the school’s grading system, so the teacher only checks each one and clicks Save. It’s being built on a practice page with made-up students and won’t touch the real system until the school approves it."
+  - key: The one rule
+    value: "The grading helper never clicks Save or submits anything. The teacher checks every entry."
 runsOn: [Canvas, Google Sheets, Google Docs, Google Drive]
 heroFocus: "40% 50%"
 clips:

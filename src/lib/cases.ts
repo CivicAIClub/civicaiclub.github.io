@@ -6,7 +6,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Case = CollectionEntry<'cases'>;
 
-// Every case, A to E, in the order set by each file's "order" field.
+// Every case, A to H, in the order set by each file's "order" field.
 export async function getAllCases(): Promise<Case[]> {
   const cases = await getCollection('cases');
   return cases.sort((a, b) => a.data.order - b.data.order);

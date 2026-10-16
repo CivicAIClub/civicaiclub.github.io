@@ -1,15 +1,15 @@
 {
   "_note": "Every number the site prints. Re-check them all before changing 'checked'. No hours-saved figure (none has been measured) and no count-up animations.",
-  "checked": "2026-10-13",
-  "checkedLabel": "Numbers checked Oct 13, 2026",
+  "checked": "2026-10-16",
+  "checkedLabel": "Numbers checked Oct 16, 2026",
   "items": [
-    { "id": "faculty-cases", "value": "5", "label": "faculty cases" },
+    { "id": "faculty-cases", "value": "8", "label": "faculty cases" },
     { "id": "local-organizations", "value": "7", "label": "local organizations" },
-    { "id": "members", "value": "37", "label": "student members" },
+    { "id": "members", "value": "45", "label": "student members" },
     { "id": "developers", "value": "33", "label": "students on case teams", "note": "plus 1 alumni advisor" },
-    { "id": "pull-requests", "value": "80", "label": "pull requests merged" },
+    { "id": "pull-requests", "value": "81", "label": "pull requests merged" },
     { "id": "lines-of-code", "value": "24,000+", "label": "lines of code" },
-    { "id": "repositories", "value": "11", "label": "public repositories" },
+    { "id": "repositories", "value": "14", "label": "public repositories" },
     { "id": "voices-moments", "value": "60", "label": "moments since 1894", "source": "Pomfret Voices" },
     { "id": "tools-delivered", "value": "2", "label": "tools delivered", "note": "AutoPlanner and Music Studio, Oct 2026" }
   ]

@@ -47,7 +47,7 @@ CI runs `check:gsap`, `check:media` and `build` on every pull request. Run `chec
 astro.config.mjs          site address, fonts, prefetch
 src/
   content.config.ts       the rules every case and event file follows
-  content/cases/          one Markdown file per case (A–E)
+  content/cases/          one Markdown file per case (A–H)
   content/events/         one Markdown file per event
   data/                   members, numbers, clients, timeline, site links, media (videos + photos), home/about footage ids
   layouts/Base.astro      the frame of every page: head, header, footer, scripts
