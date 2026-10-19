@@ -1,5 +1,5 @@
 {
-  "_note": "Names and class years for public credit, confirmed by the club president on 2026-09-29. Names only: never add emails, photos or anything else about a student here.",
+  "_note": "Names and class years for public credit, confirmed by the club president on 2026-10-16. Names only: never add emails, photos or anything else about a student here.",
   "lead": "Cayden Auyang",
   "vicePresident": "Luke Ryan",
   "facultyAdvisor": {
@@ -21,11 +21,23 @@
       "role": "President"
     },
     {
+      "name": "Abdul Hakim Al Khamisi",
+      "classYear": 2027
+    },
+    {
       "name": "Alex Tong",
       "classYear": 2029
     },
     {
+      "name": "Angie Huang",
+      "classYear": 2029
+    },
+    {
       "name": "Ava Chen",
+      "classYear": 2028
+    },
+    {
+      "name": "Christoph Ortenburg",
       "classYear": 2028
     },
     {
@@ -105,8 +117,20 @@
       "classYear": 2029
     },
     {
+      "name": "Lexi Godwin",
+      "classYear": 2027
+    },
+    {
+      "name": "Logan Lee",
+      "classYear": 2029
+    },
+    {
       "name": "Lucas Feng",
       "classYear": 2030
+    },
+    {
+      "name": "Lucas Shi",
+      "classYear": 2029
     },
     {
       "name": "Luke Ryan",
@@ -119,6 +143,10 @@
     },
     {
       "name": "Mark Donahue",
+      "classYear": 2029
+    },
+    {
+      "name": "Martin Ma",
       "classYear": 2029
     },
     {
@@ -135,6 +163,10 @@
     },
     {
       "name": "Riley Smith",
+      "classYear": 2030
+    },
+    {
+      "name": "Ryker Reissner",
       "classYear": 2030
     },
     {

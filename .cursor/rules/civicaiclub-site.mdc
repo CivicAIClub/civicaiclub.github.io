@@ -28,8 +28,8 @@ The public site for the Civic AI Club at Pomfret School, served at https://civic
 
 ## Privacy and copy (non-negotiable)
 - Never real student data, emails, tokens, `/exec` URLs, Sheet/Form/Drive IDs, avatars, URL bars or browser chrome in footage or code. Demo data only.
-- Faculty clients by office only ("CLC Supported Study Hall", "Music Department", "Office of Community and Belonging", "Teaching faculty", "College Counseling Office"). Never a faculty member's name as a client.
-- Never link Case B's live portal or (for now) its repository. Case B runs as a Pomfret-only Apps Script web app under the Music Department's own account: only people the department adds, signed in with their Pomfret accounts, can open it. Don't claim that Case D is in use.
+- Faculty clients by office only ("CLC Supported Study Hall", "Music Department", "Office of Community and Belonging", "Teaching faculty", "College Counseling Office", "Project: Pomfret", "Associate Head of School’s Office", "World Languages Department"). Never a faculty member's name as a client.
+- Never link Case B's live portal or (for now) its repository. Case B runs as a Pomfret-only Apps Script web app under the Music Department's own account: only people the department adds, signed in with their Pomfret accounts, can open it. Don't claim that Case D is in use; on the page it's "the school’s grading system", never the product's name.
 - Local organizations (`src/data/clients.json`): name, place, one plain line, and a status of "In progress" or "Discovery pending". Only "In progress" gets the crimson dot and a stage line. No logos, no AI words, no contact names, no details of how they run.
 - Names as `Name ’YY` (curly apostrophe). They/them or pronoun-free copy. No invented numbers, testimonials or hours saved.
 - Banned words: empower, revolutionize, leverage, seamless, cutting-edge, unlock, harness, journey, "AI-powered". No em-dash chains.

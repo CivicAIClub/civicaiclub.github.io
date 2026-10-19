@@ -1,22 +1,23 @@
 ---
-// Docket.astro: "the docket", every club case from A to E (section 5 of the home page, and the
+// Docket.astro: "the docket", every club case from A to H (section 5 of the home page, and the
 // target of the header's "Cases" link).
 //
 // Each case is a giant letter cut out of an ink sheet, with a short silent loop of that case's
 // tool playing through the hole in full color, and beside it the tool's name, the client
 // office, one line about what it does, "Open case ↗", and two ruled rows: who built it and
-// where it stands. Case E has no tool yet: its letter is only an outline, with no footage and
-// no link, and says "In progress".
+// where it stands. Cases E to H have no tool yet: each letter is only an outline, with no
+// footage and no link, and says "In progress". A case with no team yet reads "Team: Forming".
 //
 // Two ways it can look, from the same HTML:
 //   1. A stack of letter windows, one case under the other. This is what phones, tablets,
 //      touch screens, visitors who asked for less motion, and browsers without JavaScript see.
 //      Every window is a plain link to its case page.
 //   2. On laptops and desktops with motion on, src/scripts/motion/modules/home-docket.js turns
-//      the section into a "stage" that stays on screen while you scroll through five screens'
-//      worth of page: one case at a time, the letter rolls to the next one, the footage fades
-//      across, and the words swap. A rail "A B C D E" and a "List view" button sit along the
-//      bottom. Clicking a letter zooms through the hole into that case's page.
+//      the section into a "stage" that stays on screen while you scroll through it (80% of a
+//      screen per case, so eight cases take 6.4 screens): one case at a time, the letter rolls to
+//      the next one, the footage fades across, and the words swap. A rail of the case letters
+//      ("A B C D E F G H") and a "List view" button sit along the bottom. Clicking a letter zooms
+//      through the hole into that case's page.
 // The stage-only parts below (the shared ink sheet, the rail, the list) are marked "hidden" and
 // only shown by that script.
 //
@@ -55,11 +56,12 @@ function placeLetter(d: string, width: number): string {
 }
 
 // "Built by": the students on the case, as "Name ’YY", leaving out advisors (they are credited
-// on the case page itself). A case nobody has been assigned to yet says so. For an open case
-// with nothing built yet (Case E) the same row is labeled "Team" instead (see builtByLabel).
+// on the case page itself). For an open case with nothing built yet (Cases E to H) the same row
+// is labeled "Team" instead (see builtByLabel). A case whose team is still being put together
+// (an empty "team" in its file, like Cases F to H) reads "Forming", so the row is never blank.
 function builtBy(team: { name: string; classYear?: number; role?: string }[]): string {
   const builders = team.filter((person) => !/advisor/i.test(person.role ?? ''));
-  return builders.length ? builders.map(formatPerson).join(', ') : 'Not assigned yet';
+  return builders.length ? builders.map(formatPerson).join(', ') : 'Forming';
 }
 
 // Everything the page needs about each case, worked out once.
@@ -73,12 +75,12 @@ const rows = cases.map((entry) => {
     title: data.title,
     office: data.office,
     fix: data.fix,
-    // Only public cases have a page to open; Case E is listed but has no page yet.
+    // Only public cases have a page to open; Cases E to H are listed but have no page yet.
     href: data.public ? caseUrl(data.slug) : undefined,
     clip,
     placed: placeLetter(glyph.d, glyph.width),
     builtBy: builtBy(data.team),
-    // A case with no page yet (Case E) has built nothing, so its team is labeled "Team". A case
+    // A case with no page yet (Cases E to H) has built nothing, so its team is labeled "Team". A case
     // that is in progress but has already built a tool (Case C) keeps "Built by".
     builtByLabel: data.public ? 'Built by' : 'Team',
     // "Team this year": this school year's case team, kept apart from "Built by" (new members
@@ -90,9 +92,19 @@ const rows = cases.map((entry) => {
     status: data.inProgress ? `In progress. ${data.status.replace(/\.$/, '')}.` : data.status,
   };
 });
+
+// The rail's name for screen readers, from the first and last case letters, e.g. "Cases A to H".
+const railLabel = `Cases ${rows[0]?.letter ?? 'A'} to ${rows[rows.length - 1]?.letter ?? 'A'}`;
 ---
 
-<section id="cases" class="docket theme-ink" aria-labelledby="docket-title" data-docket>
+<!-- --dk-count: how many cases there are, so the stage's scroll length grows with them (CSS below). -->
+<section
+  id="cases"
+  class="docket theme-ink"
+  aria-labelledby="docket-title"
+  data-docket
+  style={`--dk-count: ${rows.length}`}
+>
   <h2 id="docket-title" class="sr-only">Cases</h2>
 
   <!-- data-header-keep: while this stage is stuck to the top of the window, the site header stays
@@ -290,9 +302,9 @@ const rows = cases.map((entry) => {
       }
     </ol>
 
-    {/* The bar along the bottom: the A to E rail, Pause, and the List view switch. */}
+    {/* The bar along the bottom: the rail of case letters, Pause, and the List view switch. */}
     <div class="dk-bar t-mono" hidden data-dk-bar>
-      <nav class="dk-rail" aria-label="Cases A to E">
+      <nav class="dk-rail" aria-label={railLabel}>
         <ul>
           {
             rows.map((row, i) => (
@@ -458,10 +470,12 @@ const rows = cases.map((entry) => {
   }
 
   /* ============ 2. The stage (laptops with motion on; class added by home-docket.js) ============ */
-  /* The section is five screens tall; the stage inside it stays stuck to the window meanwhile. */
+  /* The section is one screen tall plus 80% of a screen for each case (--dk-count, set on the
+     section), so every case gets the same stretch of scroll however many there are (5 cases gave
+     500vh). The stage inside it stays stuck to the window meanwhile. */
   .docket:global(.is-stage) {
     padding: 0;
-    height: 500vh;
+    height: calc(var(--dk-count, 5) * 80vh + 100vh);
     /* The "Cases" links land exactly where the stage sticks (cancelling the page's usual gap for
        the header, which the stage doesn't need). */
     scroll-margin-top: calc(-1 * (var(--header-height) + 12px));
