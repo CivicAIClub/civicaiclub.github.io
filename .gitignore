@@ -16,3 +16,5 @@ Thumbs.db
 .claude/*
 !.claude/settings.json
 *.log
+# Generated monitoring evidence is retained as an Actions artifact, not committed.
+/health-results/
