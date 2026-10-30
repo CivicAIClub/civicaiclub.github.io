@@ -17,6 +17,9 @@ the checked pages and version, not client acceptance or a complete accessibility
   and daily at 12:37 UTC. Only read permissions are granted to the job, and only production
   receives Actions read access. Hourly HTTP checks do not install project dependencies or browsers.
 
+Monitoring jobs pin Ubuntu 24.04 because the existing Playwright version does not support
+the newer Ubuntu 26.04 image behind `ubuntu-latest`. This avoids an unrelated dependency upgrade.
+
 The latest deployment attempt and current main SHA are also recorded. A failed new
 deployment fails its release check even when the older live site still passes runtime
 checks. Pending or deliberately staged source/deployment differences remain visible.
