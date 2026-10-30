@@ -12,7 +12,10 @@
     "check:gsap": "node scripts/check-gsap-imports.mjs",
     "wordmark": "node scripts/build-wordmark.mjs",
     "brand": "node scripts/build-brand-images.mjs",
-    "check:a11y": "node scripts/check-a11y.mjs"
+    "check:a11y": "node scripts/check-a11y.mjs",
+    "test:monitor": "node --test tests/*.test.mjs",
+    "monitor:http": "node scripts/monitor-site.mjs",
+    "monitor:browser": "node scripts/monitor-browser.mjs"
   },
   "engines": {
     "node": ">=22.12.0"

@@ -1,0 +1,176 @@
+# Read-only pilot. It never submits a form, changes site settings or opens an issue.
+name: Website health
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    # Away from the busy start of the hour; GitHub schedules are best effort.
+    - cron: '17 * * * *'
+    # A daily browser journey; hourly probes need only Node, not a browser download.
+    - cron: '37 12 * * *'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Deploy to GitHub Pages']
+    types: [completed]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: website-health-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Install the browser already pinned by the project
+        run: npx --no-install playwright-core install --with-deps chromium
+      - name: Verify monitor failures, retries and browser safety
+        run: npm run test:monitor
+      - run: npm run build
+      - name: Start the built website
+        run: |
+          python3 -m http.server 4321 --bind 127.0.0.1 --directory dist > /tmp/civic-preview.log 2>&1 &
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4321/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/civic-preview.log
+          exit 1
+      - name: Check built content and commit identity
+        run: npm run monitor:http -- --base http://127.0.0.1:4321 --expected-sha "$GITHUB_SHA" --output health-results
+      - name: Check desktop and mobile navigation
+        if: always()
+        run: npm run monitor:browser -- --base http://127.0.0.1:4321 --output health-results
+      - name: Keep diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: website-health-regression
+          path: health-results/
+          if-no-files-found: warn
+          retention-days: 14
+
+  production:
+    # workflow_run uses main, never untrusted PR code or a PR's deployed URL.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Find the most recent successful main deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p health-results
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          fs.writeFileSync('health-results/deployment.json', JSON.stringify({
+            checkedAt: new Date().toISOString(), releaseState: 'unknown', sourceRevision: null,
+            currentMainRevision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+            latestAttempt: null,
+          }, null, 2) + '\n');
+          JS
+          gh api --method GET "repos/$GITHUB_REPOSITORY/actions/workflows/deploy.yml/runs" \
+            -f branch=main -f status=success -f per_page=1 \
+            --jq '.workflow_runs[0] | {sourceRevision: .head_sha, runUrl: .html_url, completedAt: .updated_at}' \
+            > health-results/successful-deployment.json
+          revision=$(node --input-type=module -e 'import fs from "node:fs"; console.log(JSON.parse(fs.readFileSync("health-results/successful-deployment.json", "utf8"))?.sourceRevision)')
+          if [[ ! "$revision" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'No verified successful main deployment; runtime version is unknown.'
+            exit 1
+          fi
+          gh api --method GET "repos/$GITHUB_REPOSITORY/actions/workflows/deploy.yml/runs" \
+            -f branch=main -f per_page=1 \
+            --jq '.workflow_runs[0] | {sourceRevision: .head_sha, status: .status, conclusion: .conclusion, runUrl: .html_url, checkedAt: .updated_at}' \
+            > health-results/latest-deployment.json
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const path = 'health-results/deployment.json';
+          const release = JSON.parse(fs.readFileSync(path, 'utf8'));
+          Object.assign(release, JSON.parse(fs.readFileSync('health-results/successful-deployment.json', 'utf8')));
+          release.latestAttempt = JSON.parse(fs.readFileSync('health-results/latest-deployment.json', 'utf8'));
+          release.releaseState = release.latestAttempt.status !== 'completed' ? 'pending'
+            : release.latestAttempt.conclusion !== 'success' ? 'failed'
+            : release.sourceRevision !== release.currentMainRevision ? 'behind-main' : 'current';
+          fs.writeFileSync(path, JSON.stringify(release, null, 2) + '\n');
+          JS
+          echo "sha=$revision" >> "$GITHUB_OUTPUT"
+      - name: Allow the Pages CDN to receive a completed deployment
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+        run: sleep 30
+      - name: Check public pages and deployed commit
+        if: steps.deployment.outcome == 'success'
+        run: npm run monitor:http -- --base https://civicaiclub.github.io --expected-sha '${{ steps.deployment.outputs.sha }}' --retry-delay-ms 10000 --output health-results
+      - name: Install locked dependencies for the browser journey
+        if: always() && steps.deployment.outcome == 'success' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event.schedule == '37 12 * * *')
+        run: npm ci
+      - name: Install the pinned browser
+        if: always() && steps.deployment.outcome == 'success' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event.schedule == '37 12 * * *')
+        run: npx --no-install playwright-core install --with-deps chromium
+      - name: Exercise read-only public navigation
+        if: always() && steps.deployment.outcome == 'success' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event.schedule == '37 12 * * *')
+        run: npm run monitor:browser -- --base https://civicaiclub.github.io --output health-results
+      - name: Keep a failed new deployment visible even if the older site works
+        if: always() && steps.deployment.outcome == 'success'
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const release = JSON.parse(fs.readFileSync('health-results/deployment.json', 'utf8'));
+          console.log(`Release: ${release.releaseState}. Runtime checks describe the last successful deployment.`);
+          if (release.releaseState === 'failed') process.exitCode = 1;
+          JS
+      - name: Publish run summary
+        if: always()
+        run: |
+          echo '## Civic AI website health' >> "$GITHUB_STEP_SUMMARY"
+          # Print the redacted summary to logs too, so a read-only reviewer needn't unzip artifacts.
+          if [ -f health-results/health.md ]; then cat health-results/health.md | tee -a "$GITHUB_STEP_SUMMARY"; fi
+          if [ -f health-results/deployment.json ]; then
+            node --input-type=module -e 'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync("health-results/deployment.json","utf8")); console.log("\nRelease: " + r.releaseState + ". Current main: " + r.currentMainRevision + ". Latest attempt: " + (r.latestAttempt?.runUrl || "not observed"));' | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f health-results/browser.json ]; then
+            node --input-type=module <<'JS' | tee -a "$GITHUB_STEP_SUMMARY"
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('health-results/browser.json', 'utf8'));
+          console.log(`\nBrowser smoke: ${r.status}; ${r.checks.length} checks at ${r.checkedAt}; ${r.durationMs} ms.`);
+          for (const c of r.checks.filter(check => check.status === 'failed')) {
+            console.log(`Failed: ${c.type}, ${c.url || 'runner'}, ${c.code || 'unknown'}`);
+          }
+          JS
+          fi
+          echo 'Missing or stale results are unknown, not healthy. Client acceptance is a separate record.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Keep evidence for the daily operations review
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: website-health-production
+          path: health-results/
+          if-no-files-found: warn
+          retention-days: 14

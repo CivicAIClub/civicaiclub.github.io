@@ -41,6 +41,14 @@ The first `npm run dev` or `npm run build` downloads the fonts from Fontsource, 
 
 CI runs `check:gsap`, `check:media` and `build` on every pull request. Run `check:a11y` yourself before merging a change to a page or component.
 
+## Website health monitoring
+
+The [monitoring pilot](monitoring/README.md) adds tests for the monitor, built-site and
+public-site content/version probes, and real desktop/mobile browser navigation. Production
+checks run hourly and after a successful Pages deployment once the workflow is on main.
+JSON artifacts and a readable summary keep code, deployed version and runtime evidence
+separate. The existing Forms' anonymous sign-in requirement is reported as informational.
+
 ## Project layout
 
 ```

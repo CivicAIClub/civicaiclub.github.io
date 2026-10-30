@@ -15,3 +15,5 @@ Thumbs.db
 .idea/
 .claude/
 *.log
+# Generated monitoring evidence is retained as an Actions artifact, not committed.
+/health-results/

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "pages": [
+    { "path": "/", "contains": ["home-hero-title", "Civic AI Club"] },
+    { "path": "/about/", "contains": ["about-title", "Rules of the room"] },
+    { "path": "/cases/autoplanner/", "contains": ["AutoPlanner", "<h1"] },
+    { "path": "/events/", "contains": ["events-title", "AI Literacy Week"] }
+  ],
+  "formKeys": ["intakeFormUrl", "joinFormUrl"]
+}
