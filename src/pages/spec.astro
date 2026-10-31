@@ -19,12 +19,12 @@
 //   9. LatestEvent  AI Literacy Week (from the home page)
 //  10. Glance       the checked numbers (from the home page)
 //  11. This term    what comes next, by date
-//  12. Lead         the president, the vice president and the faculty advisor (from About)
+//  12. Lead         the president, the vice president, the directors and the faculty advisor (from About)
 //  13. The footer   the spec version (Base's chrome="spec")
 //
 // Every fact comes from the same files as the rest of the site (src/content/, src/data/), so
 // the spec stays true when they change. Two things live only here: the "Delivered" row, and the
-// rows in "This term" (nextUp, below). In "This term", "Oct 19" and "Late Oct" are dated; the
+// rows in "This term" (nextUp, below). In "This term", the two "Early Nov" rows are dated; the
 // others ("This fall", "Before winter term", "End of term", "Later this year") are seasons.
 // Update a row when its date or season passes.
 import Base from '../layouts/Base.astro';
@@ -58,11 +58,12 @@ const vicePresident = named(members.vicePresident);
 
 // "This term": what comes next, by date. Offices only, never a faculty member's name.
 const nextUp = [
-  { when: 'Oct 19', what: 'AutoPlanner: a check-in with the CLC, two weeks after handover.' },
-  { when: 'Late Oct', what: 'Pomfret Voices: the plan for the next version, for the Office of Community and Belonging.' },
-  { when: 'This fall', what: 'College counseling tools: a first prototype for the College Counseling Office.' },
+  { when: 'Early Nov', what: 'AutoPlanner: a check-in with the CLC.' },
+  { when: 'Early Nov', what: 'Pomfret Voices: the plan for the next version, for the Office of Community and Belonging.' },
+  { when: 'This fall', what: 'College counseling tools: a first demo for the College Counseling Office.' },
   { when: 'This fall', what: 'Roster Export: a first version of the grading helper, on a practice page.' },
-  { when: 'This fall', what: 'Cases F, G and H: first meetings with the three new faculty clients.' },
+  { when: 'This fall', what: 'Seated meals: a first meeting with the Associate Head of School’s Office.' },
+  { when: 'This fall', what: 'Language placement test: a plan for the first version.' },
   { when: 'Before winter term', what: 'Music Studio: a check-in with the Music Department.' },
   { when: 'End of term', what: 'The full tech demo.' },
   { when: 'Later this year', what: 'AI Literacy Week returns for the whole school.' },
@@ -105,7 +106,7 @@ const nextUp = [
     </KeyValue>
     <KeyValue label="Who" labelAs="h3">
       {count('members')} student members, {count('developers')} of them on case teams, plus an
-      alumni advisor. Led by {president}, President, and {vicePresident}, Vice President, with {members.facultyAdvisor.name} as faculty advisor.
+      alumni advisor. Led by {president}, President, and {vicePresident}, Vice President, with three directors and {members.facultyAdvisor.name} as faculty advisor.
     </KeyValue>
     <KeyValue label="Runs on" labelAs="h3">
       What the school already uses: Canvas, Google Docs, Sheets, Drive, Calendar and Apps Script.
@@ -113,14 +114,15 @@ const nextUp = [
     </KeyValue>
     <KeyValue label="How we build" labelAs="h3">
       One public GitHub repository per project. Every change is a branch and a reviewed pull
-      request; nobody pushes to main. We build with AI coding assistants, and none of the four
+      request; nobody pushes to main. We build with AI coding assistants, and none of the five
       tools we’ve built calls an AI model.
     </KeyValue>
     <KeyValue label="Delivered" labelAs="h3">
       AutoPlanner, to the CLC Supported Study Hall, on October 5, 2026: staff add a student once,
       and that student’s planner Doc updates itself every evening and at midnight. Music Studio, to
       the Music Department, on October 7: lesson invites, files, recaps and the time sheet in one
-      place.
+      place. Project: Pomfret sorting, to Project: Pomfret, in October: proposed groups, sorted by
+      students’ choices and the program’s rules.
     </KeyValue>
   </section>
 
