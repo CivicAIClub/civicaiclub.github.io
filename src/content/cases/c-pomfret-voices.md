@@ -12,7 +12,8 @@
 # version, not a final site. The office hasn’t approved it yet, and the plan for the next version
 # is due in late October 2026. Keep the note beside the link saying it is a preview still in
 # progress, and point the link at the final site once the office approves one.
-# currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-13). It shows as its
+# currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-13 and
+# 2026-10-30: Keke Li, lead developer, and Luke Ryan, vice president, are on every case). It shows as its
 # own "Team this year" line; "team" stays the "Built by" credit, because new members haven't
 # built the tool.
 letter: C
@@ -39,6 +40,8 @@ currentTeam:
     classYear: 2028
   - name: Kevin Wang
     classYear: 2028
+  - name: Luke Ryan
+    classYear: 2027
 status: Next version under way
 inProgress: true
 chore: "Pomfret’s history of diversity, equity and inclusion, [checked line by line]. Every claim traces to a source document."

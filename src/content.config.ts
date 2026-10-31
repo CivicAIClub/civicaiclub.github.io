@@ -66,7 +66,7 @@ const cases = defineCollection({
       // e.g. "teaching faculty".
       officeIn: z.string().optional(),
       // The students (and advisors) who built it, in credit order. This is the "Built by" credit.
-      // For a case with no page and nothing built yet (Cases E to H), the home page labels it
+      // For a case with no page and nothing built yet (Cases E, G and H), the home page labels it
       // "Team" instead, and it lists that case's team. Leave it empty while the team is still being
       // put together: the home page then reads "Team: Forming".
       team: z.array(person).default([]),

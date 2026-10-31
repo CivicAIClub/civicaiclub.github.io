@@ -4,10 +4,11 @@
 // What it shows: the label "Leadership" on the left (it stays at the bottom of the window while
 // this section scrolls past), and on the right, in large type, the club president's name and
 // class year with one line on what they do and a link to their GitHub profile; then the vice
-// president's name and class year with one line on what they do; then the faculty advisor. There are
-// no portraits: the club has none, and this site never invents one.
+// president's name and class year with one line on what they do; then each director's name and
+// class year with their title; then the faculty advisor. There are no portraits: the club has
+// none, and this site never invents one.
 //
-// Where the names come from: src/data/members.json ("lead", "vicePresident" and
+// Where the names come from: src/data/members.json ("lead", "vicePresident", "directors" and
 // "facultyAdvisor"). Each name is printed as "Name ’YY" by src/lib/people.ts, like every name
 // on the site. To change who holds a role, change the name in members.json, not here.
 // Motion: the lines rise into place as they scroll in (M1, data-reveal="lines") and the divider
@@ -28,6 +29,11 @@ function named(name: string | undefined): string {
 // The club president ("lead" in members.json) and the vice president.
 const leadName = named(members.lead);
 const vicePresidentName = named(members.vicePresident);
+// The directors (named 2026-10-21), in the order members.json lists them: name and title.
+const directors = (members.directors ?? []).map((director) => ({
+  name: named(director.name),
+  role: director.role,
+}));
 
 // The lead's public GitHub profile (their own account; no email is ever shown).
 const leadGithub = 'https://github.com/CaydenAuyang';
@@ -68,6 +74,23 @@ const leadFirstName = members.lead.split(' ')[0];
             </div>
           </>
         )
+      }
+
+      <!-- The directors: name and title, in the same style as the vice president. Left out if
+           members.json lists none. -->
+      {
+        directors.map((director) => (
+          <>
+            <p class="lead__name lead__name--second" data-reveal="lines">
+              {director.name}
+            </p>
+            <div class="lead__about">
+              <p class="t-label" data-reveal="lines">
+                {director.role}.
+              </p>
+            </div>
+          </>
+        ))
       }
 
       <!-- The faculty advisor, on the right beside the last title (below it on smaller screens). -->

@@ -1,7 +1,12 @@
 {
-  "_note": "Names and class years for public credit, confirmed by the club president on 2026-10-16. Names only: never add emails, photos or anything else about a student here.",
+  "_note": "Names and class years for public credit, confirmed by the club president on 2026-10-16, updated 2026-10-30. Names only: never add emails, photos or anything else about a student here.",
   "lead": "Cayden Auyang",
   "vicePresident": "Luke Ryan",
+  "directors": [
+    { "name": "James Lake", "role": "Director of Education" },
+    { "name": "Will Rounick", "role": "Director of Outreach" },
+    { "name": "Keke Li", "role": "Director of Operations" }
+  ],
   "facultyAdvisor": {
     "name": "Josh Lake",
     "role": "Faculty advisor"
@@ -74,7 +79,8 @@
     },
     {
       "name": "James Lake",
-      "classYear": 2027
+      "classYear": 2027,
+      "role": "Director of Education"
     },
     {
       "name": "James Tian",
@@ -98,7 +104,8 @@
     },
     {
       "name": "Keke Li",
-      "classYear": 2027
+      "classYear": 2027,
+      "role": "Director of Operations"
     },
     {
       "name": "Kevin Wang",
@@ -170,10 +177,6 @@
       "classYear": 2030
     },
     {
-      "name": "Samuel Tevelde",
-      "classYear": 2030
-    },
-    {
       "name": "Sasha Khan",
       "classYear": 2030
     },
@@ -191,7 +194,8 @@
     },
     {
       "name": "Will Rounick",
-      "classYear": 2027
+      "classYear": 2027,
+      "role": "Director of Outreach"
     },
     {
       "name": "Zahir Williams",
