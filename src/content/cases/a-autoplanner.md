@@ -11,7 +11,8 @@
 # signed-in email and the page footer).
 # The clip ids below must match src/data/media.json (see MEDIA-IDS.md). Beat times are seconds
 # into the scrub clip, timed against the final footage (re-time them if it is ever re-cut).
-# currentTeam is this school year's case team (set 2026-09-29). It shows as its own "Team this year" line;
+# currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-30: Keke Li, lead
+# developer, and Luke Ryan, vice president, are on every case). It shows as its own "Team this year" line;
 # "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: A
 slug: autoplanner
@@ -31,6 +32,8 @@ currentTeam:
     classYear: 2030
   - name: Justus Schroeder
     classYear: 2029
+  - name: Keke Li
+    classYear: 2027
 status: Delivered to the CLC, Oct 2026
 chore: "Study-hall staff in the CLC (Center for Learning and Collaboration) spent [hours each week] logging into student Canvas accounts and copying assignments by hand. AutoPlanner does the copying now."
 fix: "Each student’s Canvas assignments, rebuilt as a weekly Google Doc."

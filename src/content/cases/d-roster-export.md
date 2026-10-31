@@ -10,7 +10,8 @@
 # strangers wouldn’t know it.
 # Keke Li built the first version; Jay Youm ’26 advises as an alumnus (never “graduated”).
 # The credits read “teaching faculty” (officeIn), not “the Teaching faculty”.
-# currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-13). It shows as its own "Team this year" line;
+# currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-13 and 2026-10-30:
+# Keke Li, lead developer, and Luke Ryan, vice president, are on every case). It shows as its own "Team this year" line;
 # "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: D
 slug: roster-export
@@ -37,6 +38,10 @@ currentTeam:
     classYear: 2030
   - name: Sasha Khan
     classYear: 2030
+  - name: Keke Li
+    classYear: 2027
+  - name: Luke Ryan
+    classYear: 2027
 status: Phase 1 built, grading helper in progress
 chore: "Every grading period brought [the same copy-and-paste routine] before comments could start. Roster Export builds the documents straight from Canvas."
 fix: "Canvas class lists in; one comment Doc per class out, with a tab for every student."
