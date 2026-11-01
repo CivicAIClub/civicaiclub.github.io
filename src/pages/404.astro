@@ -35,7 +35,7 @@ const mark = Object.values(found)[0]?.default?.letters?.['?'];
 // The outline's box in its own units, with a little room so the 1px line is never cut.
 const box = mark ? { x: -8, y: mark.top - 8, w: mark.width + 16, h: mark.bottom - mark.top + 16 } : null;
 
-// Every case with its own page, A to D, as "Case A · AutoPlanner".
+// Every case with its own page (A to D, and F), as "Case A · AutoPlanner".
 const cases = (await getPublicCases()).map((entry) => ({
   href: caseUrl(entry.data.slug),
   label: `Case ${entry.data.letter} · ${entry.data.title}`,

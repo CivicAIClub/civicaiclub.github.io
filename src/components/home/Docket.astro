@@ -5,10 +5,8 @@
 // Each case is a giant letter cut out of an ink sheet, with a short silent loop of that case's
 // tool playing through the hole in full color, and beside it the tool's name, the client
 // office, one line about what it does, "Open case ↗", and two ruled rows: who built it and
-// where it stands. Cases E to H have no case page: each letter is only an outline, with no
-// footage and no link, and says "In progress" (or "Delivered", for Case F, which was delivered but
-// stays off the site because it used real student data). A case with no team yet reads
-// "Team: Forming".
+// where it stands. Cases E, G and H have no case page: each letter is only an outline, with no
+// footage and no link, and says "In progress". A case with no team yet reads "Team: Forming".
 //
 // Two ways it can look, from the same HTML:
 //   1. A stack of letter windows, one case under the other. This is what phones, tablets,
@@ -77,17 +75,18 @@ const rows = cases.map((entry) => {
     title: data.title,
     office: data.office,
     fix: data.fix,
-    // Only public cases have a page to open; Cases E to H are listed but have no page.
+    // Only public cases have a page to open; Cases E, G and H are listed but have no page.
     href: data.public ? caseUrl(data.slug) : undefined,
     // A case with no page reads "In progress" (with the crimson dot) while it is open, and
-    // "Delivered" once it is done (Case F).
+    // "Delivered" if it is done but still has no page (no case right now: Case F read this until
+    // it got its page).
     inProgress: data.inProgress,
     clip,
     placed: placeLetter(glyph.d, glyph.width),
     builtBy: builtBy(data.team),
     // A case with no page that is still open (Cases E, G and H) has built nothing, so its team is
     // labeled "Team". A case that has built a tool keeps "Built by": a public one, even when it is in
-    // progress (Case C), and a delivered one without a page (Case F).
+    // progress (Case C), and a delivered one without a page (none right now).
     builtByLabel: data.public || !data.inProgress ? 'Built by' : 'Team',
     // "Team this year": this school year's case team, kept apart from "Built by" (new members
     // haven't built the tool). Empty when the case file lists no currentTeam, and then the row

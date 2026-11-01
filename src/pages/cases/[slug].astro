@@ -2,7 +2,7 @@
 // cases/[slug].astro: one page per public case, e.g. /cases/autoplanner/.
 //
 // Astro builds one page for every case file in src/content/cases/ that has "public: true"
-// (Case E is not public yet, so it gets no page). The "[slug]" in this file's name is filled in
+// (Cases E, G and H are not public yet, so they get no page). The "[slug]" in this file's name is filled in
 // from each case's slug field. Every fact on the page comes from that case file, and every clip
 // from src/data/media.json by its id; nothing here is specific to one case.
 //
@@ -18,7 +18,8 @@
 //                   "stills" (AutoPlanner: its footage shows the May prototype).
 //   6. CaseCredits  one sentence saying who built it and for whom, then what it runs on, its
 //                   status, and its links.
-//   7. NextCase     the next case's letter as a window onto its footage (D leads back to A).
+//   7. NextCase     the next case's letter as a window onto its footage (D leads to F, and F
+//                   leads back to A).
 // The page-change styles for the hero (the footage hand-off) are in src/styles/case.css.
 import Base from '../../layouts/Base.astro';
 import CaseHero from '../../components/case/CaseHero.astro';

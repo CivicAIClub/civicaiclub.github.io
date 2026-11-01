@@ -122,7 +122,7 @@ The stacked list of letter windows is the default (phones, tablets, touch screen
 |---|---|---|
 | `data-docket` | the `<section id="cases">` | Switches the module on. Gets `is-ready` once set up, `is-stage` in the stage layout, `is-hover`, `is-list`, `is-zooming`. |
 | `data-docket-stage` | the sticky stage | Holds `--dk-media` (the footage squares' size), `--dk-top` (the letter's top) and `--dk-hit-*` (the letter's box). |
-| `data-dk-case="0"` + `data-letter`, `data-slug`, `data-href` | each case `<li>` | One per case (A to H, from the case files). E to H have no `data-href`: no footage, an outlined letter, no link. |
+| `data-dk-case="0"` + `data-letter`, `data-slug`, `data-href` | each case `<li>` | One per case (A to H, from the case files). E, G and H have no `data-href`: no footage, an outlined letter, no link. |
 | `data-dk-media` | the footage wrapper | In the stage: absolutely placed, sized `--dk-media`, moved with `x`/`y`/`scale`, only the current one visible. Its Video frame is set to `display: contents` so the page-wide `video.js` leaves it to this module (which plays only the current clip while the stage is on screen). |
 | `data-dk-text`, `data-dk-split`, `data-dk-line` | the words | `data-dk-split` blocks (name, one line) are split into lines and words; `data-dk-line` elements (office, link) move as one line. |
 | `data-dk-open="0"` | the "Open case" link | Zooms instead of a plain click (stage only). |
@@ -130,7 +130,7 @@ The stacked list of letter windows is the default (phones, tablets, touch screen
 | `data-dk-hit` | the invisible link over the letter | See the zoom. |
 | `data-dk-fact` | the "Built by" and "Status" rows | Swap with the case words (see above). |
 | `data-dk-list`, `data-dk-list-item`, `data-dk-list-in` | the list view | Names rise from 110 % (0.9 s `expo.out`, 0.05 s apart) and leave to −140 %. Made `inert` while hidden (and the case words while the list shows). |
-| `data-dk-bar`, `data-dk-go="0"`, `data-dk-pause`, `data-dk-pause-label`, `data-dk-pill`, `data-dk-pill-label` | the bottom bar | The rail of case letters (A to H), Pause/Play for the case footage (hidden while a case with no footage, E to H, is shown), and the List view / Full view pill (difference blend; its label rolls with M9). |
+| `data-dk-bar`, `data-dk-go="0"`, `data-dk-pause`, `data-dk-pause-label`, `data-dk-pill`, `data-dk-pill-label` | the bottom bar | The rail of case letters (A to H), Pause/Play for the case footage (hidden while a case with no footage, E, G or H, is shown), and the List view / Full view pill (difference blend; its label rolls with M9). |
 
 Stacked layout with motion on (phones, tablets, touch): each window opens like M3 (`clip-path` from the top, its contents from −30 %, 1.6 s `expo.out`, at 85 %), and its words rise with M1 at 92 %. The section gets `is-centering`, which hands the clips from `video.js` to `home-docket.js`: an IntersectionObserver (rootMargin `-35% 0px -35% 0px`) marks the one window in the middle of the screen `.is-centered`, and only that one plays. Each window keeps its own Pause button above the ink (the opening clears its transform when done, so the button isn't trapped under the letter), and a visitor's Pause is kept until they press Play again.
 

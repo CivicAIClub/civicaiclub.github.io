@@ -12,8 +12,8 @@ export async function getAllCases(): Promise<Case[]> {
   return cases.sort((a, b) => a.data.order - b.data.order);
 }
 
-// Only the cases that get their own page (public: true). Case E is listed on the home page but
-// has no page yet.
+// Only the cases that get their own page (public: true). Cases E, G and H are listed on the home
+// page but have no page yet.
 export async function getPublicCases(): Promise<Case[]> {
   return (await getAllCases()).filter((c) => c.data.public);
 }

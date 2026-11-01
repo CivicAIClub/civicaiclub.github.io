@@ -41,7 +41,7 @@
     "case": "autoplanner",
     "usedOn": [
       "home",
-      "roster-export"
+      "project-pomfret"
     ],
     "av1": "/media/autoplanner/autoplanner-docket.av1.mp4",
     "h264": "/media/autoplanner/autoplanner-docket.h264.mp4",
@@ -368,6 +368,89 @@
     "height": 1080,
     "duration": 4.667,
     "caption": "The results list: one comment Doc per class with its student count, and a link to the Drive folder that holds them. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "project-pomfret-hero",
+    "case": "project-pomfret",
+    "usedOn": [
+      "project-pomfret"
+    ],
+    "av1": "/media/project-pomfret/project-pomfret-hero.av1.mp4",
+    "h264": "/media/project-pomfret/project-pomfret-hero.h264.mp4",
+    "poster": "/media/project-pomfret/project-pomfret-hero-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 9.5,
+    "caption": "One click on Create draft placements proposes groups for every student, then shows how many take a Major or two Minors and what needs review. Demo data.",
+    "demoData": true,
+    "mobile": {
+      "av1": "/media/project-pomfret/project-pomfret-hero-mobile.av1.mp4",
+      "h264": "/media/project-pomfret/project-pomfret-hero-mobile.h264.mp4",
+      "poster": "/media/project-pomfret/project-pomfret-hero-mobile-poster.webp",
+      "width": 1080,
+      "height": 1350
+    }
+  },
+  {
+    "id": "project-pomfret-scrub",
+    "case": "project-pomfret",
+    "usedOn": [
+      "project-pomfret"
+    ],
+    "h264": "/media/project-pomfret/project-pomfret-scrub.h264.mp4",
+    "poster": "/media/project-pomfret/project-pomfret-scrub-poster.webp",
+    "width": 1600,
+    "height": 900,
+    "duration": 19.4,
+    "caption": "The sorter counts interest by grade, proposes groups for both weeks, and explains a placement. Demo data.",
+    "demoData": true,
+    "scrub": true
+  },
+  {
+    "id": "project-pomfret-docket",
+    "case": "project-pomfret",
+    "usedOn": [
+      "home",
+      "roster-export"
+    ],
+    "av1": "/media/project-pomfret/project-pomfret-docket.av1.mp4",
+    "h264": "/media/project-pomfret/project-pomfret-docket.h264.mp4",
+    "poster": "/media/project-pomfret/project-pomfret-docket-poster.webp",
+    "width": 1600,
+    "height": 1600,
+    "duration": 8.8,
+    "caption": "Interest in every project, counted by grade, beside the suggestion to run it as a Major or a Minor. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "project-pomfret-detail-1",
+    "case": "project-pomfret",
+    "usedOn": [
+      "project-pomfret"
+    ],
+    "av1": "/media/project-pomfret/project-pomfret-detail-1.av1.mp4",
+    "h264": "/media/project-pomfret/project-pomfret-detail-1.h264.mp4",
+    "poster": "/media/project-pomfret/project-pomfret-detail-1-poster.webp",
+    "width": 1080,
+    "height": 1080,
+    "duration": 6.933,
+    "caption": "One student’s placement and the reason for it, with tags for whether they checked each project and whether its type and goal match. Demo data.",
+    "demoData": true
+  },
+  {
+    "id": "project-pomfret-detail-2",
+    "case": "project-pomfret",
+    "usedOn": [
+      "project-pomfret"
+    ],
+    "av1": "/media/project-pomfret/project-pomfret-detail-2.av1.mp4",
+    "h264": "/media/project-pomfret/project-pomfret-detail-2.h264.mp4",
+    "poster": "/media/project-pomfret/project-pomfret-detail-2-poster.webp",
+    "width": 1920,
+    "height": 1080,
+    "duration": 6.067,
+    "caption": "The project groups for Week 1 and Week 2: the Minor groups change between weeks, and the Majors stay the same. Demo data.",
     "demoData": true
   },
   {
