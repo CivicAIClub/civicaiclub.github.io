@@ -35,7 +35,7 @@ That records the five takes one after another (about a minute and a half). One t
 |---|---|---|
 | `flow` | about 19 s | The interest table, a slow scroll, "Next: place students", "Create draft placements", the numbers, "Weak interest matches", "By project" and one student's "Why this placement". |
 | `hero` | about 10 s | "Create draft placements", then the numbers and the Needs review list land and hold still. |
-| `docket` | about 9 s | The interest table's bars and "Suggested" choices drifting down and back up. |
+| `docket` | about 9 s | The interest table's bars and "Suggested" choices drifting down and back up. This take uses a wider 2000 × 1500 window, so the bars and the choices both fit in the middle of the square that the home page's giant F shows. |
 | `detail1` | about 7 s | A student's "Why this placement" panel with its "Checked / Type match / Goal match" tags. |
 | `detail2` | about 6 s | "By project", switching Week 1 to Week 2 and back. |
 

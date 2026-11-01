@@ -13,6 +13,8 @@ letter: F
 slug: project-pomfret
 title: "Project: Pomfret sorting"
 office: "Project: Pomfret"
+# The credits read “for Project: Pomfret.”, without “the”.
+officeIn: "Project: Pomfret"
 team:
   - name: Christoph Ortenburg
     classYear: 2028
@@ -40,7 +42,7 @@ keyValues:
   - key: The one rule
     value: "The sorter proposes and a person decides. Anything it can’t settle is flagged for review."
 runsOn: [Google Sheets, Apps Script]
-heroFocus: "35% 50%"
+heroFocus: "25% 50%"
 clips:
   hero: project-pomfret-hero
   scrub: project-pomfret-scrub

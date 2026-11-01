@@ -11,7 +11,7 @@
 // How it records:
 //   1. Chromium runs headless (no address bar, no tabs) at 1600 x 900 with deviceScaleFactor 2,
 //      so every frame is 3200 x 1800. CAPTURE_SCALE=1.5 records smaller frames if the computer
-//      can't keep up.
+//      can't keep up. The docket take uses a bigger window (see the take).
 //   2. Chrome's own screencast sends a PNG each time the screen changes, with the time it was
 //      drawn. The script saves them, then ffmpeg turns them into a steady 30 fps master video
 //      (each frame stays on screen until the next one arrived).
@@ -33,6 +33,8 @@ import path from 'node:path';
 const DEMO = process.env.CASE_F_URL || 'http://127.0.0.1:3000';
 const SCALE = Number(process.env.CAPTURE_SCALE || 2);
 const VIEW = { width: 1600, height: 900 };
+// The window of the take being recorded (most takes use VIEW).
+let view = VIEW;
 const OUT = path.resolve('capture/out');
 
 // Names that must never appear on camera: the program's director and the club's student leaders.
@@ -119,7 +121,7 @@ async function glide(page, target, steps = 26) {
 // Put the drawn pointer somewhere without a glide, during setup (off camera). A point outside
 // the window hides it.
 async function park(page, to) {
-  await page.mouse.move(Math.min(Math.max(to.x, 0), VIEW.width - 1), Math.min(Math.max(to.y, 0), VIEW.height - 1));
+  await page.mouse.move(Math.min(Math.max(to.x, 0), view.width - 1), Math.min(Math.max(to.y, 0), view.height - 1));
   await page.evaluate(({ x, y }) => window.__movePointer(x, y), to);
   pointer = { ...to };
 }
@@ -273,7 +275,14 @@ const takes = {
 
   // 6 to 10 s: the interest table drifting down and back up, so the loop has no jump. The
   // pointer waits in the sidebar, far from the middle of the square the home page shows.
+  // The giant F shows only the middle of the square (its stem about 26 to 41% across, its arms
+  // out to about 76%). In a 1600-wide window the "Suggested" choices sit 80 to 90% across, so
+  // this take uses a 2000 x 1500 window: the demo's content has a fixed width and centers, which
+  // brings the bars and the choices into one square with the bars in the stem and the choices in
+  // the arms. Scale 1.25 keeps the 1400 x 1400 square sharp (1750 pixels, scaled to 1600).
   docket: {
+    viewport: { width: 2000, height: 1500 },
+    scale: 1.25,
     async setup(page) {
       await openDemo(page);
       await scrollTopTo(page, page.locator('table').first(), 60);
@@ -283,11 +292,11 @@ const takes = {
       cut('start');
       await wait(600);
       cut('down');
-      await scroll(page, 400, 3400);
+      await scroll(page, 260, 3400);
       cut('hold');
       await wait(500);
       cut('up');
-      await scroll(page, -400, 3400);
+      await scroll(page, -260, 3400);
       cut('end');
       await wait(600);
     },
@@ -364,13 +373,18 @@ const FLOW_STUDENT = 'Practice Student 003';
 // ---------------------------------------------------------------------------------------------
 // Recording one take.
 
-async function record(browser, name) {
+async function record(name) {
   const take = takes[name];
+  view = take.viewport || VIEW;
+  const scale = take.scale || SCALE;
+  // Chrome's screencast ignores the page's deviceScaleFactor and sends frames at the window's
+  // size unless the whole browser is told to draw at that scale too.
+  const browser = await chromium.launch({ headless: true, args: [`--force-device-scale-factor=${scale}`] });
   const frameDir = path.join(OUT, `${name}-frames`);
   fs.rmSync(frameDir, { recursive: true, force: true });
   fs.mkdirSync(frameDir, { recursive: true });
 
-  const context = await browser.newContext({ viewport: VIEW, deviceScaleFactor: SCALE, bypassCSP: true });
+  const context = await browser.newContext({ viewport: view, deviceScaleFactor: scale, bypassCSP: true });
   await context.addInitScript(installPointer);
   const page = await context.newPage();
   pointer = { x: 0, y: 0 };
@@ -387,7 +401,7 @@ async function record(browser, name) {
     writes.push(fs.promises.writeFile(file, Buffer.from(data, 'base64')));
   });
   await cdp.send('Page.startScreencast', {
-    format: 'png', maxWidth: VIEW.width * SCALE, maxHeight: VIEW.height * SCALE, everyNthFrame: 1,
+    format: 'png', maxWidth: Math.round(view.width * scale), maxHeight: Math.round(view.height * scale), everyNthFrame: 1,
   });
   // Nudge the drawn pointer by a pixel and back, so Chrome sends a first frame right away.
   await page.evaluate(({ x, y }) => window.__movePointer(x + 1, y), pointer);
@@ -419,6 +433,7 @@ async function record(browser, name) {
   await cdp.send('Page.stopScreencast');
   await Promise.all(writes);
   await context.close();
+  await browser.close();
 
   // Turn the frames into a steady 30 fps master. Each frame lasts until the next one arrived;
   // the last one lasts until the take ended. "option framerate 1000" makes ffmpeg keep each
@@ -436,7 +451,8 @@ async function record(browser, name) {
   const ffmpeg = spawnSync('ffmpeg', [
     '-y', '-hide_banner', '-loglevel', 'error',
     '-f', 'concat', '-safe', '0', '-i', path.join(frameDir, 'frames.txt'),
-    '-vf', 'fps=30,format=yuv420p', '-an', '-t', (end - start).toFixed(3),
+    // H.264 needs an even width and height; a scale like 1.25 can give an odd one, so trim a pixel.
+    '-vf', 'fps=30,crop=trunc(iw/2)*2:trunc(ih/2)*2:0:0,format=yuv420p', '-an', '-t', (end - start).toFixed(3),
     '-c:v', 'libx264', '-crf', '12', '-preset', 'slow', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
     master,
   ], { stdio: 'inherit' });
@@ -453,7 +469,7 @@ async function record(browser, name) {
   const report = {
     take: name,
     duration: Number((end - start).toFixed(3)),
-    frameSize: [VIEW.width * SCALE, VIEW.height * SCALE],
+    frameSize: [Math.round(view.width * scale), Math.round(view.height * scale)],
     frames: frames.length,
     fpsWhileMoving: Number((moving / (movingTime || 1)).toFixed(1)),
     cuts,
@@ -478,17 +494,13 @@ try {
   process.exit(1);
 }
 fs.mkdirSync(OUT, { recursive: true });
-// Chrome's screencast ignores the page's deviceScaleFactor and sends frames at 1600 x 900 unless
-// the whole browser is told to draw at that scale too.
-const browser = await chromium.launch({ headless: true, args: [`--force-device-scale-factor=${SCALE}`] });
 let failed = false;
 for (const name of names) {
   try {
-    await record(browser, name);
+    await record(name);
   } catch (error) {
     failed = true;
     console.error(error.message);
   }
 }
-await browser.close();
 process.exit(failed ? 1 : 0);

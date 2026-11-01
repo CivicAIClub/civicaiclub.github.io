@@ -86,7 +86,7 @@ Recorded from the browser demo in the `case-f-project-pomfret` repo (`npm run bu
 |---|---|---|
 | `project-pomfret-hero` | 16:9 · 9.5 s | "Create draft placements" clicked, then the four numbers (placed, Major, two Minors, not yet placed) and the Needs review list land, with a slow push-in (1.00× to 1.06×). The last 0.6 s fades back to the first frame so the loop has no jump. Phone copy: a 4:5 frame on the title, the first two numbers and the Needs review list's labels, with the same push-in. |
 | `project-pomfret-scrub` | 1600×900 · 19.4 s | The interest table and a slow scroll, "Next: place students", "Create draft placements", the numbers, "Weak interest matches", "By project" and one student's "Why this placement". Beats in `f-project-pomfret.md`. |
-| `project-pomfret-docket` | 1:1 · 8.8 s | The interest table drifting down and back up: the interest bars on the left, the grade counts in the middle and the "Suggested: Major / Minor" choices on the right. The pointer waits in the sidebar, outside the square. |
+| `project-pomfret-docket` | 1:1 · 8.8 s | The interest table drifting down and back up, recorded in a wider 2000 × 1500 window so the interest bars fall where the F's stem is and the "Suggested: Major / Minor" choices in its arms. The pointer waits in the sidebar, outside the square. |
 | `project-pomfret-detail-1` | 1:1 · 6.9 s | One student's "Why this placement": the reason and the "Checked / Type match / Goal match" tags. The panel closes and opens again from the By student list. |
 | `project-pomfret-detail-2` | 16:9 · 6.1 s | "By project", Week 1 to Week 2 and back: the Minor groups change, the Majors stay the same. |
 

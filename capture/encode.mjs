@@ -90,9 +90,10 @@ const clips = [
     start: () => 0,
     end: () => upTo('docket', 10),
     size: [1600, 1600],
-    // A 1800 x 1800 square around the interest bars and the "Suggested" choices. The pointer
-    // waits in the sidebar, outside the square.
-    filter: () => 'crop=1800:1800:1260:0,scale=1600:1600:flags=lanczos',
+    // This take's master is 2500 x 1874 (a 2000 x 1500 window at scale 1.25). A 1750 x 1750
+    // square puts the interest bars where the giant F's stem is and the "Suggested" choices in
+    // its arms. The pointer waits in the sidebar, outside the square.
+    filter: () => 'crop=1750:1750:678:62,scale=1600:1600:flags=lanczos',
     // The steady scroll moves fine text in every frame. This also counts toward the home page's
     // 8 MB video budget.
     h264Crf: 26,
