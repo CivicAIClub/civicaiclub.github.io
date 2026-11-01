@@ -71,6 +71,8 @@ public/
   media/<slug>/           encoded videos, posters and web-sized photos only (no raw recordings)
   og.png, favicon.*       share image and tab icons (made by npm run brand)
 scripts/                  wordmark, brand images, media check, import check
+capture/                  scripts that record and encode case footage from practice demos (Case F);
+                          their raw output, capture/out/, is never committed
 ```
 
 ## Common jobs
@@ -81,7 +83,7 @@ scripts/                  wordmark, brand images, media check, import check
 
 **Add an event.** Copy the Markdown file in `src/content/events/`, rename it after the new event's slug, and change the facts (title, date, time, place, the program, what came back). Name every photo by an id from `src/data/media.json` (add new photos there first; see `MEDIA-IDS.md`). Captions say what the moment or talk was, never who is in the photo. Set `public: true` when it should appear on `/events/` (the newest public event is also the home page's "Latest event"). The build checks every field (`src/content.config.ts`) and every photo id (`checkEventMedia` in `src/lib/events.ts`).
 
-**Add footage.** Encode it (commands in `MEDIA-IDS.md`), put the files in `public/media/<slug>/`, and add an entry to `src/data/media.json` using the id the page already asks for. Run `npm run check:media`.
+**Add footage.** Record it from a practice demo with invented data (Case F's scripts are in `capture/`, see `capture/README.md`). Encode it (commands in `MEDIA-IDS.md`), put the files in `public/media/<slug>/`, and add an entry to `src/data/media.json` using the id the page already asks for. Run `npm run check:media`.
 
 **Add motion.** Use a data attribute from `MOTION.md`. For something new, add a module file in `src/scripts/motion/modules/`.
 

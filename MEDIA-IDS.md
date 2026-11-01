@@ -26,7 +26,7 @@ A missing `detail-1` or `detail-2` is simply left out of the case page. A missin
 
 ## Every id
 
-Status as of Sep 28, 2026: every id below is in `media.json` except **`roster-export-detail-2`** (not made yet).
+Status as of Oct 31, 2026: every id below is in `media.json` except **`roster-export-detail-2`** (not made yet).
 
 Posters are pointer-free: where a take has the pointer baked in on the resting frame, the poster has it painted out (copied from a frame, or a spot, without it). The clip itself keeps it.
 
@@ -78,6 +78,17 @@ Recorded from the mocked `CourseSelector.html` dialog (`capture/case-d.js`). No 
 | `roster-export-docket` | 1:1 · 3.7 s | The checked class list, “Generating…”, then “Created 3 document(s)” and the dialog scrolling to its links. |
 | `roster-export-detail-1` | 1:1 · 4.7 s | The results list: one comment Doc per class with its student count, and the Drive folder link. |
 | `roster-export-detail-2` | — | **Not made yet.** Suggested: the "Canvas Tools" class picker. The case page leaves it out until it exists. |
+
+### Case F · Project: Pomfret sorting (`project-pomfret`), practice demo only
+Recorded from the browser demo in the `case-f-project-pomfret` repo (`npm run build:demo`, then `npm run preview`), which uses only invented students ("Practice Student 001" to "253"). Recorded and encoded by script: `capture/case-f.mjs` and `capture/encode.mjs` (see `capture/README.md`). The real Google Sheet, the real groups and any real student are never recorded. A name guard stops any take in which the program's director or a student leader is named on screen, so "About this tool", "View placement rules", the walkthrough and the line at the bottom of "Choose projects" are never filmed. Every poster is the clip's first frame, with the pointer outside the frame.
+
+| Id | Shape | Shows |
+|---|---|---|
+| `project-pomfret-hero` | 16:9 · 9.5 s | "Create draft placements" clicked, then the four numbers (placed, Major, two Minors, not yet placed) and the Needs review list land, with a slow push-in (1.00× to 1.06×). The last 0.6 s fades back to the first frame so the loop has no jump. Phone copy: a 4:5 frame on the title, the first two numbers and the Needs review list's labels, with the same push-in. |
+| `project-pomfret-scrub` | 1600×900 · 19.4 s | The interest table and a slow scroll, "Next: place students", "Create draft placements", the numbers, "Weak interest matches", "By project" and one student's "Why this placement". Beats in `f-project-pomfret.md`. |
+| `project-pomfret-docket` | 1:1 · 8.8 s | The interest table drifting down and back up: the interest bars on the left, the grade counts in the middle and the "Suggested: Major / Minor" choices on the right. The pointer waits in the sidebar, outside the square. |
+| `project-pomfret-detail-1` | 1:1 · 6.9 s | One student's "Why this placement": the reason and the "Checked / Type match / Goal match" tags. The panel closes and opens again from the By student list. |
+| `project-pomfret-detail-2` | 16:9 · 6.1 s | "By project", Week 1 to Week 2 and back: the Minor groups change, the Majors stay the same. |
 
 ### Case E · College counseling (`college-counseling`)
 No footage. The home page shows an outlined letter E with no link.
