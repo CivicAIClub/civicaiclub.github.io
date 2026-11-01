@@ -18,3 +18,5 @@ Thumbs.db
 *.log
 # Generated monitoring evidence is retained as an Actions artifact, not committed.
 /health-results/
+# Raw recordings and frames from capture/case-f.mjs. Only the encoded clips in public/media are committed.
+/capture/out/
