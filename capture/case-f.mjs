@@ -11,7 +11,7 @@
 // How it records:
 //   1. Chromium runs headless (no address bar, no tabs) at 1600 x 900 with deviceScaleFactor 2,
 //      so every frame is 3200 x 1800. CAPTURE_SCALE=1.5 records smaller frames if the computer
-//      can't keep up. The docket take uses a bigger window (see the take).
+//      can't keep up. The docket and heroMobile takes use other windows (see the takes).
 //   2. Chrome's own screencast sends a PNG each time the screen changes, with the time it was
 //      drawn. The script saves them, then ffmpeg turns them into a steady 30 fps master video
 //      (each frame stays on screen until the next one arrived).
@@ -115,6 +115,10 @@ async function glide(page, target, steps = 26) {
     await page.mouse.move(from.x + (to.x - from.x) * t, from.y + (to.y - from.y) * t);
     await wait(14);
   }
+  // Mouse moves outside the window never reach the page, so the drawn pointer would stay at the
+  // edge. Put it at the target, out of the picture.
+  const outside = to.x < 0 || to.y < 0 || to.x >= view.width || to.y >= view.height;
+  if (outside) await page.evaluate(({ x, y }) => window.__movePointer(x, y), to);
   pointer = { ...to };
 }
 
@@ -266,6 +270,33 @@ const takes = {
       await page.getByText('Taking a Major').waitFor();
       await wait(1300);
       await glide(page, { x: 1660, y: 640 }, 26);
+      cut('pointer-out');
+      await toastGone(page);
+      cut('still');
+      await wait(2300);
+    },
+  },
+
+  // The hero again, for phones: the same steps in a 540 x 675 window (4:5), where the demo puts
+  // the four numbers in two rows, so all of them fit. At scale 2 the frames are 1080 x 1350, the
+  // phone copy's size.
+  heroMobile: {
+    viewport: { width: 540, height: 675 },
+    async setup(page) {
+      await openDemo(page);
+      await toPlaceStudents(page);
+      await park(page, { x: 600, y: 520 });
+    },
+    async run(page, cut) {
+      cut('place');
+      await wait(1100);
+      await glide(page, page.getByRole('button', { name: 'Create draft placements' }), 30);
+      await wait(250);
+      await press(page);
+      cut('create');
+      await page.getByText('Taking a Major').waitFor();
+      await wait(1300);
+      await glide(page, { x: 600, y: 560 }, 26);
       cut('pointer-out');
       await toastGone(page);
       cut('still');

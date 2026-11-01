@@ -29,19 +29,22 @@ Terminal 2, in this repo:
 node capture/case-f.mjs all
 ```
 
-That records the five takes one after another (about a minute and a half). One take can be recorded on its own by name: `flow`, `hero`, `docket`, `detail1` or `detail2`.
+That records the six takes one after another (about a minute and a half). One take can be recorded on its own by name: `flow`, `hero`, `heroMobile`, `docket`, `detail1` or `detail2`.
+
+Record with other heavy programs closed (games, for example). On a busy computer the screencast gets only 12 to 18 pictures a second instead of 55 to 80, and the pointer stutters. Each take prints how many pictures a second it got while things moved.
 
 | Take | Length | What it shows |
 |---|---|---|
 | `flow` | about 19 s | The interest table, a slow scroll, "Next: place students", "Create draft placements", the numbers, "Weak interest matches", "By project" and one student's "Why this placement". |
 | `hero` | about 10 s | "Create draft placements", then the numbers and the Needs review list land and hold still. |
+| `heroMobile` | about 9 s | The same as `hero`, for phones, in a 540 × 675 window, where the demo puts the four numbers in two rows. |
 | `docket` | about 9 s | The interest table's bars and "Suggested" choices drifting down and back up. This take uses a wider 2000 × 1500 window, so the bars and the choices both fit in the middle of the square that the home page's giant F shows. |
 | `detail1` | about 7 s | A student's "Why this placement" panel with its "Checked / Type match / Goal match" tags. |
 | `detail2` | about 6 s | "By project", switching Week 1 to Week 2 and back. |
 
 Each take writes two files into `capture/out/`:
 
-- `<take>-master.mp4`: a sharp 30 fps master at 3200 × 1800.
+- `<take>-master.mp4`: a sharp 30 fps master, 3200 × 1800 for most takes (`heroMobile`: 1080 × 1350, `docket`: 2500 × 1874).
 - `<take>-cuts.json`: when each step of the take started, in seconds. The case page's beats and the clip cuts are set from these times.
 
 ## How the recording works
@@ -59,7 +62,7 @@ So while a take records, the script checks the screen about five times a second.
 
 ## Encoding the clips
 
-With the five masters in `capture/out/`, in this repo:
+With the six masters in `capture/out/`, in this repo:
 
 ```sh
 node capture/encode.mjs
@@ -70,7 +73,7 @@ That cuts, crops and encodes the six clips the site uses into `public/media/proj
 | Clip id | Size | From | What the script does |
 |---|---|---|---|
 | `project-pomfret-hero` | 1920 × 1080 | `hero` | A slow push-in (1.00× to 1.06×). The last 0.6 s fades back to the first frame, so the loop has no jump. |
-| `project-pomfret-hero-mobile` | 1080 × 1350 | `hero` | The phone copy: a 4:5 frame on the title, the first two numbers and the Needs review list, with the same push-in and fade. |
+| `project-pomfret-hero-mobile` | 1080 × 1350 | `heroMobile` | The phone copy: the title, "Create draft placements" and all four numbers, with a push-in (1.00× to 1.04×) and the same fade. |
 | `project-pomfret-scrub` | 1600 × 900 | `flow` | The whole flow, H.264 only, with a keyframe every 10 frames and no B-frames so scrolling the page can jump to any frame. |
 | `project-pomfret-docket` | 1600 × 1600 | `docket` | A square around the interest bars and the "Suggested" choices. |
 | `project-pomfret-detail-1` | 1080 × 1080 | `detail1` | A square on the "Why this placement" panel. |

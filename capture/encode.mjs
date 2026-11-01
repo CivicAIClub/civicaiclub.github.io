@@ -13,8 +13,9 @@
 // (start, middle, end) to capture/out/check/ for checking by eye, and prints each file's size and
 // the clip's exact length for src/data/media.json.
 //
-// All positions below are in master pixels: the masters are 3200 x 1800, twice the demo's
-// 1600 x 900 window, so a point on the demo at (x, y) is at (2x, 2y) in the master.
+// All positions below are in master pixels. Most masters are 3200 x 1800, twice the demo's
+// 1600 x 900 window, so a point on the demo at (x, y) is at (2x, 2y) in the master. The docket
+// and heroMobile takes use other windows (see capture/case-f.mjs).
 
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -60,15 +61,15 @@ const clips = [
   },
   {
     id: 'project-pomfret-hero-mobile',
-    take: 'hero',
+    take: 'heroMobile',
     start: () => 0,
-    end: () => upTo('hero', 9.5),
+    end: () => upTo('heroMobile', 9.5),
     size: [1080, 1350],
-    // 4:5, a 600 x 750 part of the demo window: the title, "Create draft placements", then the
-    // first two numbers (placed, Major) and the Needs review list's labels, with the same slow
-    // push-in as the hero. (A pan to the other two numbers ended on the list's empty right side.)
+    // The phone copy has its own take in a 540 x 675 window, where the demo puts the four numbers
+    // in two rows, so the frames are already 1080 x 1350. It gets the same slow push-in as the
+    // hero (scaled up first so the push-in stays sharp).
     filter: (d) =>
-      `crop=1200:1500:600:280,zoompan=z='1+0.04*on/${Math.round(d * FPS) - 1}':x='(iw-iw/zoom)*0.3':y='(ih-ih/zoom)*0.4':d=1:s=1080x1350:fps=${FPS}`,
+      `scale=2160:2700:flags=lanczos,zoompan=z='1+0.04*on/${Math.round(d * FPS) - 1}':x='(iw-iw/zoom)*0.5':y='(ih-ih/zoom)*0.55':d=1:s=1080x1350:fps=${FPS}`,
     loopFade: 0.6,
     h264Crf: 26,
     av1Crf: 40,
