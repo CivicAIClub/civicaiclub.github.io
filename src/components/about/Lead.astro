@@ -5,8 +5,8 @@
 // this section scrolls past), and on the right, in large type, the club president's name and
 // class year with one line on what they do and a link to their GitHub profile; then the vice
 // president's name and class year with one line on what they do; then each director's name and
-// class year with their title; then the faculty advisor. There are no portraits: the club has
-// none, and this site never invents one.
+// class year with their title and one line on the role; then the faculty advisor. There are no
+// portraits: the club has none, and this site never invents one.
 //
 // Where the names come from: src/data/members.json ("lead", "vicePresident", "directors" and
 // "facultyAdvisor"). Each name is printed as "Name ’YY" by src/lib/people.ts, like every name
@@ -26,6 +26,18 @@ function named(name: string | undefined): string {
   return person ? formatPerson(person) : name;
 }
 
+// One line on what each director's role does, printed after the title. These describe the role,
+// not the person, so they live here and not in members.json (which holds names only). A title
+// with no line here prints on its own.
+const roleLines: Record<string, string> = {
+  'Director of Education':
+    'Runs the club’s events for the whole school, like AI Literacy Week, workshops and events with AI Youth Alliance.',
+  'Director of Outreach':
+    'Finds the local organizations we work with, from the first email to the first meeting, and runs the club’s Instagram.',
+  'Director of Operations':
+    'Keeps every case on track, from weekly check-ins with each team to meeting agendas and setting up new members. Also builds across the cases as the club’s lead developer.',
+};
+
 // The club president ("lead" in members.json) and the vice president.
 const leadName = named(members.lead);
 const vicePresidentName = named(members.vicePresident);
@@ -33,6 +45,7 @@ const vicePresidentName = named(members.vicePresident);
 const directors = (members.directors ?? []).map((director) => ({
   name: named(director.name),
   role: director.role,
+  about: roleLines[director.role] ?? '',
 }));
 
 // The lead's public GitHub profile (their own account; no email is ever shown).
@@ -51,8 +64,9 @@ const leadFirstName = members.lead.split(' ')[0];
       <p class="lead__name" data-reveal="lines">{leadName}</p>
       <div class="lead__about">
         <p class="t-label" data-reveal="lines">
-          President. Sits in on every discovery call, assigns the cases, reviews the pull requests,
-          runs the demos.
+          President. Founded the club and sets its direction. Oversees the education, outreach and
+          operations departments with Luke, works with faculty and the school’s administration, and
+          works on every case with its team, from the first call to the demo.
         </p>
         <ArrowLink href={leadGithub} external class="lead__link t-label"
           ><span class="sr-only">{leadFirstName}’s </span>GitHub</ArrowLink
@@ -68,16 +82,17 @@ const leadFirstName = members.lead.split(' ')[0];
             </p>
             <div class="lead__about">
               <p class="t-label" data-reveal="lines">
-                Vice President. Oversees every case with Cayden, reviews pull requests, and joins client
-                meetings.
+                Vice President. Helps lead the club and oversees the education, outreach and
+                operations departments with Cayden. Joins client meetings, reviews the code across
+                the cases and builds with the case teams.
               </p>
             </div>
           </>
         )
       }
 
-      <!-- The directors: name and title, in the same style as the vice president. Left out if
-           members.json lists none. -->
+      <!-- The directors: name, title and one line on the role, in the same style as the vice
+           president. Left out if members.json lists none. -->
       {
         directors.map((director) => (
           <>
@@ -86,7 +101,7 @@ const leadFirstName = members.lead.split(' ')[0];
             </p>
             <div class="lead__about">
               <p class="t-label" data-reveal="lines">
-                {director.role}.
+                {director.role}. {director.about}
               </p>
             </div>
           </>
