@@ -37,7 +37,7 @@ The public site for the Civic AI Club at Pomfret School, served at https://civic
 
 ## Event photos (AI Literacy Week and later events)
 - Captions and alt text name the moment or the talk, never who is in the photo. Keep `people` empty until names are confirmed.
-- Never place or re-crop `ai-literacy-week-results-4x5` wider: the original shows a slide with a real teacher's photo and AI images of that teacher. It stays unplaced unless the lead says otherwise.
+- The original Day 1 results photos show a slide with a real teacher's photo and AI images of that teacher. `ai-literacy-week-results-4x5` (presenter only) and `ai-literacy-week-results-3x2` (slide's names, prompt and portraits blurred) are placed with the lead's OK: never re-crop the 4:5 wider and never use an unblurred copy of the 3:2.
 - Keep the demo and deck photos' browser tab strip and address bar blurred, and the deck's speaker notes and slide thumbnails too (see `MEDIA-IDS.md`). Any re-export must keep those blurs.
 - AI Youth Alliance appears by name only, with the plain facts in the event file: no logo, no link.
 

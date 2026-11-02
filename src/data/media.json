@@ -710,7 +710,9 @@
     "id": "ai-literacy-week-results-4x5",
     "kind": "image",
     "case": "ai-literacy-week",
-    "usedOn": [],
+    "usedOn": [
+      "events"
+    ],
     "width": 1600,
     "height": 2000,
     "alt": "A student in a white long-sleeve shirt stands at a lectern with one hand on a laptop, glancing to the side. Tall windows behind, and the back of an audience member’s head in the foreground.",
@@ -727,6 +729,34 @@
       "jpg": {
         "800": "/media/events/ai-literacy-week/ai-literacy-week-results-4x5-800.jpg",
         "1600": "/media/events/ai-literacy-week/ai-literacy-week-results-4x5-1600.jpg"
+      }
+    }
+  },
+  {
+    "id": "ai-literacy-week-results-3x2",
+    "kind": "image",
+    "case": "ai-literacy-week",
+    "usedOn": [
+      "events"
+    ],
+    "width": 2400,
+    "height": 1600,
+    "alt": "A student in a white long-sleeve shirt speaks in the foreground, beside a large screen titled “Same Person, Different Result”. The names, the prompt and the three portraits on the slide are blurred.",
+    "caption": "Day 1’s results: the same person, from words alone and then with a reference photo.",
+    "files": {
+      "avif": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-results-3x2-800.avif",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-results-3x2-1600.avif",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-results-3x2-2400.avif"
+      },
+      "webp": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-results-3x2-800.webp",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-results-3x2-1600.webp",
+        "2400": "/media/events/ai-literacy-week/ai-literacy-week-results-3x2-2400.webp"
+      },
+      "jpg": {
+        "800": "/media/events/ai-literacy-week/ai-literacy-week-results-3x2-800.jpg",
+        "1600": "/media/events/ai-literacy-week/ai-literacy-week-results-3x2-1600.jpg"
       }
     }
   },

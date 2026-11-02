@@ -4,8 +4,8 @@
 //
 // Each case is a giant letter cut out of an ink sheet, with a short silent loop of that case's
 // tool playing through the hole in full color, and beside it the tool's name, the client
-// office, one line about what it does, "Open case ↗", and two ruled rows: who built it and
-// where it stands. Cases E, G and H have no case page: each letter is only an outline, with no
+// office, one line about what it does, "Open case ↗", and ruled rows: who built it, the club
+// lead, this year's team and where it stands. Cases E, G and H have no case page: each letter is only an outline, with no
 // footage and no link, and says "In progress". A case with no team yet reads "Team: Forming".
 //
 // Two ways it can look, from the same HTML:
@@ -31,6 +31,7 @@ import { getAllCases, caseUrl } from '../../lib/cases';
 import { getClip } from '../../lib/media';
 import { formatPerson } from '../../lib/people';
 import glyphs from './docket-letters.json';
+import members from '../../data/members.json';
 
 const cases = await getAllCases();
 
@@ -65,6 +66,11 @@ function builtBy(team: { name: string; classYear?: number; role?: string }[]): s
 }
 
 // Everything the page needs about each case, worked out once.
+// "Club lead": the club president ("lead" in members.json), the same on every case, as
+// "Cayden Auyang ’27". Change "lead" in members.json to change it.
+const leadEntry = members.members.find((person) => person.name === members.lead);
+const clubLead = formatPerson({ name: members.lead, classYear: leadEntry?.classYear });
+
 const rows = cases.map((entry) => {
   const data = entry.data;
   const glyph = glyphs.letters[data.letter as keyof typeof glyphs.letters];
@@ -197,8 +203,8 @@ const railLabel = `Cases ${rows[0]?.letter ?? 'A'} to ${rows[rows.length - 1]?.l
                   </span>
                 </span>
               </p>
-              {/* Ruled rows: who built it, this year's team (when the case file lists one), and
-                  where it stands. Each value rolls in and out
+              {/* Ruled rows: who built it, the club lead, this year's team (when the case file
+                  lists one), and where it stands. Each value rolls in and out
                   with the rest of the case's words (data-dk-fact). */}
               <dl class="dk-case__facts t-ui">
                 <div class="dk-fact">
@@ -207,6 +213,16 @@ const railLabel = `Cases ${rows[0]?.letter ?? 'A'} to ${rows[rows.length - 1]?.l
                     <span class="dk-mask">
                       <span class="dk-mask__in" data-dk-fact>
                         {row.builtBy}
+                      </span>
+                    </span>
+                  </dd>
+                </div>
+                <div class="dk-fact">
+                  <dt class="dk-fact__key t-mono">Club lead</dt>
+                  <dd class="dk-fact__value">
+                    <span class="dk-mask">
+                      <span class="dk-mask__in" data-dk-fact>
+                        {clubLead}
                       </span>
                     </span>
                   </dd>
