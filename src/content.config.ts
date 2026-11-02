@@ -74,6 +74,10 @@ const cases = defineCollection({
       // case page and on the home page. It is kept apart from "team" on purpose: "team" says who
       // built the tool, and new members haven't built it. Leave it out to show no line.
       currentTeam: z.array(person).default([]),
+      // The student who leads the case day to day (one per case), shown as "Case lead" on the case
+      // page and on the home page. Leave it out while no one is named: the row then reads
+      // "Case lead: To be named".
+      caseLead: person.optional(),
       // Where the case stands today, in a few words, e.g. "Phase 1 built".
       status: z.string().min(1),
       // True marks the case as in progress: the home page's docket reads "In progress. <status>."

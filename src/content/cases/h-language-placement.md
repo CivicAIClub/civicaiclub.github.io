@@ -3,8 +3,9 @@
 # outlined letter with no footage and no link. The World Languages Department asked for help
 # after the school meeting on 2026-10-13; the first meeting has been held, and the team is
 # planning the first version (as of 2026-10-30).
-# "team" is this year's case team (set 2026-10-30), with Keke Li, lead developer, and Luke Ryan,
-# vice president, who are on every case. Nothing is built yet, so the home page labels it "Team".
+# "team" is this year's case team (set 2026-10-30, updated 2026-11-01), with Cayden Auyang,
+# president, Keke Li, lead developer, and Luke Ryan, vice president, who are on every case.
+# Nothing is built yet, so the home page labels it "Team". No case lead yet ("To be named").
 # The client is named by office only. The repo is recorded here but not linked from the site.
 letter: H
 slug: language-placement
@@ -17,6 +18,8 @@ team:
     classYear: 2029
   - name: Ryker Reissner
     classYear: 2030
+  - name: Cayden Auyang
+    classYear: 2027
   - name: Keke Li
     classYear: 2027
   - name: Luke Ryan
