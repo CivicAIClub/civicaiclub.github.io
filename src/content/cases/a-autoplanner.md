@@ -20,11 +20,11 @@ slug: autoplanner
 title: AutoPlanner
 office: CLC Supported Study Hall
 team:
+  - name: Cayden Auyang
+    classYear: 2027
   - name: Luke Ryan
     classYear: 2027
   - name: Jack Weinberg
-    classYear: 2027
-  - name: Cayden Auyang
     classYear: 2027
 currentTeam:
   - name: Luke Ryan

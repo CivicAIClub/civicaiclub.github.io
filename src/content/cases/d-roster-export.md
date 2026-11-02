@@ -20,15 +20,15 @@ title: Roster Export
 office: Teaching faculty
 officeIn: teaching faculty
 team:
+  - name: Keke Li
+    classYear: 2027
+    role: Built the first version
+  - name: Cayden Auyang
+    classYear: 2027
   - name: James Lake
     classYear: 2027
   - name: Magnus Songhurst
     classYear: 2028
-  - name: Cayden Auyang
-    classYear: 2027
-  - name: Keke Li
-    classYear: 2027
-    role: Built the first version
   - name: Jay Youm
     classYear: 2026
     role: Alumni advisor

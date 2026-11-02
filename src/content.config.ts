@@ -66,6 +66,9 @@ const cases = defineCollection({
       // e.g. "teaching faculty".
       officeIn: z.string().optional(),
       // The students (and advisors) who built it, in credit order. This is the "Built by" credit.
+      // Credit order is by contribution, never random: largest share of the case repo's code on
+      // GitHub first (lines changed on main, not counting lockfiles or media), then anyone with no
+      // commits in their earlier order, then advisors last (set 2026-11-01).
       // For a case with no page and nothing built yet (Cases E, G and H), the home page labels it
       // "Team" instead, and it lists that case's team. Leave it empty while the team is still being
       // put together: the home page then reads "Team: Forming".

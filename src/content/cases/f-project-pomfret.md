@@ -5,9 +5,10 @@
 # data, so the footage comes only from the case-f repo’s browser demo, which uses invented
 # students (“Practice Student 001” to “253”), recorded with capture/case-f.mjs. Never record or
 # link the real spreadsheet or the real groups.
-# "team" is who built it (set 2026-10-30; Cayden Auyang added first on 2026-11-01, since he ran
-# the build and the delivery himself from Oct 27), with Keke Li, lead developer. Cayden is also
-# the case lead. Luke Ryan is not on Case F (removed 2026-11-01).
+# "team" is who built it (set 2026-10-30), in order of contribution since 2026-11-01 (see
+# src/content.config.ts): Cayden Auyang ran the build and the delivery himself from Oct 27, and
+# Keke Li built the first version of the sorter. Cayden is also the case lead. Luke Ryan is not
+# on Case F (removed 2026-11-01).
 # The client is named by office only. The repo is linked from the credits; the demo itself is
 # not linked from the site, so don’t add a liveUrl.
 letter: F
@@ -19,14 +20,14 @@ officeIn: "Project: Pomfret"
 team:
   - name: Cayden Auyang
     classYear: 2027
+  - name: Keke Li
+    classYear: 2027
   - name: Christoph Ortenburg
     classYear: 2028
   - name: Lucas Shi
     classYear: 2029
   - name: Serena Xu
     classYear: 2028
-  - name: Keke Li
-    classYear: 2027
 caseLead:
   name: Cayden Auyang
   classYear: 2027
