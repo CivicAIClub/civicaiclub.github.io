@@ -66,7 +66,7 @@ Use `feature/`, `fix/`, or `chore/` as appropriate, with lowercase names and hyp
 - Do not use empower, revolutionize, leverage, seamless, cutting-edge, unlock, harness, journey, or "AI-powered". Avoid chains of long dashes.
 - Rejouice is inspiration only. Never copy its code, text, fonts, images, or video.
 - Event captions and alt text describe the moment or talk, never people in the photo. Leave `people` empty until names are confirmed.
-- Keep `ai-literacy-week-results-4x5` unplaced unless the lead says otherwise; never place it or re-crop it wider because it shows a real teacher and AI images of that teacher.
+- `ai-literacy-week-results-4x5` (presenter only) and `ai-literacy-week-results-3x2` (slide blurred) are placed with the lead's OK. The original slide shows a real teacher and AI images of that teacher: never re-crop the 4:5 wider, and never use an unblurred copy of the 3:2.
 - Demo/deck photos must keep browser tabs and address bars blurred, plus deck speaker notes and slide thumbnails. Preserve blurs in every re-export; see `MEDIA-IDS.md`.
 - AI Youth Alliance appears by name only with plain event-file facts: no logo or link.
 

@@ -60,7 +60,7 @@ const ordered = [...numbered.filter((row) => row.number), ...numbered.filter((ro
 
 // Number the photos ("plates") in the order they appear on the page: the cover is Plate 1, then
 // each part's photos in the running order above (the demo sheet's two, then the pair), then the
-// closing photo. For AI Literacy Week that gives Plates 1 to 6.
+// closing photo. For AI Literacy Week that gives Plates 1 to 8.
 let plateCount = 1;
 const chapters = ordered.map((row) => {
   const count = row.chapter.sheet ? 2 : row.chapter.plates.length;

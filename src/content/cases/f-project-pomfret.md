@@ -5,8 +5,9 @@
 # data, so the footage comes only from the case-f repo’s browser demo, which uses invented
 # students (“Practice Student 001” to “253”), recorded with capture/case-f.mjs. Never record or
 # link the real spreadsheet or the real groups.
-# "team" is who built it (set 2026-10-30), with Keke Li, lead developer, and Luke Ryan, vice
-# president, who are on every case.
+# "team" is who built it (set 2026-10-30; Cayden Auyang added first on 2026-11-01, since he ran
+# the build and the delivery himself from Oct 27), with Keke Li, lead developer, and Luke Ryan,
+# vice president, who are on every case.
 # The client is named by office only. The repo is linked from the credits; the demo itself is
 # not linked from the site, so don’t add a liveUrl.
 letter: F
@@ -16,6 +17,8 @@ office: "Project: Pomfret"
 # The credits read “for Project: Pomfret.”, without “the”.
 officeIn: "Project: Pomfret"
 team:
+  - name: Cayden Auyang
+    classYear: 2027
   - name: Christoph Ortenburg
     classYear: 2028
   - name: Lucas Shi

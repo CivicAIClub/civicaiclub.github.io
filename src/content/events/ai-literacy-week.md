@@ -13,8 +13,11 @@
 #     meeting" on the About page (src/components/about/Started.astro; the first meeting was
 #     November 2025).
 # Photo captions name the moment or the talk, never a person. "people" stays empty until names
-# are confirmed (when filled, "With …" is printed under that photo's caption). The Day 1 results
-# crop is never used (see MEDIA-IDS.md).
+# are confirmed (when filled, "With …" is printed under that photo's caption). The two Day 1
+# results photos under "What We Learned From You" were placed with the lead's OK on 2026-11-01.
+# The slide in them shows a real teacher and AI images of that teacher, so the 4:5 stops short of
+# the screen and the 3:2 keeps the slide's names, prompt and portraits blurred. Never use an
+# unblurred copy or re-crop the 4:5 wider (see MEDIA-IDS.md).
 slug: "ai-literacy-week"
 title: "AI Literacy Week"
 date: "2026-05-17"
@@ -60,6 +63,9 @@ program:
     speakers: [{ name: "Cayden Auyang", classYear: 2027 }]
     line: "The results from Days 1 and 2, then the three you’ve probably used: ChatGPT (OpenAI), Claude (Anthropic) and Gemini (Google). Same family, different strengths."
     link: { label: "What we learned", href: "#findings" }
+    plates:
+      - { media: "ai-literacy-week-results-4x5", caption: "At the lectern for “What We Learned From You”." }
+      - { media: "ai-literacy-week-results-3x2", caption: "Day 1’s results: the same person, from words alone and then with a reference photo (blurred here)." }
   - title: "AI Tools: Beyond Chatbots"
     speakers: [{ name: "Luke Ryan", classYear: 2027 }]
     line: "NotebookLM, Cursor and Claude Design, then a live demo that built a ten-slide deck from one prompt."
