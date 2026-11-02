@@ -8,7 +8,7 @@
 //    anyone with a special role in brackets ("Keke Li ’27 (first version)"), advisors after
 //    "with", and the client office (offices only, never a faculty member's name). Each name links
 //    to the club's developers on the About page (/about/#developers), underlined.
-// 2. One small mono row: "Club lead ..." (the club president, from members.json, on every case),
+// 2. One small mono row: "Case lead ..." (from the case file's "caseLead", or "To be named"),
 //    "Team this year ..." (this year's case team, from "currentTeam"; kept
 //    apart from the "Built by" sentence because new members haven't built the tool), "Runs on
 //    ...", "Status ..." (for Roster Export, where the next phase is explained) and the links:
@@ -23,12 +23,13 @@ import Statement from '../Statement.astro';
 import Divider from '../Divider.astro';
 import ArrowLink from '../ArrowLink.astro';
 import { formatPerson, joinNames } from '../../lib/people';
-import members from '../../data/members.json';
 
 interface Props {
   team: { name: string; classYear?: number; role?: string }[];
   // This year's team (see src/content.config.ts). Empty means no "Team this year" line.
   currentTeam?: { name: string; classYear?: number; role?: string }[];
+  // The case lead (see src/content.config.ts). Left out means "To be named".
+  caseLead?: { name: string; classYear?: number };
   office: string;
   // How the office reads inside the sentence (see src/content.config.ts), e.g. "teaching faculty".
   officeIn?: string;
@@ -40,13 +41,10 @@ interface Props {
   // A short line shown beside the link, e.g. "A preview of the next version, still in progress."
   liveNote?: string;
 }
-const { team, currentTeam = [], office, officeIn, runsOn, status, rows, repo, liveUrl, liveNote } = Astro.props;
+const { team, currentTeam = [], caseLead, office, officeIn, runsOn, status, rows, repo, liveUrl, liveNote } = Astro.props;
 
-// The club lead ("lead" in members.json, the president) as "Cayden Auyang ’27": printed on every
-// case, because the president leads every case alongside its team. To change who it is, change
-// "lead" in members.json, not here.
-const leadEntry = members.members.find((person) => person.name === members.lead);
-const clubLead = formatPerson({ name: members.lead, classYear: leadEntry?.classYear });
+// The case lead as "Luke Ryan ’27", or "To be named" while the case file names no one.
+const lead = caseLead ? formatPerson(caseLead) : 'To be named';
 
 // This year's team as "A ’27, B ’28 and C ’30", or nothing when the case file lists none.
 const thisYear = joinNames(currentTeam.map((person) => formatPerson(person)));
@@ -105,7 +103,7 @@ const statusText = statusRow ? statusRow.value : `${status}.`;
     <!-- The facts row: what it runs on, where it stands, and the links. -->
     <ul class="credits__facts t-mono">
       <li class="credits__fact credits__fact--lead">
-        <span class="credits__key">Club lead</span> {clubLead}.
+        <span class="credits__key">Case lead</span> {lead}.
       </li>
       {
         thisYear && (
@@ -222,7 +220,7 @@ const statusText = statusRow ? statusRow.value : `${status}.`;
   .credits__fact {
     grid-column: span 4;
   }
-  /* "Club lead" and "Team this year" each get a row of their own across the full width, so "Runs
+  /* "Case lead" and "Team this year" each get a row of their own across the full width, so "Runs
      on", "Status" and the links keep sharing the row below them, three across. */
   .credits__fact--team,
   .credits__fact--lead {

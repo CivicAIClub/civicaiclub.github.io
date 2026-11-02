@@ -6,8 +6,9 @@
 # accounts, can open it. Say that, and nothing more about how it is set up.
 # Never link the live portal (it shows real data). The repository link stays hidden for now
 # (repo: null).
-# currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-30: Keke Li, lead
-# developer, and Luke Ryan, vice president, are on every case). It shows as its own "Team this year" line;
+# currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-30 and
+# 2026-11-01): Cayden Auyang, president, is on every case. Keke Li and Luke Ryan are not on
+# Case B (2026-11-01). It shows as its own "Team this year" line;
 # "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: B
 slug: music-studio
@@ -18,6 +19,8 @@ team:
     classYear: 2028
   - name: JT Gannon
     classYear: 2029
+  - name: Cayden Auyang
+    classYear: 2027
 currentTeam:
   - name: Serena Xu
     classYear: 2028
@@ -27,10 +30,11 @@ currentTeam:
     classYear: 2030
   - name: Kyle Kim
     classYear: 2027
-  - name: Keke Li
+  - name: Cayden Auyang
     classYear: 2027
-  - name: Luke Ryan
-    classYear: 2027
+caseLead:
+  name: Serena Xu
+  classYear: 2028
 status: Delivered to the Music Department, Oct 2026
 chore: "Lesson materials were scattered, every booking took back-and-forth, and [nothing tracked progress]. Music Studio puts all three in one portal."
 fix: "Lesson invites after a quick preview, a Drive folder per student, a recap after every lesson."

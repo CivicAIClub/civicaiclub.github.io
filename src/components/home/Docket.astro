@@ -4,7 +4,7 @@
 //
 // Each case is a giant letter cut out of an ink sheet, with a short silent loop of that case's
 // tool playing through the hole in full color, and beside it the tool's name, the client
-// office, one line about what it does, "Open case ↗", and ruled rows: who built it, the club
+// office, one line about what it does, "Open case ↗", and ruled rows: who built it, the case
 // lead, this year's team and where it stands. Cases E, G and H have no case page: each letter is only an outline, with no
 // footage and no link, and says "In progress". A case with no team yet reads "Team: Forming".
 //
@@ -31,7 +31,6 @@ import { getAllCases, caseUrl } from '../../lib/cases';
 import { getClip } from '../../lib/media';
 import { formatPerson } from '../../lib/people';
 import glyphs from './docket-letters.json';
-import members from '../../data/members.json';
 
 const cases = await getAllCases();
 
@@ -66,11 +65,6 @@ function builtBy(team: { name: string; classYear?: number; role?: string }[]): s
 }
 
 // Everything the page needs about each case, worked out once.
-// "Club lead": the club president ("lead" in members.json), the same on every case, as
-// "Cayden Auyang ’27". Change "lead" in members.json to change it.
-const leadEntry = members.members.find((person) => person.name === members.lead);
-const clubLead = formatPerson({ name: members.lead, classYear: leadEntry?.classYear });
-
 const rows = cases.map((entry) => {
   const data = entry.data;
   const glyph = glyphs.letters[data.letter as keyof typeof glyphs.letters];
@@ -98,6 +92,8 @@ const rows = cases.map((entry) => {
     // haven't built the tool). Empty when the case file lists no currentTeam, and then the row
     // is left out.
     thisYear: data.currentTeam.map(formatPerson).join(', '),
+    // "Case lead": the case file's caseLead, or "To be named" while no one is named.
+    caseLead: data.caseLead ? formatPerson(data.caseLead) : 'To be named',
     // "Status": the case file's own words. A case marked inProgress reads "In progress. ...", e.g.
     // Case E: "In progress. Building a first demo."
     status: data.inProgress ? `In progress. ${data.status.replace(/\.$/, '')}.` : data.status,
@@ -203,7 +199,7 @@ const railLabel = `Cases ${rows[0]?.letter ?? 'A'} to ${rows[rows.length - 1]?.l
                   </span>
                 </span>
               </p>
-              {/* Ruled rows: who built it, the club lead, this year's team (when the case file
+              {/* Ruled rows: who built it, the case lead, this year's team (when the case file
                   lists one), and where it stands. Each value rolls in and out
                   with the rest of the case's words (data-dk-fact). */}
               <dl class="dk-case__facts t-ui">
@@ -218,11 +214,11 @@ const railLabel = `Cases ${rows[0]?.letter ?? 'A'} to ${rows[rows.length - 1]?.l
                   </dd>
                 </div>
                 <div class="dk-fact">
-                  <dt class="dk-fact__key t-mono">Club lead</dt>
+                  <dt class="dk-fact__key t-mono">Case lead</dt>
                   <dd class="dk-fact__value">
                     <span class="dk-mask">
                       <span class="dk-mask__in" data-dk-fact>
-                        {clubLead}
+                        {row.caseLead}
                       </span>
                     </span>
                   </dd>
