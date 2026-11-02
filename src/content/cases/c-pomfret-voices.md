@@ -13,9 +13,9 @@
 # is due in late October 2026. Keep the note beside the link saying it is a preview still in
 # progress, and point the link at the final site once the office approves one.
 # currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-13 and
-# 2026-10-30, 2026-11-01): Cayden Auyang, president, Keke Li, lead developer, and Luke Ryan, vice
-# president, are on every case. It shows as its own "Team this year" line; "team" stays the
-# "Built by" credit, because new members haven't built the tool.
+# 2026-10-30, 2026-11-01): Cayden Auyang, president, is on every case. Luke Ryan is not on
+# Case C (2026-11-01). It shows as its own "Team this year" line; "team" stays the "Built by"
+# credit, because new members haven't built the tool.
 letter: C
 slug: pomfret-voices
 title: Pomfret Voices
@@ -43,8 +43,6 @@ currentTeam:
   - name: Kevin Wang
     classYear: 2028
   - name: Cayden Auyang
-    classYear: 2027
-  - name: Luke Ryan
     classYear: 2027
 caseLead:
   name: Zahir Williams

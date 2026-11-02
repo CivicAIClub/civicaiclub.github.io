@@ -6,8 +6,8 @@
 # students (“Practice Student 001” to “253”), recorded with capture/case-f.mjs. Never record or
 # link the real spreadsheet or the real groups.
 # "team" is who built it (set 2026-10-30; Cayden Auyang added first on 2026-11-01, since he ran
-# the build and the delivery himself from Oct 27), with Keke Li, lead developer, and Luke Ryan,
-# vice president, who are on every case. Cayden is also the case lead.
+# the build and the delivery himself from Oct 27), with Keke Li, lead developer. Cayden is also
+# the case lead. Luke Ryan is not on Case F (removed 2026-11-01).
 # The client is named by office only. The repo is linked from the credits; the demo itself is
 # not linked from the site, so don’t add a liveUrl.
 letter: F
@@ -26,8 +26,6 @@ team:
   - name: Serena Xu
     classYear: 2028
   - name: Keke Li
-    classYear: 2027
-  - name: Luke Ryan
     classYear: 2027
 caseLead:
   name: Cayden Auyang

@@ -3,9 +3,9 @@
 # outlined letter with no footage and no link. The first discovery meeting with the College
 # Counseling Office was on 2026-10-09; the team is now building a first demo (as of 2026-10-30).
 # "team" is this year's case team (set 2026-09-29, updated 2026-10-13, 2026-10-30 and
-# 2026-11-01): Cayden Auyang, president, Keke Li, lead developer, and Luke Ryan, vice president,
-# are on every case. Nothing is built yet, so the home page labels it "Team", not "Built by".
-# The repo is recorded here but not linked from the site.
+# 2026-11-01): Cayden Auyang, president, is on every case; Keke Li, lead developer, and Luke
+# Ryan, vice president, are on this one too. Nothing is built yet, so the home page labels it
+# "Team", not "Built by". The repo is recorded here but not linked from the site.
 letter: E
 slug: college-counseling
 title: College counseling tools

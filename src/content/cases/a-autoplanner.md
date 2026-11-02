@@ -12,8 +12,8 @@
 # The clip ids below must match src/data/media.json (see MEDIA-IDS.md). Beat times are seconds
 # into the scrub clip, timed against the final footage (re-time them if it is ever re-cut).
 # currentTeam is this school year's case team (set 2026-09-29, updated 2026-10-30 and
-# 2026-11-01): Cayden Auyang, president, Keke Li, lead developer, and Luke Ryan, vice president,
-# are on every case. It shows as its own "Team this year" line;
+# 2026-11-01): Cayden Auyang, president, is on every case. Keke Li is not on Case A (2026-11-01).
+# It shows as its own "Team this year" line;
 # "team" stays the "Built by" credit, because new members haven't built the tool.
 letter: A
 slug: autoplanner
@@ -36,8 +36,6 @@ currentTeam:
   - name: Justus Schroeder
     classYear: 2029
   - name: Cayden Auyang
-    classYear: 2027
-  - name: Keke Li
     classYear: 2027
 caseLead:
   name: Luke Ryan
