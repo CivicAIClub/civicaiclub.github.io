@@ -15,12 +15,12 @@ slug: music-studio
 title: Music Studio
 office: Music Department
 team:
+  - name: Cayden Auyang
+    classYear: 2027
   - name: Serena Xu
     classYear: 2028
   - name: JT Gannon
     classYear: 2029
-  - name: Cayden Auyang
-    classYear: 2027
 currentTeam:
   - name: Serena Xu
     classYear: 2028

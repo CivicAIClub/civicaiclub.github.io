@@ -21,12 +21,12 @@ slug: pomfret-voices
 title: Pomfret Voices
 office: Office of Community and Belonging
 team:
-  - name: Zahir Williams
-    classYear: 2028
   - name: Keke Li
     classYear: 2027
   - name: Cayden Auyang
     classYear: 2027
+  - name: Zahir Williams
+    classYear: 2028
 currentTeam:
   - name: Zahir Williams
     classYear: 2028
@@ -45,8 +45,8 @@ currentTeam:
   - name: Cayden Auyang
     classYear: 2027
 caseLead:
-  name: Zahir Williams
-  classYear: 2028
+  name: Keke Li
+  classYear: 2027
 status: Next version under way
 inProgress: true
 chore: "Pomfret’s history of diversity, equity and inclusion, [checked line by line]. Every claim traces to a source document."
