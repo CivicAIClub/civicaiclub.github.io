@@ -3,18 +3,22 @@
   One term of Civic AI: a 12-slide deck for a 5 to 7 minute class talk.
 
   Plain HTML, CSS and JavaScript. Nothing here is built by Astro: the whole public/showcase/ folder
-  is copied to the site as it is, and it makes no network requests once it has loaded.
+  is copied to the site as it is. After it has loaded (and its clips have downloaded, which the
+  status line counts) it makes no network requests.
 
   Files:
     index.html   the slides and their presenter notes (this file)
     deck.css     how everything looks
     deck.js      moving between slides, the status line, the clock, the notes
+    clips.js     the recordings: play on a step, K pause, R replay, kept in memory for offline
     sims.js      the working parts of the two simulations (Case F sorter, Case G guest question)
     slides.js    what each slide does when you step through it
+    media/       the recordings of the real tools (AV1, H.264 and a poster for each)
     fonts/       Host Grotesk and Martian Mono
 
-  Every student in a mock or simulation is made up. Real tools are shown live from the presenter's
-  own browser tabs, never from this page.
+  The recordings show the real tools. FACTS.md says what each one shows, when it was recorded
+  and which use real names (Case B, GitHub and Cayden's own planner) or practice data (F and G).
+  Every student in a mock or simulation is made up.
 -->
 <html lang="en">
 <head>
@@ -59,7 +63,7 @@
   </section>
 
   <!-- ================================================================== 2. The term in numbers -->
-  <section class="slide slide--paper s-numbers" data-section="The term in numbers" data-time="30" data-steps="0">
+  <section class="slide slide--paper s-numbers" data-section="The term in numbers" data-time="25" data-steps="0">
     <div class="numbers__hero">
       <p class="numbers__big display"><span class="ln" style="--i:0"><span>108</span></span></p>
       <p class="numbers__biglabel" data-rise style="--i:3">pull requests merged since September 1.</p>
@@ -84,7 +88,7 @@
   </section>
 
   <!-- ================================================================== 3. How a case runs -->
-  <section class="slide slide--paper s-run" data-section="How a case runs" data-time="40" data-steps="0">
+  <section class="slide slide--paper s-run" data-section="How a case runs" data-time="30" data-steps="0">
     <p class="run__head label" data-rise style="--i:0">Every case, five stages</p>
     <p class="run__head run__head--right label" data-rise style="--i:0">What I do there</p>
     <ol class="run__list">
@@ -159,109 +163,87 @@
 
   <!-- ================================================================== 5. Case A -->
   <section class="slide slide--paper s-case s-a" data-section="Case A" data-time="40" data-steps="2">
-    <div class="case__side">
+    <div class="case__side case__side--narrow">
       <p class="case__letter display" aria-hidden="true"><span class="ln" style="--i:0"><span>A</span></span></p>
       <p class="label" data-rise style="--i:2">Case A · CLC Supported Study Hall</p>
-      <h2 class="case__title display"><span class="ln" style="--i:2"><span>AutoPlanner</span></span></h2>
+      <h2 class="case__title case__title--small display"><span class="ln" style="--i:2"><span>AutoPlanner</span></span></h2>
       <p class="case__line" data-rise style="--i:4">Staff copied assignments out of Canvas <mark class="mark">by hand</mark>. Now one planner Doc per student updates itself, at about 7 pm and midnight.</p>
-      <p class="case__status label" data-rise style="--i:5"><span class="sq"></span>Delivered to the CLC, Oct 2026 · Apps Script</p>
+      <p class="case__status label" data-rise style="--i:5"><span class="sq"></span>Delivered to the CLC, Oct 2026<br>Apps Script</p>
     </div>
-    <div class="case__mock" data-rise style="--i:3">
-      <div class="a-clock">
-        <span class="label label--quiet">On-slide clock</span>
-        <span class="a-clock__time" id="a-clock">6:57 PM</span>
+    <figure class="clip clip--case" data-clip="case-a" data-play="1">
+      <div class="clip__frame">
+        <video class="clip__video" muted playsinline preload="none" poster="media/case-a.webp" width="1920" height="1080" controls aria-label="A recording of an AutoPlanner Doc: the week tabs, then the By Day table, the Weekend plan and the By Class table.">
+          <source src="media/case-a.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'>
+          <source src="media/case-a.h264.mp4" type='video/mp4; codecs="avc1.640029"'>
+        </video>
+        <button class="clip__play" type="button">Play</button>
+        <span class="clip__bar"></span>
       </div>
-      <div class="doc">
-        <div class="doc__head">
-          <span class="doc__title">Weekly planner · Jordan Vale</span>
-          <span class="doc__stamp label" id="a-stamp">Last updated 12:00 AM</span>
-        </div>
-        <table class="doc__table">
-          <thead><tr><th>Class</th><th>Assignment</th><th>Due</th><th>Status</th></tr></thead>
-          <tbody id="a-rows">
-            <tr><td>Chemistry</td><td>Lab report: density</td><td>Thu</td><td>In progress</td></tr>
-            <tr><td>U.S. History</td><td>Reading, chapter 9</td><td>Wed</td><td>Done</td></tr>
-            <tr><td>Algebra II</td><td>Problem set 4.2</td><td>Thu</td><td>Not started</td></tr>
-            <tr class="a-new"><td>English</td><td>Essay outline</td><td>Fri</td><td><span class="tag">New</span></td></tr>
-            <tr class="a-new"><td>Spanish III</td><td>Vocabulary quiz</td><td>Fri</td><td><span class="tag">New</span></td></tr>
-            <tr class="a-new"><td>Chemistry</td><td>Quiz: moles</td><td>Mon</td><td><span class="tag">New</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="mock__caption label label--quiet">Demo data. Jordan Vale is a made-up student.</p>
-      <p class="live label" data-step="2"><span class="dot"></span>Live<span class="live__what">switch to the real tab</span></p>
-    </div>
+      <figcaption class="clip__meta"><span class="clip__caption label">Cayden’s own planner · recorded Nov 19, 2026</span><span class="clip__keys label label--quiet"></span></figcaption>
+    </figure>
+    <p class="live label" data-step="2"><span class="dot"></span>Live<span class="live__what">switch to the real tab</span></p>
     <aside class="notes">
       <h2>Case A, AutoPlanner</h2>
       <ul>
         <li>“Study hall staff logged in to Canvas and copied every assignment by hand.”</li>
-        <li>Press Right: the clock runs to 7 pm and the planner fills in. “Nobody clicked anything.”</li>
-        <li>Press Right again for the LIVE marker, then switch to the real planner tab.</li>
+        <li>Press Right: my own planner plays (20 seconds). “One tab per week. By day, the weekend, by class. Nobody typed any of it.”</li>
+        <li>Press Right again for the LIVE marker, then switch to the real planner tab. This is the only live moment.</li>
       </ul>
     </aside>
   </section>
 
   <!-- ================================================================== 6. Case B -->
-  <section class="slide slide--paper s-case s-b" data-section="Case B" data-time="35" data-steps="2">
-    <div class="case__side">
+  <section class="slide slide--paper s-case s-b" data-section="Case B" data-time="40" data-steps="1">
+    <div class="case__side case__side--narrow">
       <p class="case__letter display" aria-hidden="true"><span class="ln" style="--i:0"><span>B</span></span></p>
       <p class="label" data-rise style="--i:2">Case B · Music Department</p>
-      <h2 class="case__title display"><span class="ln" style="--i:2"><span>Music Studio</span></span></h2>
+      <h2 class="case__title case__title--small display"><span class="ln" style="--i:2"><span>Music Studio</span></span></h2>
       <p class="case__line" data-rise style="--i:4">Lesson materials, booking and progress lived in three places. Now they share <mark class="mark">one portal</mark>, and only people the department adds can sign in.</p>
-      <p class="case__status label" data-rise style="--i:5"><span class="sq"></span>Delivered, Oct 2026 · Apps Script web app</p>
+      <p class="case__status label" data-rise style="--i:5"><span class="sq"></span>Delivered, Oct 2026<br>Apps Script web app</p>
     </div>
-    <div class="case__mock" data-rise style="--i:3">
-      <div class="portal" id="b-portal">
-        <div class="portal__parts">
-          <div class="portal__bar"><span>Music Studio</span><span class="label label--quiet">Signed in · mara.quill@example.org</span></div>
-          <div class="portal__part">
-            <span class="portal__n label">01</span><h3>Materials</h3>
-            <p>A folder for the studio and one for each student.</p>
-            <ul class="portal__files"><li>Scales, week 6</li><li>Etude no. 3</li></ul>
-          </div>
-          <div class="portal__part">
-            <span class="portal__n label">02</span><h3>Booking</h3>
-            <p>Preview a lesson, then one click sends the invite.</p>
-            <ul class="portal__files"><li>Thu 3:15 PM · Room 2</li><li class="is-sent">Invite sent</li></ul>
-          </div>
-          <div class="portal__part">
-            <span class="portal__n label">03</span><h3>Progress</h3>
-            <p>A recap after every lesson, kept on the student’s profile.</p>
-            <ul class="portal__files portal__files--three"><li>Today we</li><li>Homework</li><li>Next class</li></ul>
-          </div>
-        </div>
-        <div class="portal__signin">
-          <p class="portal__brand display">Music Studio</p>
-          <p class="portal__ask">Sign in with your school account</p>
-          <div class="portal__field">mara.quill@example.org</div>
-          <button class="btn" type="button" id="b-signin">Sign in</button>
-          <p class="label label--quiet">Only people the department adds can open it</p>
-        </div>
+    <figure class="clip clip--case" data-clip="case-b" data-play="1">
+      <div class="clip__frame">
+        <video class="clip__video" muted playsinline preload="none" poster="media/case-b.webp" width="1920" height="1080" controls aria-label="A recording of the Music Studio portal: the dashboard and class resources, the roster, one profile with its booked lessons, and a lesson recap.">
+          <source src="media/case-b.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'>
+          <source src="media/case-b.h264.mp4" type='video/mp4; codecs="avc1.640029"'>
+        </video>
+        <button class="clip__play" type="button">Play</button>
+        <span class="clip__bar"></span>
       </div>
-      <p class="mock__caption label label--quiet">A mock with a made-up student. The real portal is never linked.</p>
-      <p class="live label" data-step="2"><span class="dot"></span>Live<span class="live__what">switch to the real tab</span></p>
-    </div>
+      <figcaption class="clip__meta"><span class="clip__caption label">Real portal · recorded Nov 19, 2026 · emails hidden</span><span class="clip__keys label label--quiet"></span></figcaption>
+    </figure>
     <aside class="notes">
       <h2>Case B, Music Studio</h2>
       <ul>
         <li>“Materials, booking and progress used to live in three places.”</li>
-        <li>Press Right to sign in: three parts, one portal. “The department decides who gets in.”</li>
-        <li>Press Right again for the LIVE marker, then switch to the portal tab.</li>
+        <li>Press Right: the real portal plays (30 seconds). Home and shared materials, the roster, one profile and its booked lessons, then a recap.</li>
+        <li>“The department decides who gets in.” No live tab here: the recording is the demo.</li>
       </ul>
     </aside>
   </section>
 
   <!-- ================================================================== 7. Case F -->
-  <section class="slide slide--paper s-case s-f" data-section="Case F" data-time="40" data-steps="1">
+  <section class="slide slide--paper s-case s-f" data-section="Case F" data-time="45" data-steps="2">
     <div class="case__side case__side--narrow">
       <p class="case__letter display" aria-hidden="true"><span class="ln" style="--i:0"><span>F</span></span></p>
       <p class="label" data-rise style="--i:2">Case F · Project: Pomfret</p>
       <h2 class="case__title case__title--small display"><span class="ln" style="--i:2"><span>Project: Pomfret</span></span><span class="ln" style="--i:3"><span>sorting</span></span></h2>
       <p class="case__line" data-rise style="--i:4">Hundreds of form answers, balanced into project groups, with <mark class="mark">a reason</mark> for each placement.</p>
       <p class="case__status label" data-rise style="--i:5"><span class="sq"></span>Delivered, Oct 2026<br>Sheets + Apps Script</p>
-      <button class="btn" type="button" id="f-sort" data-rise style="--i:6">Sort 24 students</button>
+      <button class="btn" type="button" id="f-sort" data-step="2">Sort 24 students</button>
     </div>
-    <div class="sorter" data-rise style="--i:3">
+    <figure class="clip clip--case" data-clip="case-f" data-play="1" data-until="1">
+      <div class="clip__frame">
+        <video class="clip__video" muted playsinline preload="none" poster="media/case-f.webp" width="1920" height="1080" controls aria-label="A recording of the sorter in Google Sheets with practice data: the menu, Sort, the project groups, and one placement’s reason.">
+          <source src="media/case-f.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'>
+          <source src="media/case-f.h264.mp4" type='video/mp4; codecs="avc1.640029"'>
+        </video>
+        <button class="clip__play" type="button">Play</button>
+        <span class="clip__bar"></span>
+      </div>
+      <figcaption class="clip__meta"><span class="clip__caption label">The real sorter in Google Sheets · practice students · Demo data.</span><span class="clip__keys label label--quiet"></span></figcaption>
+    </figure>
+    <div class="sorter" data-step="2">
       <div class="sorter__heads" id="f-heads"></div>
       <div class="sorter__field" id="f-field"></div>
       <p class="sorter__summary" id="f-summary">24 made-up students. 4 projects, 6 seats each. Each student ranked three.</p>
@@ -270,8 +252,8 @@
       <h2>Case F, Project: Pomfret sorting</h2>
       <ul>
         <li>“Every year someone read hundreds of form answers and balanced the groups by hand.”</li>
-        <li>Press Right (or the button) to sort 24 made-up students. Press the button again for a new draw.</li>
-        <li>“Every placement says why. The sorter proposes, a person decides.”</li>
+        <li>Press Right: the real sorter plays on practice students (25 seconds). The menu, Sort, the groups, one reason.</li>
+        <li>Press Right again: a small version sorts 24 made-up students on the slide. “It proposes, a person decides.” Skip this press if you’re behind.</li>
       </ul>
     </aside>
   </section>
@@ -332,23 +314,33 @@
       </g>
     </svg>
 
+<figure class="clip clip--org" data-clip="github" data-play="7" data-from="7">
+      <div class="clip__frame">
+        <video class="clip__video" muted playsinline preload="none" poster="media/github.webp" width="1920" height="1080" controls aria-label="A recording of the club’s GitHub: the list of repositories, then pull request 5 in the Case G repository with its review, the fix, the passing check and the merge.">
+          <source src="media/github.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'>
+          <source src="media/github.h264.mp4" type='video/mp4; codecs="avc1.640029"'>
+        </video>
+        <button class="clip__play" type="button">Play</button>
+        <span class="clip__bar"></span>
+      </div>
+      <figcaption class="clip__meta"><span class="clip__caption label">Real GitHub pages, signed out · recorded Nov 19, 2026</span><span class="clip__keys label label--quiet"></span></figcaption>
+    </figure>
     <div class="org__real" data-step="7">
-      <p class="label label--quiet">The real one · Case G, pull request 5 · Nov 18, 2026</p>
+      <p class="label label--quiet">The real one · Case G, pull request 5</p>
       <ol class="org__steps">
-        <li><span class="label">6:41 PM</span><p>Opened for review. Four commits.</p></li>
-        <li><span class="label">6:47 PM</span><p>Keke Li ’27 reviews it: “The tool reserves one seat. The answer calls for two.”</p></li>
-        <li><span class="label">6:53 PM</span><p>Fixed. A guest written as “my son” now gets a seat. 94 tests pass.</p></li>
-        <li><span class="label">7:30 PM</span><p>Merged to main.</p></li>
+        <li><span class="label">One repository per case</span><p>14 in the organization.</p></li>
+        <li><span class="label">Review, 6:47 PM</span><p>Keke Li ’27 reads it and finds a guest with no seat.</p></li>
+        <li><span class="label">Fix, 6:53 PM</span><p>One more commit. The check turns green.</p></li>
+        <li><span class="label">Merge, 7:30 PM</span><p>Into main.</p></li>
       </ol>
     </div>
     <p class="org__why display" data-step="8">Nobody’s mistake <mark class="mark">reaches the teacher</mark>.</p>
     <aside class="notes">
       <h2>Teaching point 1, building as an organization</h2>
       <ul>
-        <li>Six presses draw the diagram: organization, repos, branch, pull request, review, merge.</li>
-        <li>“Nobody edits the real thing. You work on a copy, then ask the team to look.”</li>
-        <li>Press 7: “Keke found a guest with no seat. Six minutes later it was fixed.”</li>
-        <li>Press 8: “That’s why. Nobody’s mistake reaches the teacher.”</li>
+        <li>Six presses draw the diagram: organization, repos, branch, pull request, review, merge. “Nobody edits the real thing.”</li>
+        <li>Press 7: the real GitHub plays (25 seconds). The repositories, then pull request 5. “Keke found a guest with no seat. Six minutes later it was fixed.”</li>
+        <li>Press 8: “That’s why. Nobody’s mistake reaches the teacher.” Say reviewed and fixed, not approved.</li>
       </ul>
     </aside>
   </section>
@@ -404,6 +396,22 @@
       <p class="mock__caption label">A mock Sheet. Made-up names.</p>
     </div>
 
+<figure class="clip clip--script" data-clip="apps-script" data-play="3" data-from="3">
+      <div class="clip__frame">
+        <video class="clip__video" muted playsinline preload="none" poster="media/apps-script.webp" width="1920" height="1080" controls aria-label="A recording of Google Sheets and Apps Script: Extensions, Apps Script, the script pasted in and saved, the spreadsheet reloaded, and a new Seated Meals menu.">
+          <source src="media/apps-script.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'>
+          <source src="media/apps-script.h264.mp4" type='video/mp4; codecs="avc1.640029"'>
+        </video>
+        <button class="clip__play" type="button">Play</button>
+        <span class="clip__bar"></span>
+      </div>
+      <figcaption class="clip__meta"><span class="clip__caption label">Real Apps Script editor · practice spreadsheet · Demo data.</span><span class="clip__keys label label--quiet"></span></figcaption>
+    </figure>
+    <ol class="script__moments" data-step="3">
+      <li><span class="label">01</span><p>Extensions &gt; Apps Script</p></li>
+      <li><span class="label">02</span><p>Paste the script. Save.</p></li>
+      <li><span class="label">03</span><p>Reload the Sheet: it has a new menu.</p></li>
+    </ol>
     <p class="script__line display" data-step="3">Extensions &gt; Apps Script. <mark class="mark">In any Sheet. Free.</mark></p>
     <p class="script__sub label label--quiet" data-step="3">Five of the club’s eight cases run on it: A, B, D, F and G</p>
     <aside class="notes">
@@ -411,13 +419,13 @@
       <ul>
         <li>“Thirteen lines. The top half adds a menu. The bottom half is what the menu runs.”</li>
         <li>Press Right to open the Club tools menu, Right again to run it. The code lights up as the cells fill.</li>
-        <li>Press Right once more: “Extensions, Apps Script. It’s in every Sheet you already have.”</li>
+        <li>Press Right once more: the real editor plays (15 seconds). “Extensions, Apps Script. Paste, save, reload. It’s in every Sheet you already have.”</li>
       </ul>
     </aside>
   </section>
 
   <!-- ================================================================== 10. Case G, try it -->
-  <section class="slide slide--paper s-case s-g" data-section="Case G, try it" data-time="35" data-steps="1">
+  <section class="slide slide--paper s-case s-g" data-section="Case G, try it" data-time="45" data-steps="2">
     <div class="case__side case__side--narrow">
       <p class="case__letter display" aria-hidden="true"><span class="ln" style="--i:0"><span>G</span></span></p>
       <p class="label" data-rise style="--i:2">Case G · Associate Head of School’s Office</p>
@@ -425,7 +433,18 @@
       <p class="case__line" data-rise style="--i:4">Seats students and faculty by ranked rules, and picks waiters fairly.</p>
       <p class="case__status label" data-rise style="--i:5"><span class="dot"></span>In testing for Candlelight<br>in December</p>
     </div>
-    <div class="guest" data-rise style="--i:3">
+    <figure class="clip clip--case" data-clip="case-g" data-play="1" data-until="1">
+      <div class="clip__frame">
+        <video class="clip__video" muted playsinline preload="none" poster="media/case-g.webp" width="1920" height="1080" controls aria-label="A recording of the seated meals tool in Google Sheets with practice data: Make practice data, Sort, the result, then the SM By table and SM Check tabs.">
+          <source src="media/case-g.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'>
+          <source src="media/case-g.h264.mp4" type='video/mp4; codecs="avc1.640029"'>
+        </video>
+        <button class="clip__play" type="button">Play</button>
+        <span class="clip__bar"></span>
+      </div>
+      <figcaption class="clip__meta"><span class="clip__caption label">The real tool in Google Sheets · practice school · Demo data.</span><span class="clip__keys label label--quiet"></span></figcaption>
+    </figure>
+    <div class="guest" data-step="2">
       <p class="label label--quiet">Question 4 on the faculty form</p>
       <label class="guest__q display" for="g-input">Will a spouse, partner or child join you? If so, who?</label>
       <input class="guest__input" id="g-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="120" placeholder="Type an answer, then press Enter">
@@ -450,9 +469,9 @@
     <aside class="notes">
       <h2>Case G, try it</h2>
       <ul>
-        <li>“Someone answer this the way a teacher would on a form.”</li>
-        <li>Press Right to put the cursor in the box. Type the answer, press Enter. Enter again leaves the box.</li>
-        <li>If it’s quiet, click “No”: “The first version saved a seat for a guest named No.”</li>
+        <li>Press Right: the real tool plays on a practice school (24 seconds). “Sort seats 325 students and 78 faculty, then checks every rule.”</li>
+        <li>Press Right again for the question box. “Someone answer this the way a teacher would.” Type, Enter, Enter.</li>
+        <li>If it’s quiet, click “No”: “The first version saved a seat for a guest named No.” One answer is enough.</li>
       </ul>
     </aside>
   </section>
@@ -460,17 +479,29 @@
   <!-- ================================================================== 11. In progress -->
   <section class="slide slide--paper s-next" data-section="In progress" data-time="20" data-steps="0">
     <p class="eyebrow label" data-rise style="--i:0">Still on the bench</p>
-    <ul class="next__list">
-      <li class="next__row" data-case="C" data-rise style="--i:1"><span class="next__letter display">C</span><h2 class="display">Pomfret Voices</h2><p>A sourced timeline website. Next version under way.</p></li>
-      <li class="next__row" data-case="D" data-rise style="--i:2"><span class="next__letter display">D</span><h2 class="display">Roster Export</h2><p>Phase 1 built. A helper for the school’s grading system is in progress.</p></li>
-      <li class="next__row" data-case="E" data-rise style="--i:3"><span class="next__letter display">E</span><h2 class="display">College counseling tools</h2><p>Early. The team is building a first demo.</p></li>
-      <li class="next__row" data-case="H" data-rise style="--i:4"><span class="next__letter display">H</span><h2 class="display">Language placement test</h2><p>Early. First meeting held, first version being planned.</p></li>
-      <li class="next__row" data-case="L" data-rise style="--i:5"><span class="next__letter display">7</span><h2 class="display">Local organizations</h2><p>In the pipeline, down the road from campus. And AI Literacy Week comes back this year.</p></li>
+<ul class="next__list">
+      <li class="next__row" data-case="C" data-rise style="--i:1"><span class="next__letter display">C</span><div><h2 class="display">Pomfret Voices</h2><p>A sourced timeline website. Next version under way.</p></div></li>
+      <li class="next__row" data-case="D" data-rise style="--i:2"><span class="next__letter display">D</span><div><h2 class="display">Roster Export</h2><p>Phase 1 built. A helper for the school’s grading system is in progress.</p></div></li>
+      <li class="next__row" data-case="E" data-rise style="--i:3"><span class="next__letter display">E</span><div><h2 class="display">College counseling tools</h2><p>Early. The team is building a first demo.</p></div></li>
+      <li class="next__row" data-case="H" data-rise style="--i:4"><span class="next__letter display">H</span><div><h2 class="display">Language placement test</h2><p>Early. First meeting held, first version being planned.</p></div></li>
+      <li class="next__row" data-case="L" data-rise style="--i:5"><span class="next__letter display">7</span><div><h2 class="display">Local organizations</h2><p>In the pipeline, down the road from campus. And AI Literacy Week comes back this year.</p></div></li>
     </ul>
+    <figure class="clip clip--small" data-clip="case-c" data-play="0">
+      <div class="clip__frame">
+        <video class="clip__video" muted playsinline preload="none" poster="media/case-c.webp" width="1920" height="1080" controls aria-label="A recording of the Pomfret Voices timeline page, scrolling slowly from the woven timeline to the first chapter.">
+          <source src="media/case-c.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'>
+          <source src="media/case-c.h264.mp4" type='video/mp4; codecs="avc1.640029"'>
+        </video>
+        <button class="clip__play" type="button">Play</button>
+        <span class="clip__bar"></span>
+      </div>
+      <figcaption class="clip__meta"><span class="clip__caption label">Case C · the real site · recorded Nov 19, 2026</span><span class="clip__keys label label--quiet"></span></figcaption>
+    </figure>
     <aside class="notes">
       <h2>In progress</h2>
       <ul>
         <li>“Four more cases are on the bench, and seven local organizations are in the pipeline.”</li>
+        <li>The Pomfret Voices site plays by itself on the right (10 seconds). No press needed.</li>
         <li>Don’t say Case D is in use. It isn’t yet.</li>
       </ul>
     </aside>
@@ -499,8 +530,9 @@
   <header class="status" aria-live="off">
     <span class="status__club">Civic AI Club</span>
     <span class="status__section" id="status-section">Title</span>
+    <span class="status__clips" id="status-clips" title="Recordings downloaded and kept for offline use"></span>
     <span class="status__num" id="status-num">01 / 12</span>
-    <span class="status__clock" id="status-clock" title="Elapsed time. Starts on the first move forward. R resets it.">0:00</span>
+    <span class="status__clock" id="status-clock" title="Elapsed time. Starts on the first move forward. T resets it.">0:00</span>
   </header>
   <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
 
@@ -513,6 +545,7 @@
 
 <script src="sims.js"></script>
 <script src="deck.js"></script>
+<script src="clips.js"></script>
 <script src="slides.js"></script>
 </body>
 </html>
