@@ -1,0 +1,518 @@
+<!doctype html>
+<!--
+  One term of Civic AI: a 12-slide deck for a 5 to 7 minute class talk.
+
+  Plain HTML, CSS and JavaScript. Nothing here is built by Astro: the whole public/showcase/ folder
+  is copied to the site as it is, and it makes no network requests once it has loaded.
+
+  Files:
+    index.html   the slides and their presenter notes (this file)
+    deck.css     how everything looks
+    deck.js      moving between slides, the status line, the clock, the notes
+    sims.js      the working parts of the two simulations (Case F sorter, Case G guest question)
+    slides.js    what each slide does when you step through it
+    fonts/       Host Grotesk and Martian Mono
+
+  Every student in a mock or simulation is made up. Real tools are shown live from the presenter's
+  own browser tabs, never from this page.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>One term of Civic AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="A term of work at the Civic AI Club, Pomfret School: what shipped, how a team ships safely, and Apps Script.">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/host-grotesk-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/martian-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="deck.css">
+  <script>document.documentElement.className = 'js';</script>
+</head>
+<body>
+<div class="viewport" id="viewport">
+<main class="stage" id="stage">
+
+  <!-- ================================================================== 1. Title -->
+  <section class="slide slide--ink s-title" data-section="Title" data-time="15" data-steps="0">
+    <div class="title__who">
+      <p class="label" data-rise style="--i:6">Cayden Auyang ’27</p>
+      <p class="label label--quiet" data-rise style="--i:7">Founder and president, Civic AI Club</p>
+      <p class="label label--quiet" data-rise style="--i:8">Pomfret School · November 2026</p>
+    </div>
+    <h1 class="title__head display">
+      <span class="ln" style="--i:0"><span>One term</span></span>
+      <span class="ln" style="--i:1"><span>of Civic AI.</span></span>
+    </h1>
+    <p class="title__purpose" data-rise style="--i:5">Teachers bring <mark class="mark">time-consuming chores</mark>. Students build the tools.</p>
+    <ol class="title__docket" aria-label="Cases A to H" data-rise style="--i:9">
+      <li class="is-done">A</li><li class="is-done">B</li><li>C</li><li>D</li><li>E</li><li class="is-done">F</li><li>G</li><li>H</li>
+    </ol>
+    <aside class="notes">
+      <h2>Title</h2>
+      <ul>
+        <li>“This is what I did all term: I ran the Civic AI Club.”</li>
+        <li>“Teachers bring us a chore. Students build the tool.”</li>
+        <li>The clock starts when you press Right.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 2. The term in numbers -->
+  <section class="slide slide--paper s-numbers" data-section="The term in numbers" data-time="30" data-steps="0">
+    <div class="numbers__hero">
+      <p class="numbers__big display"><span class="ln" style="--i:0"><span>108</span></span></p>
+      <p class="numbers__biglabel" data-rise style="--i:3">pull requests merged since September 1.</p>
+      <p class="label label--quiet" data-rise style="--i:4">138 since the club’s first one in April 2026</p>
+    </div>
+    <dl class="numbers__list">
+      <div class="numbers__row" data-rise style="--i:2"><dt>8</dt><dd>faculty cases</dd></div>
+      <div class="numbers__row" data-rise style="--i:3"><dt>3</dt><dd>tools delivered</dd></div>
+      <div class="numbers__row" data-rise style="--i:4"><dt>14</dt><dd>public repositories</dd></div>
+      <div class="numbers__row" data-rise style="--i:5"><dt>24</dt><dd>students on the GitHub team</dd></div>
+      <div class="numbers__row" data-rise style="--i:6"><dt>7</dt><dd>local organizations in the pipeline</dd></div>
+    </dl>
+    <p class="numbers__checked label" data-rise style="--i:8"><span class="sq"></span>Checked Nov 18, 2026</p>
+    <aside class="notes">
+      <h2>The term in numbers</h2>
+      <ul>
+        <li>“108 pull requests merged since September. I’ll explain what a pull request is in a minute.”</li>
+        <li>“Three tools delivered to offices. Eight faculty cases open.”</li>
+        <li>24 is the GitHub team. The club roster is larger: not everyone codes.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 3. How a case runs -->
+  <section class="slide slide--paper s-run" data-section="How a case runs" data-time="40" data-steps="0">
+    <p class="run__head label" data-rise style="--i:0">Every case, five stages</p>
+    <p class="run__head run__head--right label" data-rise style="--i:0">What I do there</p>
+    <ol class="run__list">
+      <li class="run__row" style="--i:1"><span class="run__n label">01</span><h2 class="run__stage display"><span class="ln" style="--i:1"><span>Discovery meeting</span></span></h2><p data-rise style="--i:3">I sit down with the office and ask what the chore really is.</p></li>
+      <li class="run__row" style="--i:2"><span class="run__n label">02</span><h2 class="run__stage display"><span class="ln" style="--i:2"><span>Spec</span></span></h2><p data-rise style="--i:4">I write down what the tool will do and what it must never touch.</p></li>
+      <li class="run__row" style="--i:3"><span class="run__n label">03</span><h2 class="run__stage display"><span class="ln" style="--i:3"><span>Build</span></span></h2><p data-rise style="--i:5">I build with the case team, one small pull request at a time.</p></li>
+      <li class="run__row" style="--i:4"><span class="run__n label">04</span><h2 class="run__stage display"><span class="ln" style="--i:4"><span><mark class="mark">Review</mark></span></span></h2><p data-rise style="--i:6">I review teammates’ code, and they review mine, before anything merges.</p></li>
+      <li class="run__row" style="--i:5"><span class="run__n label">05</span><h2 class="run__stage display"><span class="ln" style="--i:5"><span>Delivery meeting</span></span></h2><p data-rise style="--i:7">I hand the tool over and write down what to fix next.</p></li>
+    </ol>
+    <aside class="notes">
+      <h2>How a case runs</h2>
+      <ul>
+        <li>“Every case goes through the same five stages, and my job changes at each one.”</li>
+        <li>“Most of my term was the first and last rows: meetings, not code.”</li>
+        <li>“Review is the one I’ll come back to.”</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 4. Hub -->
+  <section class="slide slide--ink s-hub" data-section="Eight cases" data-time="10" data-steps="0" data-hub>
+    <div class="hub__grid">
+      <button class="hub__tile is-done" type="button" data-goto="5" data-key="1" style="--i:0">
+        <span class="hub__key label">1</span><span class="hub__status label"><span class="sq"></span>Delivered</span>
+        <span class="hub__letter display">A</span>
+        <span class="hub__name">AutoPlanner</span><span class="hub__office label">CLC Supported Study Hall</span>
+      </button>
+      <button class="hub__tile is-done" type="button" data-goto="6" data-key="2" style="--i:1">
+        <span class="hub__key label">2</span><span class="hub__status label"><span class="sq"></span>Delivered</span>
+        <span class="hub__letter display">B</span>
+        <span class="hub__name">Music Studio</span><span class="hub__office label">Music Department</span>
+      </button>
+      <button class="hub__tile" type="button" data-goto="11" data-focus="C" data-key="3" style="--i:2">
+        <span class="hub__key label">3</span><span class="hub__status label">Next version</span>
+        <span class="hub__letter display">C</span>
+        <span class="hub__name">Pomfret Voices</span><span class="hub__office label">Community and Belonging</span>
+      </button>
+      <button class="hub__tile" type="button" data-goto="11" data-focus="D" data-key="4" style="--i:3">
+        <span class="hub__key label">4</span><span class="hub__status label">Phase 1 built</span>
+        <span class="hub__letter display">D</span>
+        <span class="hub__name">Roster Export</span><span class="hub__office label">Teaching faculty</span>
+      </button>
+      <button class="hub__tile" type="button" data-goto="11" data-focus="E" data-key="5" style="--i:4">
+        <span class="hub__key label">5</span><span class="hub__status label">Early</span>
+        <span class="hub__letter display">E</span>
+        <span class="hub__name">College counseling tools</span><span class="hub__office label">College Counseling Office</span>
+      </button>
+      <button class="hub__tile is-done" type="button" data-goto="7" data-key="6" style="--i:5">
+        <span class="hub__key label">6</span><span class="hub__status label"><span class="sq"></span>Delivered</span>
+        <span class="hub__letter display">F</span>
+        <span class="hub__name">Project: Pomfret sorting</span><span class="hub__office label">Project: Pomfret</span>
+      </button>
+      <button class="hub__tile is-testing" type="button" data-goto="10" data-key="7" style="--i:6">
+        <span class="hub__key label">7</span><span class="hub__status label"><span class="dot"></span>In testing</span>
+        <span class="hub__letter display">G</span>
+        <span class="hub__name">Seated meals</span><span class="hub__office label">Associate Head of School’s Office</span>
+      </button>
+      <button class="hub__tile" type="button" data-goto="11" data-focus="H" data-key="8" style="--i:7">
+        <span class="hub__key label">8</span><span class="hub__status label">Early</span>
+        <span class="hub__letter display">H</span>
+        <span class="hub__name">Language placement test</span><span class="hub__office label">World Languages Department</span>
+      </button>
+    </div>
+    <aside class="notes">
+      <h2>Eight cases</h2>
+      <ul>
+        <li>“Eight cases, A to H. Three are delivered.”</li>
+        <li>Press Right to carry on to Case A, or 1 to 8 (or click) to jump to one.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 5. Case A -->
+  <section class="slide slide--paper s-case s-a" data-section="Case A" data-time="40" data-steps="2">
+    <div class="case__side">
+      <p class="case__letter display" aria-hidden="true"><span class="ln" style="--i:0"><span>A</span></span></p>
+      <p class="label" data-rise style="--i:2">Case A · CLC Supported Study Hall</p>
+      <h2 class="case__title display"><span class="ln" style="--i:2"><span>AutoPlanner</span></span></h2>
+      <p class="case__line" data-rise style="--i:4">Staff copied assignments out of Canvas <mark class="mark">by hand</mark>. Now one planner Doc per student updates itself, at about 7 pm and midnight.</p>
+      <p class="case__status label" data-rise style="--i:5"><span class="sq"></span>Delivered to the CLC, Oct 2026 · Apps Script</p>
+    </div>
+    <div class="case__mock" data-rise style="--i:3">
+      <div class="a-clock">
+        <span class="label label--quiet">On-slide clock</span>
+        <span class="a-clock__time" id="a-clock">6:57 PM</span>
+      </div>
+      <div class="doc">
+        <div class="doc__head">
+          <span class="doc__title">Weekly planner · Jordan Vale</span>
+          <span class="doc__stamp label" id="a-stamp">Last updated 12:00 AM</span>
+        </div>
+        <table class="doc__table">
+          <thead><tr><th>Class</th><th>Assignment</th><th>Due</th><th>Status</th></tr></thead>
+          <tbody id="a-rows">
+            <tr><td>Chemistry</td><td>Lab report: density</td><td>Thu</td><td>In progress</td></tr>
+            <tr><td>U.S. History</td><td>Reading, chapter 9</td><td>Wed</td><td>Done</td></tr>
+            <tr><td>Algebra II</td><td>Problem set 4.2</td><td>Thu</td><td>Not started</td></tr>
+            <tr class="a-new"><td>English</td><td>Essay outline</td><td>Fri</td><td><span class="tag">New</span></td></tr>
+            <tr class="a-new"><td>Spanish III</td><td>Vocabulary quiz</td><td>Fri</td><td><span class="tag">New</span></td></tr>
+            <tr class="a-new"><td>Chemistry</td><td>Quiz: moles</td><td>Mon</td><td><span class="tag">New</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mock__caption label label--quiet">Demo data. Jordan Vale is a made-up student.</p>
+      <p class="live label" data-step="2"><span class="dot"></span>Live<span class="live__what">switch to the real tab</span></p>
+    </div>
+    <aside class="notes">
+      <h2>Case A, AutoPlanner</h2>
+      <ul>
+        <li>“Study hall staff logged in to Canvas and copied every assignment by hand.”</li>
+        <li>Press Right: the clock runs to 7 pm and the planner fills in. “Nobody clicked anything.”</li>
+        <li>Press Right again for the LIVE marker, then switch to the real planner tab.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 6. Case B -->
+  <section class="slide slide--paper s-case s-b" data-section="Case B" data-time="35" data-steps="2">
+    <div class="case__side">
+      <p class="case__letter display" aria-hidden="true"><span class="ln" style="--i:0"><span>B</span></span></p>
+      <p class="label" data-rise style="--i:2">Case B · Music Department</p>
+      <h2 class="case__title display"><span class="ln" style="--i:2"><span>Music Studio</span></span></h2>
+      <p class="case__line" data-rise style="--i:4">Lesson materials, booking and progress lived in three places. Now they share <mark class="mark">one portal</mark>, and only people the department adds can sign in.</p>
+      <p class="case__status label" data-rise style="--i:5"><span class="sq"></span>Delivered, Oct 2026 · Apps Script web app</p>
+    </div>
+    <div class="case__mock" data-rise style="--i:3">
+      <div class="portal" id="b-portal">
+        <div class="portal__parts">
+          <div class="portal__bar"><span>Music Studio</span><span class="label label--quiet">Signed in · mara.quill@example.org</span></div>
+          <div class="portal__part">
+            <span class="portal__n label">01</span><h3>Materials</h3>
+            <p>A folder for the studio and one for each student.</p>
+            <ul class="portal__files"><li>Scales, week 6</li><li>Etude no. 3</li></ul>
+          </div>
+          <div class="portal__part">
+            <span class="portal__n label">02</span><h3>Booking</h3>
+            <p>Preview a lesson, then one click sends the invite.</p>
+            <ul class="portal__files"><li>Thu 3:15 PM · Room 2</li><li class="is-sent">Invite sent</li></ul>
+          </div>
+          <div class="portal__part">
+            <span class="portal__n label">03</span><h3>Progress</h3>
+            <p>A recap after every lesson, kept on the student’s profile.</p>
+            <ul class="portal__files portal__files--three"><li>Today we</li><li>Homework</li><li>Next class</li></ul>
+          </div>
+        </div>
+        <div class="portal__signin">
+          <p class="portal__brand display">Music Studio</p>
+          <p class="portal__ask">Sign in with your school account</p>
+          <div class="portal__field">mara.quill@example.org</div>
+          <button class="btn" type="button" id="b-signin">Sign in</button>
+          <p class="label label--quiet">Only people the department adds can open it</p>
+        </div>
+      </div>
+      <p class="mock__caption label label--quiet">A mock with a made-up student. The real portal is never linked.</p>
+      <p class="live label" data-step="2"><span class="dot"></span>Live<span class="live__what">switch to the real tab</span></p>
+    </div>
+    <aside class="notes">
+      <h2>Case B, Music Studio</h2>
+      <ul>
+        <li>“Materials, booking and progress used to live in three places.”</li>
+        <li>Press Right to sign in: three parts, one portal. “The department decides who gets in.”</li>
+        <li>Press Right again for the LIVE marker, then switch to the portal tab.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 7. Case F -->
+  <section class="slide slide--paper s-case s-f" data-section="Case F" data-time="40" data-steps="1">
+    <div class="case__side case__side--narrow">
+      <p class="case__letter display" aria-hidden="true"><span class="ln" style="--i:0"><span>F</span></span></p>
+      <p class="label" data-rise style="--i:2">Case F · Project: Pomfret</p>
+      <h2 class="case__title case__title--small display"><span class="ln" style="--i:2"><span>Project: Pomfret</span></span><span class="ln" style="--i:3"><span>sorting</span></span></h2>
+      <p class="case__line" data-rise style="--i:4">Hundreds of form answers, balanced into project groups, with <mark class="mark">a reason</mark> for each placement.</p>
+      <p class="case__status label" data-rise style="--i:5"><span class="sq"></span>Delivered, Oct 2026<br>Sheets + Apps Script</p>
+      <button class="btn" type="button" id="f-sort" data-rise style="--i:6">Sort 24 students</button>
+    </div>
+    <div class="sorter" data-rise style="--i:3">
+      <div class="sorter__heads" id="f-heads"></div>
+      <div class="sorter__field" id="f-field"></div>
+      <p class="sorter__summary" id="f-summary">24 made-up students. 4 projects, 6 seats each. Each student ranked three.</p>
+    </div>
+    <aside class="notes">
+      <h2>Case F, Project: Pomfret sorting</h2>
+      <ul>
+        <li>“Every year someone read hundreds of form answers and balanced the groups by hand.”</li>
+        <li>Press Right (or the button) to sort 24 made-up students. Press the button again for a new draw.</li>
+        <li>“Every placement says why. The sorter proposes, a person decides.”</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 8. Teaching point 1 -->
+  <section class="slide slide--ink s-org" data-section="Teaching point 1" data-time="60" data-steps="8">
+    <p class="eyebrow label label--quiet" data-rise style="--i:0">Teaching point 1</p>
+    <h2 class="org__head display"><span class="ln" style="--i:0"><span>Building as an organization.</span></span></h2>
+
+    <svg class="org__diagram" viewBox="0 0 1760 400" role="img" aria-label="An organization holds one repository per case. Work happens on a branch, becomes a pull request, gets a review and merges to main.">
+      <g data-step="1">
+        <rect class="dg-line draw" pathLength="1" x="1" y="1" width="418" height="398"/>
+        <text class="dg-label" x="24" y="46">Organization</text>
+        <text class="dg-name" x="24" y="100">CivicAIClub</text>
+      </g>
+      <g data-step="2">
+        <text class="dg-label" x="24" y="152">One repo per case</text>
+        <g class="dg-repos">
+          <rect x="24" y="172" width="80" height="80"/><text x="64" y="226">A</text>
+          <rect x="120" y="172" width="80" height="80"/><text x="160" y="226">B</text>
+          <rect x="216" y="172" width="80" height="80"/><text x="256" y="226">C</text>
+          <rect x="312" y="172" width="80" height="80"/><text x="352" y="226">D</text>
+          <rect x="24" y="268" width="80" height="80"/><text x="64" y="322">E</text>
+          <rect x="120" y="268" width="80" height="80"/><text x="160" y="322">F</text>
+          <rect x="216" y="268" width="80" height="80"/><text x="256" y="322">G</text>
+          <rect x="312" y="268" width="80" height="80"/><text x="352" y="322">H</text>
+        </g>
+      </g>
+      <g data-step="3">
+        <rect class="dg-hot" x="216" y="268" width="80" height="80"/>
+        <path class="dg-line draw" pathLength="1" d="M420 308H1740"/>
+        <text class="dg-label" x="444" y="288">Repo G</text>
+        <text class="dg-label" x="460" y="352">Main</text>
+        <text class="dg-text" x="460" y="390">what the office gets</text>
+        <path class="dg-line dg-line--hot draw" pathLength="1" d="M640 308C700 308 680 140 740 140H800"/>
+        <text class="dg-label" x="680" y="62">Branch</text>
+        <text class="dg-text" x="680" y="100">your own copy to work in</text>
+      </g>
+      <g data-step="4">
+        <path class="dg-line dg-line--hot draw" pathLength="1" d="M800 140H1090"/>
+        <circle class="dg-dot" cx="830" cy="140" r="9"/><circle class="dg-dot" cx="910" cy="140" r="9"/>
+        <circle class="dg-dot" cx="990" cy="140" r="9"/><circle class="dg-dot" cx="1070" cy="140" r="9"/>
+        <text class="dg-label" x="800" y="208">Pull request</text>
+        <text class="dg-text" x="800" y="246">asks the team to look</text>
+      </g>
+      <g data-step="5">
+        <path class="dg-line dg-line--hot draw" pathLength="1" d="M1090 140H1290"/>
+        <rect class="dg-review" x="1164" y="124" width="32" height="32" transform="rotate(45 1180 140)"/>
+        <circle class="dg-dot" cx="1262" cy="140" r="9"/>
+        <text class="dg-label" x="1130" y="62">Review</text>
+        <text class="dg-text" x="1130" y="100">a teammate reads it first</text>
+      </g>
+      <g data-step="6">
+        <path class="dg-line dg-line--hot draw" pathLength="1" d="M1290 140H1400C1460 140 1440 308 1500 308"/>
+        <circle class="dg-merge" cx="1500" cy="308" r="12"/>
+        <text class="dg-label" x="1530" y="208">Merge</text>
+        <text class="dg-text" x="1530" y="246">into main</text>
+      </g>
+    </svg>
+
+    <div class="org__real" data-step="7">
+      <p class="label label--quiet">The real one · Case G, pull request 5 · Nov 18, 2026</p>
+      <ol class="org__steps">
+        <li><span class="label">6:41 PM</span><p>Opened for review. Four commits.</p></li>
+        <li><span class="label">6:47 PM</span><p>Keke Li ’27 reviews it: “The tool reserves one seat. The answer calls for two.”</p></li>
+        <li><span class="label">6:53 PM</span><p>Fixed. A guest written as “my son” now gets a seat. 94 tests pass.</p></li>
+        <li><span class="label">7:30 PM</span><p>Merged to main.</p></li>
+      </ol>
+    </div>
+    <p class="org__why display" data-step="8">Nobody’s mistake <mark class="mark">reaches the teacher</mark>.</p>
+    <aside class="notes">
+      <h2>Teaching point 1, building as an organization</h2>
+      <ul>
+        <li>Six presses draw the diagram: organization, repos, branch, pull request, review, merge.</li>
+        <li>“Nobody edits the real thing. You work on a copy, then ask the team to look.”</li>
+        <li>Press 7: “Keke found a guest with no seat. Six minutes later it was fixed.”</li>
+        <li>Press 8: “That’s why. Nobody’s mistake reaches the teacher.”</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 9. Teaching point 2 -->
+  <section class="slide slide--ink s-script" data-section="Teaching point 2" data-time="55" data-steps="3">
+    <p class="eyebrow label label--quiet" data-rise style="--i:0">Teaching point 2 · Apps Script</p>
+    <h2 class="script__head display"><span class="ln" style="--i:0"><span>Every Google Sheet has a free programming layer.</span></span></h2>
+
+    <div class="code" data-rise style="--i:2">
+      <ol class="code__lines" id="s-code">
+        <li data-part="menu"><span class="k">function</span> onOpen() {</li>
+        <li data-part="menu">  SpreadsheetApp.getUi()</li>
+        <li data-part="menu">    .createMenu(<span class="s">'Club tools'</span>)</li>
+        <li data-part="menu">    .addItem(<span class="s">'Assign tables'</span>, <span class="s">'assignTables'</span>)</li>
+        <li data-part="menu">    .addToUi();</li>
+        <li data-part="menu">}</li>
+        <li class="is-blank"> </li>
+        <li data-part="fn"><span class="k">function</span> assignTables() {</li>
+        <li data-part="fn" data-line="sheet">  <span class="k">const</span> sheet = SpreadsheetApp.getActiveSheet();</li>
+        <li data-part="fn" data-line="for">  <span class="k">for</span> (<span class="k">let</span> row = 2; row &lt;= sheet.getLastRow(); row++) {</li>
+        <li data-part="fn" data-line="table">    <span class="k">const</span> table = row % 3 + 1;</li>
+        <li data-part="fn" data-line="set">    sheet.getRange(row, 3).setValue(<span class="s">'Table '</span> + table);</li>
+        <li data-part="fn">  }</li>
+        <li data-part="fn">}</li>
+      </ol>
+      <div class="code__tags">
+        <span class="code__tag code__tag--menu label" data-tag="menu">The menu</span>
+        <span class="code__tag code__tag--fn label" data-tag="fn">The function</span>
+        <span class="code__tag code__tag--sheet label" data-tag="sheet">The sheet</span>
+      </div>
+    </div>
+
+    <div class="sheet" data-rise style="--i:3">
+      <div class="sheet__title">Seated dinner sign-up</div>
+      <div class="sheet__menus">
+        <span>File</span><span>Edit</span><span>View</span><span class="sheet__ext" id="s-ext">Extensions</span><span>Help</span>
+        <button class="sheet__custom" type="button" id="s-menu">Club tools</button>
+        <div class="sheet__drop" id="s-drop"><button type="button" id="s-run">Assign tables</button></div>
+      </div>
+      <table class="sheet__grid">
+        <thead><tr><th></th><th>A</th><th>B</th><th>C</th></tr></thead>
+        <tbody id="s-rows">
+          <tr><th>1</th><td class="h">Name</td><td class="h">Form</td><td class="h">Table</td></tr>
+          <tr><th>2</th><td>Juno Marsh</td><td>Senior</td><td class="out"></td></tr>
+          <tr><th>3</th><td>Tobin Hale</td><td>Junior</td><td class="out"></td></tr>
+          <tr><th>4</th><td>Priya Vance</td><td>Sophomore</td><td class="out"></td></tr>
+          <tr><th>5</th><td>Leo Castell</td><td>Freshman</td><td class="out"></td></tr>
+          <tr><th>6</th><td>Imani Brook</td><td>Senior</td><td class="out"></td></tr>
+          <tr><th>7</th><td>Rafe Okoro</td><td>Junior</td><td class="out"></td></tr>
+        </tbody>
+      </table>
+      <p class="mock__caption label">A mock Sheet. Made-up names.</p>
+    </div>
+
+    <p class="script__line display" data-step="3">Extensions &gt; Apps Script. <mark class="mark">In any Sheet. Free.</mark></p>
+    <p class="script__sub label label--quiet" data-step="3">Five of the club’s eight cases run on it: A, B, D, F and G</p>
+    <aside class="notes">
+      <h2>Teaching point 2, Apps Script</h2>
+      <ul>
+        <li>“Thirteen lines. The top half adds a menu. The bottom half is what the menu runs.”</li>
+        <li>Press Right to open the Club tools menu, Right again to run it. The code lights up as the cells fill.</li>
+        <li>Press Right once more: “Extensions, Apps Script. It’s in every Sheet you already have.”</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 10. Case G, try it -->
+  <section class="slide slide--paper s-case s-g" data-section="Case G, try it" data-time="35" data-steps="1">
+    <div class="case__side case__side--narrow">
+      <p class="case__letter display" aria-hidden="true"><span class="ln" style="--i:0"><span>G</span></span></p>
+      <p class="label" data-rise style="--i:2">Case G · Associate Head of School’s Office</p>
+      <h2 class="case__title case__title--small display"><span class="ln" style="--i:2"><span>Seated meals</span></span></h2>
+      <p class="case__line" data-rise style="--i:4">Seats students and faculty by ranked rules, and picks waiters fairly.</p>
+      <p class="case__status label" data-rise style="--i:5"><span class="dot"></span>In testing for Candlelight<br>in December</p>
+    </div>
+    <div class="guest" data-rise style="--i:3">
+      <p class="label label--quiet">Question 4 on the faculty form</p>
+      <label class="guest__q display" for="g-input">Will a spouse, partner or child join you? If so, who?</label>
+      <input class="guest__input" id="g-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="120" placeholder="Type an answer, then press Enter">
+      <div class="guest__samples" id="g-samples">
+        <span class="label label--quiet">Or try</span>
+        <button type="button">No</button><button type="button">N/A</button><button type="button">Just me</button><button type="button">Yes my wife Sarah</button><button type="button">My husband</button><button type="button">John</button>
+      </div>
+      <div class="guest__results">
+        <div class="guest__col" id="g-first">
+          <p class="label">First version</p>
+          <p class="guest__count display" data-count>No answer yet</p>
+          <ul class="guest__seats" data-seats></ul>
+        </div>
+        <div class="guest__col guest__col--fixed" id="g-fixed">
+          <p class="label">Fixed version</p>
+          <p class="guest__count display" data-count>No answer yet</p>
+          <ul class="guest__seats" data-seats></ul>
+        </div>
+      </div>
+      <p class="mock__caption label label--quiet">The same cleaning rules as the tool, copied from core/read.js. Nothing typed here is saved or sent.</p>
+    </div>
+    <aside class="notes">
+      <h2>Case G, try it</h2>
+      <ul>
+        <li>“Someone answer this the way a teacher would on a form.”</li>
+        <li>Press Right to put the cursor in the box. Type the answer, press Enter. Enter again leaves the box.</li>
+        <li>If it’s quiet, click “No”: “The first version saved a seat for a guest named No.”</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 11. In progress -->
+  <section class="slide slide--paper s-next" data-section="In progress" data-time="20" data-steps="0">
+    <p class="eyebrow label" data-rise style="--i:0">Still on the bench</p>
+    <ul class="next__list">
+      <li class="next__row" data-case="C" data-rise style="--i:1"><span class="next__letter display">C</span><h2 class="display">Pomfret Voices</h2><p>A sourced timeline website. Next version under way.</p></li>
+      <li class="next__row" data-case="D" data-rise style="--i:2"><span class="next__letter display">D</span><h2 class="display">Roster Export</h2><p>Phase 1 built. A helper for the school’s grading system is in progress.</p></li>
+      <li class="next__row" data-case="E" data-rise style="--i:3"><span class="next__letter display">E</span><h2 class="display">College counseling tools</h2><p>Early. The team is building a first demo.</p></li>
+      <li class="next__row" data-case="H" data-rise style="--i:4"><span class="next__letter display">H</span><h2 class="display">Language placement test</h2><p>Early. First meeting held, first version being planned.</p></li>
+      <li class="next__row" data-case="L" data-rise style="--i:5"><span class="next__letter display">7</span><h2 class="display">Local organizations</h2><p>In the pipeline, down the road from campus. And AI Literacy Week comes back this year.</p></li>
+    </ul>
+    <aside class="notes">
+      <h2>In progress</h2>
+      <ul>
+        <li>“Four more cases are on the bench, and seven local organizations are in the pipeline.”</li>
+        <li>Don’t say Case D is in use. It isn’t yet.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== 12. Close -->
+  <section class="slide slide--ink s-close" data-section="Close" data-time="15" data-steps="0">
+    <p class="eyebrow label label--quiet" data-rise style="--i:0">What the term taught me</p>
+    <h2 class="close__head display">
+      <span class="ln" style="--i:0"><span>A tool is finished</span></span>
+      <span class="ln" style="--i:1"><span>when the office can</span></span>
+      <span class="ln" style="--i:2"><span>run it <mark class="mark">without me</mark>.</span></span>
+    </h2>
+    <p class="close__url" data-rise style="--i:6">civicaiclub.github.io</p>
+    <p class="close__who label label--quiet" data-rise style="--i:7">Cayden Auyang ’27 · Civic AI Club · Pomfret School</p>
+    <aside class="notes">
+      <h2>Close</h2>
+      <ul>
+        <li>“The code was the easy part. The work was finding out what the office needed and handing over something they can run.”</li>
+        <li>“Everything we’ve shipped is at civicaiclub.github.io. Questions?”</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ================================================================== The status line, on every slide -->
+  <header class="status" aria-live="off">
+    <span class="status__club">Civic AI Club</span>
+    <span class="status__section" id="status-section">Title</span>
+    <span class="status__num" id="status-num">01 / 12</span>
+    <span class="status__clock" id="status-clock" title="Elapsed time. Starts on the first move forward. R resets it.">0:00</span>
+  </header>
+  <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
+  <!-- Presenter notes (press N). Filled in by deck.js from each slide's notes. -->
+  <aside class="notespanel" id="notes" aria-label="Presenter notes" hidden></aside>
+</main>
+</div>
+
+<noscript><p class="nojs">This deck needs JavaScript to move between slides. With it off, every slide is shown below, one after another.</p></noscript>
+
+<script src="sims.js"></script>
+<script src="deck.js"></script>
+<script src="slides.js"></script>
+</body>
+</html>
