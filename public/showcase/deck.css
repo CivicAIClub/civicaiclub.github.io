@@ -272,9 +272,10 @@ mark { background: none; color: inherit; }
 .clip--case { left: 610px; right: 80px; top: 112px; }
 .clip--org { left: 80px; top: 238px; width: 1180px; }
 .clip--script { left: 80px; top: 258px; width: 1080px; }
-.clip--small { left: 1220px; right: 80px; top: 162px; }
-.clip--small .clip__meta { display: block; }
-.clip--small .clip__keys { display: block; margin-top: 4px; }
+/* Slide 11: large on its own step, then smaller on the right when the list comes in. */
+.clip--next { left: 80px; top: 160px; width: 1420px; }
+.js .s-next[data-at='1'] .clip--next { left: 1160px; width: 680px; }
+.js .slide.is-active .clip--next.is-on { transition: opacity 0.5s linear 0.3s, transform 0.9s var(--ease-expo-out) 0.3s, visibility 0s linear 0s, left 0.9s var(--ease-civic), width 0.9s var(--ease-civic); }
 
 /* Case F: the mini sorter. Chips are placed by slides.js and glide to their groups. */
 .sorter { position: absolute; left: 610px; right: 80px; top: 108px; }
@@ -393,7 +394,16 @@ mark { background: none; color: inherit; }
 
 /* ---- 11. In progress ----------------------------------------------------------------------- */
 .s-next .eyebrow { position: absolute; left: 80px; top: 112px; color: var(--ink-2); }
-.next__list { position: absolute; left: 80px; right: 760px; top: 160px; }
+.next__list { position: absolute; left: 80px; right: 820px; top: 160px; }
+/* The rows wait for the list's step, then rise one after another. */
+.js .slide.is-active .next__list:not(.is-on) [data-rise] { animation: none; }
+.js .slide.is-active .next__list.is-on [data-rise] { animation-delay: calc(var(--i, 0) * 70ms); }
+/* Beside the large recording on step 0: which case this is. */
+.next__lead { position: absolute; left: 1540px; right: 80px; top: 160px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.next__lead .next__letter { display: block; color: var(--ink); }
+.next__lead h2 { margin-top: 10px; font-size: 46px; line-height: 1.02; }
+.next__lead p { margin-top: 12px; font-size: 26px; line-height: 1.2; letter-spacing: -0.01em; }
+.js .s-next[data-at='1'] .next__lead { visibility: hidden; }
 .next__row { position: relative; display: grid; grid-template-columns: 150px 1fr; align-items: center; height: 166px; border-top: 1px solid var(--rule); }
 .next__row:last-child { border-bottom: 1px solid var(--rule); }
 .next__letter { font-size: 130px; line-height: 1; color: rgb(13 13 12 / 0.22); transition: color 0.5s linear 0.6s; }
@@ -425,3 +435,5 @@ html:not(.js) .slide { position: relative; inset: auto; height: 1080px; visibili
 html:not(.js) .status, html:not(.js) .progress { display: none; }
 /* Where a recording shares its place with something that needs JavaScript, show the recording. */
 html:not(.js) .s-case .sorter, html:not(.js) .s-case .guest, html:not(.js) #f-sort, html:not(.js) .org__diagram, html:not(.js) .s-script .code, html:not(.js) .s-script .sheet { display: none; }
+html:not(.js) .next__lead { display: none; }
+html:not(.js) .clip--next { left: 1160px; width: 680px; }
