@@ -9,8 +9,10 @@
     info.silent    a control on the slide already did the work; only the step count changed
   Each apply() can be called with any step at any time and always shows the right state for it.
 
-  Slides with their own code: 5 (Case A planner), 6 (Case B portal), 7 (Case F sorter),
-  9 (Apps Script), 10 (Case G guest question). The other slides only use data-step in the HTML.
+  Slides with their own code: 7 (Case F sorter), 9 (Apps Script), 10 (Case G guest question).
+  The other slides only use data-step in the HTML. The recordings are run by clips.js: a slide's
+  clip plays on the step named in its data-play, and these hooks only look after what comes
+  before or after it.
 */
 (function () {
   'use strict';
@@ -27,63 +29,6 @@
       clear: function () { ids.forEach(clearTimeout); ids = []; }
     };
   }
-
-  // ---- 5. Case A: the planner that updates itself at 7 pm -----------------------------------
-  (function () {
-    var clock = $('a-clock'), stamp = $('a-stamp'), rows = document.querySelectorAll('#a-rows .a-new'), timers = makeTimers();
-    if (!clock) return;
-
-    function before() {
-      clock.textContent = '6:57 PM';
-      clock.classList.remove('is-seven');
-      stamp.textContent = 'Last updated 12:00 AM';
-      stamp.classList.remove('is-fresh');
-      each(rows, function (row) { row.classList.remove('is-filled'); });
-    }
-    function after() {
-      clock.textContent = '7:00 PM';
-      clock.classList.add('is-seven');
-      stamp.textContent = 'Updated 7:00 PM';
-      stamp.classList.add('is-fresh');
-      each(rows, function (row) { row.classList.add('is-filled'); });
-    }
-    function run() {
-      before();
-      ['6:58 PM', '6:59 PM'].forEach(function (time, i) {
-        timers.after(500 * (i + 1), function () { clock.textContent = time; });
-      });
-      timers.after(1500, function () {
-        clock.textContent = '7:00 PM';
-        clock.classList.add('is-seven');
-      });
-      each(rows, function (row, i) {
-        timers.after(1900 + 280 * i, function () { row.classList.add('is-filled'); });
-      });
-      timers.after(1900 + 280 * rows.length, function () {
-        stamp.textContent = 'Updated 7:00 PM';
-        stamp.classList.add('is-fresh');
-      });
-    }
-
-    Deck.on(5, {
-      apply: function (step, info) {
-        if (info.silent) return;
-        timers.clear();
-        if (step === 0) before();
-        else if (step === 1 && info.from === 0 && !info.instant && !Deck.reduced) run();
-        else after();
-      },
-      leave: function () { timers.clear(); }
-    });
-  })();
-
-  // ---- 6. Case B: the sign-in sheet lifts off the portal --------------------------------------
-  (function () {
-    var portal = $('b-portal'), button = $('b-signin');
-    if (!portal) return;
-    Deck.on(6, { apply: function (step) { portal.classList.toggle('is-open', step >= 1); } });
-    button.addEventListener('click', function () { if (Deck.current() === 6 && Deck.step() === 0) Deck.next(); });
-  })();
 
   // ---- 7. Case F: the mini sorter -----------------------------------------------------------------
   (function () {
@@ -170,21 +115,24 @@
     newDraw(1);
     instantly(showUnsorted);
 
+    // Steps 0 and 1 belong to the recording. On step 2 the mini sorter appears with the students
+    // unsorted, waits a moment so the class can see that, then sorts them.
     Deck.on(7, {
       apply: function (step, info) {
         if (info.silent) return;
         timers.clear();
-        var quick = info.instant || Deck.reduced;
-        if (step === 0) { if (quick) instantly(showUnsorted); else showUnsorted(); }
-        else if (quick) instantly(showSorted);
-        else showSorted();
+        if (step < 2) { instantly(showUnsorted); return; }
+        if (info.instant || Deck.reduced) { instantly(showSorted); return; }
+        instantly(showUnsorted);
+        timers.after(1200, showSorted);
       },
       leave: function () { timers.clear(); }
     });
 
     button.addEventListener('click', function () {
       if (Deck.current() !== 7) return;
-      if (!sorted) { Deck.next(); return; }
+      // Pressed during the short wait before the first sort: sort now.
+      if (!sorted) { timers.clear(); showSorted(); return; }
       // Already sorted: deal new choices, show them, then sort again.
       timers.clear();
       newDraw(seed + 1);
@@ -315,7 +263,7 @@
       show(input.value);
       input.select();
     });
-    input.addEventListener('focus', function () { if (Deck.current() === 10 && Deck.step() === 0) Deck.setStep(1); });
+
     samples.addEventListener('click', function (e) {
       if (e.target.tagName !== 'BUTTON') return;
       input.value = e.target.textContent;
@@ -323,11 +271,12 @@
       e.target.blur();
     });
 
+    // Steps 0 and 1 belong to the recording. Step 2 shows the question and puts the cursor in it.
     Deck.on(10, {
       apply: function (step, info) {
         if (info.silent) return;
-        if (step === 1 && info.from === 0 && !info.entering) input.focus();
-        if (step === 0 && document.activeElement === input) input.blur();
+        if (step === 2 && info.from === 1 && !info.entering) input.focus();
+        if (step < 2 && document.activeElement === input) input.blur();
       },
       leave: function () { input.blur(); }
     });

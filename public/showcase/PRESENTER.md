@@ -1,18 +1,20 @@
 # Presenter sheet: One term of Civic AI
 
-The deck: https://civicaiclub.github.io/showcase/ (after the pull request is merged). Target: 6:35.
+The deck: https://civicaiclub.github.io/showcase/ . Target: 6:40, with 6:45 as the limit.
+
+Seven slides now play a recording of the real tool. The recordings add up to 2 minutes 31 seconds, so talk over them: each slide's time below already includes its recording.
 
 ## Before you start
 
 1. Open these tabs in one browser window, in this order:
-   - **Tab 1, the deck.** Load it while you still have wifi. After that it works with wifi off.
-   - **Tab 2, the real AutoPlanner Doc** you are allowed to show (a test student's planner is the safe choice).
-   - **Tab 3, the real Music Studio portal**, already signed in, on a screen with no student details.
-2. In the deck tab press **F** for fullscreen, then **R** so the clock reads 0:00.
+   - **Tab 1, the deck.** Load it while you still have wifi and wait until the status line (top right) says **Clips ready**. After that every recording plays with wifi off.
+   - **Tab 2, your own AutoPlanner Doc.** This is the only live moment in the talk (slide 5). Never the staff page, never another student's Doc.
+   - No Music Studio tab any more: slide 6 plays a recording of the real portal.
+2. In the deck tab press **F** for fullscreen, then **T** so the clock reads 0:00.
 3. Press **N** once to check the notes, and **N** again to hide them if the class can see your screen.
-4. To switch to a live tab and back, use Ctrl+Tab (or Cmd+Option+Right on a Mac). Fullscreen ends when you leave the tab, so press **F** again when you return.
+4. To switch to the live tab and back, use Ctrl+Tab (or Cmd+Option+Right on a Mac). Fullscreen ends when you leave the tab, so press **F** again when you return.
 
-If the projector or wifi fails, the deck alone tells the whole story: skip the two LIVE moments.
+If the projector or wifi fails, the deck alone tells the whole story: skip the LIVE moment.
 
 ## Keys
 
@@ -20,38 +22,45 @@ If the projector or wifi fails, the deck alone tells the whole story: skip the t
 |---|---|
 | Right, Space, Down, Page Down, or a click | Forward. Steps inside a slide come first, then the next slide. |
 | Left, Up, Page Up | Back. |
+| K, or a click on a recording | Pause the recording, or carry on. |
+| R | Play the recording on this slide again from the start. |
 | H, or any number | Open the hub. On the hub, 1 to 8 open cases A to H, and H goes back. |
 | N | Presenter notes on or off. |
 | F | Fullscreen on or off. |
-| R | Reset the clock to 0:00. It starts again on the next move forward. |
+| T | Reset the clock to 0:00. It starts again on the next move forward. (This was R before.) |
 | Home, End | First slide, last slide. |
 | Enter, Esc (slide 10 only) | Enter shows the result. Enter again, or Esc, leaves the text box. |
+
+A recording plays once when you arrive on its step, with no sound, and stops on its last frame. Pressing Right while it plays moves on. With "reduce motion" switched on in the computer's settings, nothing plays by itself: each recording shows a still and a Play button.
 
 The address ends in the slide number (for example `#8`), so a reload returns to the same slide.
 
 ## Time per slide
 
-| # | Slide | Time | Done by | Presses | What to do |
-|---|---|---|---|---|---|
-| 1 | Title | 0:15 | 0:15 | 1 | The first press of Right starts the clock. |
-| 2 | The term in numbers | 0:30 | 0:45 | 1 | 108 merged since Sep 1. Say "about forty" only about the club, not GitHub (24). |
-| 3 | How a case runs | 0:40 | 1:25 | 1 | Five stages. Point at Review: it comes back on slide 8. |
-| 4 | Hub | 0:10 | 1:35 | 1 | Eight cases, three delivered. Right carries on to Case A. |
-| 5 | Case A, AutoPlanner | 0:40 | 2:15 | 3 | Right runs the clock to 7 pm. Right shows LIVE: switch to tab 2. |
-| 6 | Case B, Music Studio | 0:35 | 2:50 | 3 | Right signs in. Right shows LIVE: switch to tab 3. |
-| 7 | Case F, sorting | 0:40 | 3:30 | 2 | Right sorts. The button deals a new draw and sorts again. |
-| 8 | Building as an organization | 1:00 | 4:30 | 9 | Six presses draw the diagram, the 7th shows pull request 5, the 8th the last line. |
-| 9 | Apps Script | 0:55 | 5:25 | 4 | Right opens the menu, Right runs it, Right shows "Extensions > Apps Script". |
-| 10 | Case G, try it | 0:35 | 6:00 | 2 | Right puts the cursor in the box. Type, Enter, Enter. Or click "No". |
-| 11 | In progress | 0:20 | 6:20 | 1 | Don't say Case D is in use. |
-| 12 | Close | 0:15 | 6:35 | | Questions. |
+| # | Slide | Time | Done by | Presses | Recording | What to do |
+|---|---|---|---|---|---|---|
+| 1 | Title | 0:15 | 0:15 | 1 | | The first press of Right starts the clock. |
+| 2 | The term in numbers | 0:25 | 0:40 | 1 | | 108 merged since Sep 1. Say "about forty" only about the club, not GitHub (24). |
+| 3 | How a case runs | 0:30 | 1:10 | 1 | | Five stages. Point at Review: it comes back on slide 8. |
+| 4 | Hub | 0:10 | 1:20 | 1 | | Eight cases, three delivered. Right carries on to Case A. |
+| 5 | Case A, AutoPlanner | 0:40 | 2:00 | 3 | 0:21, your own planner | Right plays it. Right shows LIVE: switch to tab 2. |
+| 6 | Case B, Music Studio | 0:40 | 2:40 | 2 | 0:30, the real portal | Right plays it. Talk through home, roster, one profile, a recap. |
+| 7 | Case F, sorting | 0:45 | 3:25 | 3 | 0:25, the real sorter, practice data | Right plays it. Right again: the small sorter on the slide sorts 24 made-up students. |
+| 8 | Building as an organization | 1:00 | 4:25 | 9 | 0:25, the real GitHub | Six presses draw the diagram. The 7th plays GitHub. The 8th shows the last line. |
+| 9 | Apps Script | 0:55 | 5:20 | 4 | 0:15, the real editor | Right opens the menu, Right runs it, Right plays the real editor and shows "Extensions > Apps Script". |
+| 10 | Case G, try it | 0:45 | 6:05 | 3 | 0:24, the real tool, practice data | Right plays it. Right again: the question box. Type, Enter, Enter. Or click "No". |
+| 11 | In progress | 0:20 | 6:25 | 1 | 0:10, Pomfret Voices | It plays by itself. Don't say Case D is in use. |
+| 12 | Close | 0:15 | 6:40 | | | Questions. |
+
+If you are behind at slide 7 (the clock reads more than 3:30 when the recording ends), skip the small sorter: press Right twice quickly. On slide 10 one answer in the box is enough.
 
 ## Things only you can check
 
 - **The date on slide 1** says "November 2026". Change it in `index.html` if you want the exact day.
 - **Slide 3**: the five lines about what you do at each stage are a draft. Make them yours.
 - **Slide 12** is one sentence about what the term taught you. It is a draft: rewrite it.
-- **Slide 8** says Keke reviewed, the bug was fixed, tests passed and it merged. Read the note in `FACTS.md` before you say "approved".
+- **Slide 8**: the recording shows "previously approved these changes" and "dismissed ... stale review". Read the note in `FACTS.md` before you say "approved".
+- **Slide 6** shows six real students' names and one student's profile and lesson recap. `FACTS.md` lists exactly what is on screen. Watch it once before the talk.
 
 ## Testing the simulations again
 

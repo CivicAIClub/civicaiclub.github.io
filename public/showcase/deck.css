@@ -109,6 +109,7 @@ mark { background: none; color: inherit; }
 /* Things that wait for a step (a press of Right). deck.js adds is-on. */
 .js .slide [data-step] { opacity: 0; transition: opacity 0.5s var(--ease-civic), transform 0.9s var(--ease-expo-out); }
 .js .slide [data-step]:not(g) { transform: translateY(26px); }
+.js .slide [data-step]:not(.is-on) { pointer-events: none; }
 .js .slide [data-step].is-on { opacity: 1; transform: none; }
 
 /* The one marked phrase on a slide: a crimson bar sweeps in behind it. */
@@ -147,6 +148,10 @@ mark { background: none; color: inherit; }
 .stage.on-paper .status__section { color: var(--ink); }
 .status__section::before { content: '/'; margin-right: 28px; color: var(--paper-2); }
 .stage.on-paper .status__section::before { color: var(--ink-2); }
+.status__clips { color: var(--paper-2); transition: opacity 0.6s linear 2s; }
+.status__clips.is-ready { opacity: 0.55; }
+.status__clips.is-missing::after { content: ' (some missing)'; }
+.stage.on-paper .status__clips { color: var(--ink-2); }
 .status__clock { min-width: 88px; text-align: right; font-variant-numeric: tabular-nums; }
 .progress { position: absolute; z-index: 10; left: 0; right: 0; bottom: 0; height: 4px; }
 .progress span { display: block; height: 100%; background: var(--crimson-on-ink); transform-origin: 0 50%; transform: scaleX(0); transition: transform 0.6s var(--ease-civic); }
@@ -235,59 +240,45 @@ mark { background: none; color: inherit; }
 .case__side--narrow .case__line { font-size: 32px; }
 .case__status { margin-top: 26px; font-size: 17px; }
 .case__side .btn { margin-top: 30px; }
-.case__mock { position: absolute; left: 790px; right: 80px; top: 118px; }
 .mock__caption { margin-top: 16px; font-size: 16px; }
 
-/* The LIVE marker: the cue to switch to the real browser tab. */
-.live { position: absolute; right: 0; top: 0; display: flex; align-items: center; padding: 14px 20px; border: 2px solid var(--crimson); font-size: 20px; color: var(--ink); background: var(--paper); }
+/* The LIVE marker (Case A only): the cue to switch to the real browser tab. It sits on the top
+   right corner of the recording once the recording has played. */
+.live { position: absolute; z-index: 3; right: 80px; top: 112px; display: flex; align-items: center; padding: 14px 20px; border: 2px solid var(--crimson); font-size: 20px; color: var(--ink); background: var(--paper); }
 .live .dot { width: 14px; height: 14px; margin-right: 12px; }
 .live__what { margin-left: 18px; padding-left: 18px; border-left: 1px solid var(--rule); color: var(--ink-2); font-size: 16px; }
 
-/* Case A: the mock planner Doc. */
-.a-clock { display: flex; align-items: baseline; gap: 26px; height: 92px; }
-.a-clock__time { font-family: var(--font-mono); font-size: 60px; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.a-clock__time.is-seven { background: var(--crimson); color: var(--mark-text); padding: 4px 14px 8px; margin: -4px -14px -8px; }
-.doc { background: var(--sheet); border: 2px solid var(--ink); }
-.doc__head { display: flex; justify-content: space-between; align-items: center; padding: 24px 30px; border-bottom: 2px solid var(--ink); }
-.doc__title { font-size: 38px; font-weight: 300; letter-spacing: -0.02em; }
-.doc__stamp { font-size: 16px; color: var(--ink-2); }
-.doc__stamp.is-fresh { color: var(--crimson); }
-.doc__table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.doc__table th { text-align: left; padding: 16px 30px 12px; font-family: var(--font-mono); font-weight: 400; font-size: 15px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); }
-.doc__table td { padding: 0 30px; height: 76px; font-size: 30px; letter-spacing: -0.01em; border-top: 1px solid var(--rule); white-space: nowrap; }
-.doc__table th:nth-child(1) { width: 25%; } .doc__table th:nth-child(2) { width: 40%; } .doc__table th:nth-child(3) { width: 12%; }
-.tag { display: inline-block; padding: 3px 12px 5px; background: var(--crimson); color: var(--mark-text); font-size: 24px; }
-.js .a-new td { opacity: 0; transform: translateY(14px); transition: opacity 0.5s linear, transform 0.8s var(--ease-expo-out); }
-.js .a-new.is-filled td { opacity: 1; transform: none; }
-
-/* Case B: the mock portal. The sign-in sheet lifts off the three parts. */
-.s-b .case__mock { padding-top: 92px; }
-.portal { position: relative; height: 640px; border: 2px solid var(--ink); background: var(--sheet); overflow: hidden; }
-.portal__signin { position: absolute; inset: 0; background: var(--sheet); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 0 90px; clip-path: inset(0); transition: clip-path 0.9s var(--ease-civic); }
-.portal.is-open .portal__signin { clip-path: inset(0 0 100% 0); pointer-events: none; }
-.portal__brand { font-size: 110px; }
-.portal__ask { margin: 26px 0 30px; font-size: 34px; }
-.portal__field { width: 620px; padding: 18px 22px; border: 2px solid var(--ink); font-size: 30px; margin-bottom: 22px; }
-.portal__signin .label { margin-top: 36px; font-size: 16px; }
-.portal__bar { display: flex; justify-content: space-between; align-items: center; height: 82px; padding: 0 30px; border-bottom: 2px solid var(--ink); font-size: 34px; font-weight: 300; letter-spacing: -0.02em; }
-.portal__bar .label { font-size: 14px; }
-.portal__part { display: grid; grid-template-columns: 70px 250px 1fr 290px; align-items: center; height: 185px; padding: 0 30px; border-top: 1px solid var(--rule); }
-.portal__bar + .portal__part { border-top: 0; }
-.portal__n { color: var(--ink-2); font-size: 16px; }
-.portal__part h3 { font-size: 46px; font-weight: 300; letter-spacing: -0.03em; }
-.portal__part p { font-size: 28px; line-height: 1.2; padding-right: 30px; }
-.portal__files { display: grid; gap: 8px; }
-.portal__files li { padding: 10px 14px; border: 1px solid var(--rule); font-size: 22px; white-space: nowrap; }
-.portal__files--three li { padding: 6px 14px 8px; }
-.portal__files li.is-sent { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-.js .portal__part { opacity: 0; transform: translateY(20px); transition: opacity 0.5s linear, transform 0.9s var(--ease-expo-out); }
-.js .portal.is-open .portal__part { opacity: 1; transform: none; }
-.js .portal.is-open .portal__part:nth-of-type(2) { transition-delay: 0.45s; }
-.js .portal.is-open .portal__part:nth-of-type(3) { transition-delay: 0.6s; }
-.js .portal.is-open .portal__part:nth-of-type(4) { transition-delay: 0.75s; }
+/* ---- The recordings of the real tools (clips.js) --------------------------------------------
+   A clip is a 16:9 frame with a hairline border, a thin crimson line that fills as it plays, and
+   one line of small mono type under it: what it is on the left, the keys on the right. */
+.clip { position: absolute; margin: 0; }
+.clip__frame { position: relative; aspect-ratio: 16 / 9; background: var(--ink); border: 2px solid var(--ink); overflow: hidden; cursor: pointer; }
+.slide--ink .clip__frame { border-color: var(--paper-2); }
+.clip__video { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--sheet); }
+.clip__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: var(--hot); transform-origin: 0 50%; transform: scaleX(0); transition: transform 0.3s linear; }
+.clip__meta { display: flex; justify-content: space-between; align-items: baseline; gap: 30px; margin-top: 14px; }
+.clip__caption { font-size: 16px; }
+.clip__keys { flex: none; font-size: 16px; white-space: nowrap; }
+/* The Play button: only for reduced motion, or a browser that won't start a video by itself. */
+.clip__play { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 20px 44px 24px; background: var(--ink); color: var(--paper); border: 2px solid var(--paper); font-size: 40px; line-height: 1; letter-spacing: -0.01em; }
+.clip.is-manual .clip__play { display: block; }
+.clip.is-manual.is-started .clip__play { display: none; }
+.clip__play:hover { background: var(--crimson); }
+/* On and off: a clip can share its place with something else on the slide (the mini sorter, the
+   question box, the diagram), so off means gone, not just see-through. */
+.js .slide .clip { opacity: 0; visibility: hidden; transform: translateY(26px); transition: opacity 0.4s linear, transform 0.9s var(--ease-expo-out), visibility 0s linear 0.4s; }
+.js .slide.is-active .clip.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity 0.5s linear 0.3s, transform 0.9s var(--ease-expo-out) 0.3s, visibility 0s linear 0s; }
+/* Where each one sits. */
+.clip--case { left: 610px; right: 80px; top: 112px; }
+.clip--org { left: 80px; top: 238px; width: 1180px; }
+.clip--script { left: 80px; top: 258px; width: 1080px; }
+.clip--small { left: 1220px; right: 80px; top: 162px; }
+.clip--small .clip__meta { display: block; }
+.clip--small .clip__keys { display: block; margin-top: 4px; }
 
 /* Case F: the mini sorter. Chips are placed by slides.js and glide to their groups. */
 .sorter { position: absolute; left: 610px; right: 80px; top: 108px; }
+.js .slide .sorter:not(.is-on), .js .slide .guest:not(.is-on) { visibility: hidden; }
 .sorter__heads { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; height: 62px; }
 .sorter__head { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 10px; border-bottom: 2px solid var(--ink); font-size: 32px; font-weight: 300; letter-spacing: -0.02em; opacity: 0.28; transition: opacity 0.6s linear; }
 .sorter__head span { font-family: var(--font-mono); font-size: 17px; letter-spacing: 0.04em; color: var(--ink-2); }
@@ -341,11 +332,15 @@ mark { background: none; color: inherit; }
 .dg-merge { fill: var(--paper); stroke: var(--crimson-on-ink); stroke-width: 5; }
 .js .draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
 .js [data-step].is-on .draw { stroke-dashoffset: 0; transition: stroke-dashoffset 1.1s var(--ease-civic); }
-.org__real { position: absolute; left: 80px; right: 80px; top: 686px; }
-.org__steps { display: grid; grid-template-columns: 0.8fr 1.5fr 1.3fr 0.7fr; gap: 30px; margin-top: 12px; }
-.org__steps li { padding-top: 12px; border-top: 1px solid var(--rule); }
-.org__steps .label { font-size: 18px; color: var(--paper-2); }
-.org__steps p { margin-top: 6px; font-size: 29px; line-height: 1.2; letter-spacing: -0.01em; }
+/* Step 7: the diagram makes way for the recording of the real pull request, with four plain
+   lines beside it that say what to watch for. */
+.org__diagram { transition: opacity 0.4s linear; }
+.s-org[data-at='7'] .org__diagram, .s-org[data-at='8'] .org__diagram { opacity: 0; }
+.org__real { position: absolute; left: 1310px; right: 80px; top: 238px; }
+.org__steps { display: grid; gap: 22px; margin-top: 18px; }
+.org__steps li { padding-top: 14px; border-top: 1px solid var(--rule); }
+.org__steps .label { font-size: 17px; color: var(--paper-2); }
+.org__steps p { margin-top: 6px; font-size: 30px; line-height: 1.18; letter-spacing: -0.01em; }
 .org__why { position: absolute; left: 76px; bottom: 44px; font-size: 76px; }
 
 /* ---- 9. Teaching point 2: Apps Script ------------------------------------------------------ */
@@ -386,17 +381,24 @@ mark { background: none; color: inherit; }
 .sheet__grid td.out { transition: background-color 0.6s linear; }
 .sheet__grid td.out.is-new { background: var(--crimson); color: var(--mark-text); transition: none; }
 .sheet .mock__caption { margin: 0; padding: 10px 18px 12px; font-size: 13px; color: var(--ink-2); }
+/* Step 3: the code and the mock Sheet make way for the recording of the real editor. */
+.s-script .code, .s-script .sheet { transition: opacity 0.4s linear; }
+.js .s-script[data-at='3'] .code, .js .s-script[data-at='3'] .sheet { opacity: 0; visibility: hidden; transition: opacity 0.4s linear, visibility 0s linear 0.4s; }
+.script__moments { position: absolute; left: 1210px; right: 80px; top: 258px; display: grid; gap: 22px; }
+.script__moments li { padding-top: 14px; border-top: 1px solid var(--rule); }
+.script__moments .label { font-size: 17px; color: var(--paper-2); }
+.script__moments p { margin-top: 6px; font-size: 34px; line-height: 1.15; letter-spacing: -0.015em; }
 .script__line { position: absolute; left: 76px; bottom: 84px; font-size: 76px; }
 .script__sub { position: absolute; left: 80px; bottom: 40px; font-size: 17px; }
 
 /* ---- 11. In progress ----------------------------------------------------------------------- */
 .s-next .eyebrow { position: absolute; left: 80px; top: 112px; color: var(--ink-2); }
-.next__list { position: absolute; left: 80px; right: 80px; top: 160px; }
-.next__row { position: relative; display: grid; grid-template-columns: 170px 720px 1fr; align-items: center; height: 166px; border-top: 1px solid var(--rule); }
+.next__list { position: absolute; left: 80px; right: 760px; top: 160px; }
+.next__row { position: relative; display: grid; grid-template-columns: 150px 1fr; align-items: center; height: 166px; border-top: 1px solid var(--rule); }
 .next__row:last-child { border-bottom: 1px solid var(--rule); }
 .next__letter { font-size: 130px; line-height: 1; color: rgb(13 13 12 / 0.22); transition: color 0.5s linear 0.6s; }
-.next__row h2 { font-size: 62px; }
-.next__row p { font-size: 32px; line-height: 1.18; letter-spacing: -0.01em; max-width: 700px; }
+.next__row h2 { font-size: 54px; white-space: nowrap; }
+.next__row p { margin-top: 8px; font-size: 29px; line-height: 1.18; letter-spacing: -0.01em; }
 .next__row::before { content: ''; position: absolute; left: 0; right: 0; top: -2px; height: 4px; background: var(--crimson); transform: scaleX(0); transform-origin: 0 50%; transition: transform 0.8s var(--ease-civic) 0.6s; }
 .s-next[data-focus='C'] [data-case='C']::before, .s-next[data-focus='D'] [data-case='D']::before,
 .s-next[data-focus='E'] [data-case='E']::before, .s-next[data-focus='H'] [data-case='H']::before { transform: scaleX(1); }
@@ -421,4 +423,5 @@ html:not(.js) .viewport { position: static; overflow: visible; }
 html:not(.js) .stage { position: static; transform: none; height: auto; overflow: visible; }
 html:not(.js) .slide { position: relative; inset: auto; height: 1080px; visibility: visible; border-bottom: 4px solid var(--crimson); }
 html:not(.js) .status, html:not(.js) .progress { display: none; }
-html:not(.js) .portal__signin { display: none; }
+/* Where a recording shares its place with something that needs JavaScript, show the recording. */
+html:not(.js) .s-case .sorter, html:not(.js) .s-case .guest, html:not(.js) #f-sort, html:not(.js) .org__diagram, html:not(.js) .s-script .code, html:not(.js) .s-script .sheet { display: none; }
