@@ -71,7 +71,7 @@ Checked against `src/content/cases/*.md` and `src/content/events/ai-literacy-wee
 |---|---|---|
 | A, AutoPlanner | Delivered to the CLC, Oct 2026. Updates at about 7 pm and midnight. Apps Script. | Case file. |
 | B, Music Studio | Delivered to the Music Department, Oct 2026. Sign-in only. Apps Script web app. | Case file. The portal is never linked. |
-| C, Pomfret Voices | Next version under way. A sourced timeline website. | Case file. |
+| C, Pomfret Voices | Next version under way. A sourced timeline website. | Case file. The recording on slide 11 shows a preview build of that next version. |
 | D, Roster Export | Phase 1 built, helper for the school's grading system in progress. Not in use. | Case file. |
 | E, College counseling tools | Early. Building a first demo. | Case file. |
 | F, Project: Pomfret sorting | Delivered, Oct 2026. Sheets plus Apps Script. | Case file. |
@@ -80,7 +80,7 @@ Checked against `src/content/cases/*.md` and `src/content/events/ai-literacy-wee
 
 ## The recordings
 
-Seven clips in `media/`, all recorded on **Nov 19, 2026** between 2:15 and 3:35 AM Eastern, on Cayden's Mac. Each is 1920 x 1080, 30 frames a second, no sound, with an AV1 file, an H.264 file and a WebP poster. Only the page was recorded: no address bar, tabs or bookmarks.
+Seven clips in `media/`, all recorded on **Nov 19, 2026** on Cayden's Mac: six between 2:15 and 3:35 AM Eastern, and `case-c` again at about 9:45 AM Eastern from the next version of the site. Each is 1920 x 1080, 30 frames a second, no sound, with an AV1 file, an H.264 file and a WebP poster. Only the page was recorded: no address bar, tabs or bookmarks.
 
 | Clip | Slide | Length | What it shows | Whose data |
 |---|---|---|---|---|
@@ -90,20 +90,22 @@ Seven clips in `media/`, all recorded on **Nov 19, 2026** between 2:15 and 3:35 
 | `github` | 8 | 25.4 s | Public GitHub pages, signed out: the organization's repository list, pull request 5 in case-g-seated-meals (Merged, five commits), then its review, the fix commit, the green check and the merge. | Real: three GitHub account names (Cayden's, Keke Li ’27's and one more club reviewer's), as GitHub shows them to anyone. |
 | `apps-script` | 9 | 15.2 s | A new Google Sheet named "Showcase practice G": Extensions > Apps Script, the Case G script pasted into Code.gs and saved, the Sheet reloaded, the Seated Meals menu appearing. | No people. The code is the public Case G bundle. |
 | `case-g` | 10 | 24.4 s | The real seated meals tool in "Showcase practice G": Make practice data, the Rules tab, Sort, "Seated 325 students and 78 faculty at 46 tables. 0 rules not fully met.", SM By table, SM Check. | Practice data only (an invented school). |
-| `case-c` | 11 | 10.4 s | The public Pomfret Voices site, its timeline page: one slow scroll from the woven timeline to the first chapter. | The public site. No photos of people are in frame. |
+| `case-c` | 11 | 17.9 s | The home page of the next version of Pomfret Voices, from a preview build, in two takes cut into one. First the page loading: the title comes in over a survey of the campus (2.3 s). Then one slow scroll: a flight over the 2023 LiDAR and aerial survey with the six tour stops pinned on it, the hill in October, and the page's three lines. Re-recorded Nov 19, 2026 (the first `case-c` clip showed the public site's timeline page). | No people. A preview build that is not the public site yet; its address is not written anywhere in this repository. The flight is real survey data and the October view is AI-generated: the page labels both on screen. The one photograph is of the observatory (Library of Congress, public domain, credited on the page). |
 
-How they were made: Chrome with its own profile, started with a debugging port and driven by Playwright; the page's frames were taken with Chrome's screencast and turned into video with ffmpeg (the same method as `capture/case-f.mjs`). The two public clips (`github`, `case-c`) used the repo's headless Chromium, signed out. The pointer in every clip is drawn, because a screencast has none. Raw takes and the recording scripts are in `~/showcase-raw/` on Cayden's Mac, not in this repository.
+How they were made: Chrome with its own profile, started with a debugging port and driven by Playwright; the page's frames were taken with Chrome's screencast and turned into video with ffmpeg (the same method as `capture/case-f.mjs`). The two public clips were recorded signed out, with a clean profile: `github` in the repo's headless Chromium, `case-c` in headless Chrome. The pointer in every clip is drawn, because a screencast has none. Raw takes and the recording scripts are in `~/showcase-raw/` on Cayden's Mac, not in this repository.
+
+How the two animations in `case-c` start, as measured on the page in a 1280 x 720 window: the intro runs by itself when the page loads (the title's lines rise in about half a second after the first paint and are done within 1.5 s). The flight over the survey is tied to the scroll position: its 60 frames run between about 410 and 1,760 px of scroll. The October view fades in as the scroll goes on, and at about 2,090 px a 5 second film of it starts by itself, muted, and plays once. The third line only appears as the page's opening section lets go of the window, which is why the last frames show a thin strip of the next section at the bottom.
 
 What was kept off screen, and how:
 
 - **Emails.** In the portal, a watcher hid any element holding an email address before it was painted (the Email row of the profile and one line on the Recaps page are blank in the clip). In `case-g`, the practice data's made-up email column shows beside one message and is blurred. In `case-f`, the tab that names who ran the sort (PP Start here) was cut out, because the tool writes the runner's email there.
 - **Account photos.** Hidden with a style rule in Docs, Sheets and Apps Script. On GitHub every account photo is hidden; the organization's own logo stays.
 - **Faculty names.** The GitHub clip never shows the pull request's description (it names a faculty member), and the repository list is the compact view, whose descriptions are cut off before any name. The portal clip stops above the "Student resources" section, which names one.
-- **Addresses and IDs.** None appear: no address bar was recorded, and the pointer stays off links in the planner (a link shows its address when hovered).
+- **Addresses and IDs.** No address bar was recorded, and the pointer stays off links in the planner (a link shows its address when hovered). No Doc, Sheet, Form, Drive or web app address or ID appears. One public address does: in `case-c` the page's own source credit under the survey prints the Connecticut state survey's download address and a public dataset number. It was left in, because it is the credit for the imagery.
 
-Each finished clip was split into one frame a second (150 frames in all), read by eye on contact sheets, and read by machine (tesseract) for anything shaped like an email or a web address: none found. The machine read is a second check, not a proof: it found the eight emails in an untouched test frame but missed a dimmed one.
+Each finished clip was split into one frame a second (158 frames in all), read by eye on contact sheets, and read by machine (tesseract) for anything shaped like an email or a web address: none found, apart from the source credit in `case-c` described above. The machine read is a second check, not a proof: it found the eight emails in an untouched test frame but missed a dimmed one.
 
-What was changed in real tools to make them: nothing. In the planner and the portal the only actions were scrolling, opening one week tab, the portal's own Students and Recaps links, and opening one student's profile. Nothing was typed, saved, booked or sent. One thing to know: opening a profile in the portal asks the server for that student's Drive folder, and the portal's own text says the folder is created if it does not exist yet. One profile was opened (three times). It showed "Folder is empty".
+What was changed in real tools to make them: nothing. On the Pomfret Voices page the only actions were loading it and scrolling. In the planner and the portal the only actions were scrolling, opening one week tab, the portal's own Students and Recaps links, and opening one student's profile. Nothing was typed, saved, booked or sent. One thing to know: opening a profile in the portal asks the server for that student's Drive folder, and the portal's own text says the folder is created if it does not exist yet. One profile was opened (three times). It showed "Folder is empty".
 
 The real names are here by Cayden's decision as club lead, with school permission, for this deck only (the exception is recorded in `AGENTS.md` under "Privacy and copy"). Case A is not part of it: only Cayden's own planner was opened, never the staff page or another student's Doc. Cases F and G use practice data on purpose.
 
