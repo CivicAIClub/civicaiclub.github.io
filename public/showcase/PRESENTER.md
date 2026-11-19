@@ -1,8 +1,8 @@
 # Presenter sheet: One term of Civic AI
 
-The deck: https://civicaiclub.github.io/showcase/ . Target: 6:40, with 6:45 as the limit.
+The deck: https://civicaiclub.github.io/showcase/ . Target: 6:44, with 6:45 as the limit. That leaves one second, so keep slide 11 moving (see its row below).
 
-Seven slides now play a recording of the real tool. The recordings add up to 2 minutes 31 seconds, so talk over them: each slide's time below already includes its recording.
+Seven slides now play a recording of the real tool. The recordings add up to 2 minutes 39 seconds, so talk over them: each slide's time below already includes its recording.
 
 ## Before you start
 
@@ -24,7 +24,7 @@ If the projector or wifi fails, the deck alone tells the whole story: skip the L
 | Left, Up, Page Up | Back. |
 | K, or a click on a recording | Pause the recording, or carry on. |
 | R | Play the recording on this slide again from the start. |
-| H, or any number | Open the hub. On the hub, 1 to 8 open cases A to H, and H goes back. |
+| H, or any number | Open the hub. On the hub, 1 to 8 open cases A to H, and H goes back. Case C opens slide 11 on its recording; D, E and H open it on the list. |
 | N | Presenter notes on or off. |
 | F | Fullscreen on or off. |
 | T | Reset the clock to 0:00. It starts again on the next move forward. (This was R before.) |
@@ -49,10 +49,10 @@ The address ends in the slide number (for example `#8`), so a reload returns to 
 | 8 | Building as an organization | 1:00 | 4:25 | 9 | 0:25, the real GitHub | Six presses draw the diagram. The 7th plays GitHub. The 8th shows the last line. |
 | 9 | Apps Script | 0:55 | 5:20 | 4 | 0:15, the real editor | Right opens the menu, Right runs it, Right plays the real editor and shows "Extensions > Apps Script". |
 | 10 | Case G, try it | 0:45 | 6:05 | 3 | 0:24, the real tool, practice data | Right plays it. Right again: the question box. Type, Enter, Enter. Or click "No". |
-| 11 | In progress | 0:20 | 6:25 | 1 | 0:10, Pomfret Voices | It plays by itself. Don't say Case D is in use. |
-| 12 | Close | 0:15 | 6:40 | | | Questions. |
+| 11 | In progress | 0:24 | 6:29 | 2 | 0:18, Pomfret Voices, next version | It plays by itself, large. Press Right when the October hill comes up (about 12 seconds in): the list comes in and the recording carries on beside it. Don't say Case D is in use. |
+| 12 | Close | 0:15 | 6:44 | | | Questions. |
 
-If you are behind at slide 7 (the clock reads more than 3:30 when the recording ends), skip the small sorter: press Right twice quickly. On slide 10 one answer in the box is enough.
+If you are behind at slide 7 (the clock reads more than 3:30 when the recording ends), skip the small sorter: press Right twice quickly. On slide 10 one answer in the box is enough. On slide 11 you can press Right as early as you like: the recording keeps playing beside the list.
 
 ## Things only you can check
 
@@ -60,6 +60,7 @@ If you are behind at slide 7 (the clock reads more than 3:30 when the recording 
 - **Slide 3**: the five lines about what you do at each stage are a draft. Make them yours.
 - **Slide 12** is one sentence about what the term taught you. It is a draft: rewrite it.
 - **Slide 8**: the recording shows "previously approved these changes" and "dismissed ... stale review". Read the note in `FACTS.md` before you say "approved".
+- **Slide 11**: the recording is a preview build of the next Pomfret Voices site, not the public one. Its October view of the hill is AI-generated, and the page says so on screen; the flight before it is the real 2023 survey. Check with the Case C team that they are happy to show it.
 - **Slide 6** shows six real students' names and one student's profile and lesson recap. `FACTS.md` lists exactly what is on screen. Watch it once before the talk.
 
 ## Testing the simulations again

@@ -232,7 +232,8 @@
 
   function openTile(tile) {
     startClock();
-    go(parseInt(tile.getAttribute('data-goto'), 10) - 1, 0, { focus: tile.getAttribute('data-focus') || '' });
+    // data-goto-step: the step to open on (the In progress rows for D, E and H are on its step 1).
+    go(parseInt(tile.getAttribute('data-goto'), 10) - 1, parseInt(tile.getAttribute('data-goto-step') || '0', 10), { focus: tile.getAttribute('data-focus') || '' });
   }
 
   // ---- Clicks: anywhere that isn't a control goes forward -----------------------------------
