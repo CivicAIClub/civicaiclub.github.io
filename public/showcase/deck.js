@@ -6,13 +6,15 @@
     - moves between slides and between the steps inside a slide,
     - keeps the slide (and step) in the address after the #, so a reload returns to it,
     - runs the status line: section, slide number and the elapsed-time clock,
-    - shows the presenter notes (N), goes fullscreen (F) and opens the hub (H or a number key).
+    - shows the presenter notes (N), goes fullscreen (F) and opens the hub (H or a number key),
+    - tells clips.js when a slide's step changes, so the recordings play, and passes it K and R.
 
   Keys:
     Right, Space, Down, Page Down   forward (a step first, then the next slide)
     Left, Up, Page Up               back
     H or a number                   the hub (on the hub, 1 to 8 open a case, H goes back)
-    N  notes     F  fullscreen     R  reset the clock     Home / End  first / last slide
+    K or a click on a recording     pause and resume it        R   play it again
+    N  notes     F  fullscreen     T  reset the clock     Home / End  first / last slide
 
   slides.js adds what each slide does on its steps, through Deck.on(number, { apply, leave }).
 */
@@ -63,6 +65,8 @@
     if (hook && hook.apply) {
       try { hook.apply(step, info || {}); } catch (e) { if (window.console) console.error(e); }
     }
+    // The recordings on this slide: play, hold or go back to the poster (clips.js).
+    if (window.Clips) window.Clips.sync(slide, step, info || {});
   }
 
   // ---- Going to a slide ---------------------------------------------------------------------
@@ -84,6 +88,7 @@
     if (old) {
       var hook = hooks[current + 1];
       if (hook && hook.leave) { try { hook.leave(); } catch (e) { if (window.console) console.error(e); } }
+      if (window.Clips) window.Clips.leave(old);
       old.removeAttribute('data-focus');
     }
     // Only one slide may be leaving at a time, even when keys are pressed quickly.
@@ -220,7 +225,9 @@
     if (lower === 'h') { e.preventDefault(); openHub(); }
     else if (lower === 'n') { e.preventDefault(); toggleNotes(); }
     else if (lower === 'f') { e.preventDefault(); toggleFullscreen(); }
-    else if (lower === 'r') { e.preventDefault(); resetClock(); }
+    else if (lower === 't') { e.preventDefault(); resetClock(); }
+    else if (lower === 'k') { e.preventDefault(); if (window.Clips) window.Clips.toggle(slides[current]); }
+    else if (lower === 'r') { e.preventDefault(); if (window.Clips) window.Clips.replay(slides[current]); }
   });
 
   function openTile(tile) {
@@ -232,7 +239,7 @@
   viewport.addEventListener('click', function (e) {
     var tile = e.target.closest && e.target.closest('[data-goto]');
     if (tile) { openTile(tile); return; }
-    if (e.target.closest && e.target.closest('button, a, input, textarea, label, select, [data-interactive], .notespanel')) return;
+    if (e.target.closest && e.target.closest('button, a, input, textarea, label, select, [data-interactive], .clip__frame, .notespanel')) return;
     next();
   });
 
