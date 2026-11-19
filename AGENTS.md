@@ -58,6 +58,7 @@ Use `feature/`, `fix/`, or `chore/` as appropriate, with lowercase names and hyp
 ## Privacy and copy
 
 - Demo data only. Never put real student data, emails, tokens, `/exec` URLs, Sheet/Form/Drive IDs, avatars, URL bars, or browser chrome in footage or code. No real student data in copy and no emails anywhere.
+- One exception, decided by the club lead with school permission on 2026-11-19, for `public/showcase/` only: its recordings may show real names in Case B, on GitHub, and on the lead's own AutoPlanner Doc (never the AutoPlanner staff page or another student's Doc; Cases F and G stay on practice data). Everything else in the rule above still applies there, and `public/showcase/FACTS.md` lists what each recording shows.
 - Name faculty clients by office only: CLC Supported Study Hall, Music Department, Office of Community and Belonging, Teaching faculty, College Counseling Office, Project: Pomfret, Associate Head of School’s Office, or World Languages Department. Never name a faculty member as the client.
 - Never link Case B's live portal or, for now, its repo. It is a Pomfret-only Apps Script web app in the Music Department's account, available only to department-added people signed in with Pomfret accounts.
 - Do not claim Case D is in use. Call its destination "the school’s grading system", never the product's name.
